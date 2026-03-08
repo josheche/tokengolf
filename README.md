@@ -21,10 +21,9 @@ tokengolf install
 ```bash
 tokengolf start       # declare quest + budget, begin a run
 tokengolf status      # live run status
-tokengolf win         # shipped it ✓
-tokengolf win --spent 0.18   # with actual cost
+tokengolf win         # shipped it ✓ (auto-detects cost)
 tokengolf bust        # budget exploded
-tokengolf scorecard   # last run
+tokengolf scorecard   # last run scorecard
 tokengolf stats       # career dashboard
 ```
 
@@ -35,6 +34,11 @@ tokengolf stats       # career dashboard
 |-----------|---------|----------|----------|------------|
 | < $0.10 | < $0.30 | < $1.00 | < $3.00 | > $3.00 |
 
+**Efficiency rating (roguelike mode):**
+| 🌟 Legendary | ⚡ Efficient | ✓ Solid | 😅 Close Call | 💀 Busted |
+|-------------|------------|--------|--------------|---------|
+| < 25% used | < 50% | < 75% | < 100% | > 100% |
+
 **Model classes:**
 | 🏹 Rogue (Haiku) | ⚔️ Fighter (Sonnet) | 🧙 Warlock (Opus) |
 |-----------------|-------------------|-----------------|
@@ -42,11 +46,28 @@ tokengolf stats       # career dashboard
 
 ## Claude Code hooks
 
-After `tokengolf install`, three hooks fire during every Claude Code session:
+After `tokengolf install`, four hooks fire automatically:
 
-- **SessionStart** → injects your active run context into Claude's conversation. Claude sees the quest, remaining budget, floor, and efficiency tips.
-- **PostToolUse** → tracks every tool call. Fires a `systemMessage` warning at 80% budget — Claude actually sees this and tightens up.
+- **SessionStart** → injects your active quest, remaining budget, floor, and efficiency tips into Claude's context. If no run is active, starts a Flow Mode session automatically.
+- **PostToolUse** → tracks every tool call. Fires a budget warning at 80% — Claude sees it and tightens up.
 - **UserPromptSubmit** → counts prompts. Injects a halfway nudge at 50%.
+- **Stop** → captures exact session cost when Claude Code ends. No manual `--spent` needed.
+
+## Auto cost detection
+
+`tokengolf win` automatically reads cost from the session's transcript files in `~/.claude/projects/`. This includes subagent sidechain files, so multi-model usage (Haiku + Sonnet) is captured in the breakdown.
+
+## Achievements
+
+- 💎 Diamond — Haiku under $0.10
+- 🥇 Gold — Completed with Haiku
+- 🥈 Silver — Completed with Sonnet
+- 🥉 Bronze — Completed with Opus
+- 🎯 Sniper — Under 25% of budget
+- ⚡ Efficient — Under 50% of budget
+- 🪙 Penny Pincher — Total spend under $0.10
+- 🏹 Frugal — Haiku handled ≥50% of session cost
+- 🎲 Rogue Run — Haiku handled ≥75% of session cost
 
 ## State
 
