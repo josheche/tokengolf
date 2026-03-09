@@ -6,6 +6,25 @@ import os from 'os';
 const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 const STATE_DIR  = path.join(os.homedir(), '.tokengolf');
 
+function detectEffort() {
+  const fromEnv = process.env.CLAUDE_CODE_EFFORT_LEVEL;
+  if (fromEnv) return fromEnv;
+  for (const p of [
+    path.join(os.homedir(), '.claude', 'settings.json'),
+    path.join(process.env.PWD || process.cwd(), '.claude', 'settings.json'),
+  ]) {
+    try { const s = JSON.parse(fs.readFileSync(p, 'utf8')); if (s.effortLevel) return s.effortLevel; } catch {}
+  }
+  return null;
+}
+
+function detectFastMode() {
+  try {
+    const s = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.claude', 'settings.json'), 'utf8'));
+    return s.fastMode === true;
+  } catch { return false; }
+}
+
 try {
   const cwd = process.env.PWD || process.cwd();
 
@@ -19,6 +38,8 @@ try {
       quest: null,
       model: 'claude-sonnet-4-6',
       budget: null,
+      effort: detectEffort(),
+      fastMode: detectFastMode(),
       spent: 0,
       status: 'active',
       mode: 'flow',
@@ -28,11 +49,21 @@ try {
       totalToolCalls: 0,
       toolCalls: {},
       cwd,
+      sessionCount: 1,
+      compactionEvents: [],
       startedAt: new Date().toISOString(),
     };
     fs.writeFileSync(STATE_FILE, JSON.stringify(run, null, 2));
-  } else if (!run.cwd) {
-    run = { ...run, cwd };
+  } else {
+    // Continuing an existing run — increment session count, snapshot spent for per-session tracking
+    run = {
+      ...run,
+      sessionCount: (run.sessionCount || 1) + 1,
+      spentBeforeThisSession: run.spent || 0,
+      cwd: run.cwd || cwd,
+      effort: 'effort' in run ? run.effort : detectEffort(),
+      fastMode: 'fastMode' in run ? run.fastMode : detectFastMode(),
+    };
     fs.writeFileSync(STATE_FILE, JSON.stringify(run, null, 2));
   }
 
@@ -43,11 +74,13 @@ try {
     ? `Budget: $${run.budget.toFixed(2)} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(run.budget - run.spent).toFixed(4)}`
     : '';
 
+  const effortStr = run.effort ? run.effort : 'default';
+  const fastStr = run.fastMode ? ' ⚡ Fast' : '';
   const context = `## ⛳ TokenGolf Active
 ${urgency}Every token counts.
 
 ${questLine}
-Model: ${run.model} | Floor: ${run.floor}/${run.totalFloors}
+Model: ${run.model} | Effort: ${effortStr}${fastStr} | Floor: ${run.floor}/${run.totalFloors}
 ${budgetLine}
 
 Efficiency tips:
