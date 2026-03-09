@@ -45,23 +45,23 @@ export function getAllRuns() {
 }
 
 export function getStats() {
-  const runs = readRuns().filter(r => r.status !== 'active');
-  const wins = runs.filter(r => r.status === 'won');
-  const deaths = runs.filter(r => r.status === 'died');
+  const runs = readRuns().filter((r) => r.status !== 'active');
+  const wins = runs.filter((r) => r.status === 'won');
+  const deaths = runs.filter((r) => r.status === 'died');
 
-  const avgSpend = wins.length
-    ? wins.reduce((sum, r) => sum + (r.spent || 0), 0) / wins.length
-    : 0;
+  const avgSpend = wins.length ? wins.reduce((sum, r) => sum + (r.spent || 0), 0) / wins.length : 0;
 
   const bestRun = wins.length
     ? wins.reduce((best, r) => (!best || r.spent < best.spent ? r : best), null)
     : null;
 
-  const allAchievements = runs.flatMap(r => (r.achievements || []).map(a => ({
-    ...a,
-    quest: r.quest,
-    earnedAt: r.endedAt,
-  })));
+  const allAchievements = runs.flatMap((r) =>
+    (r.achievements || []).map((a) => ({
+      ...a,
+      quest: r.quest,
+      earnedAt: r.endedAt,
+    }))
+  );
 
   return {
     total: runs.length,

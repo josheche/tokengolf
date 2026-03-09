@@ -11,10 +11,7 @@ import { ActiveRun } from './components/ActiveRun.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
-program
-  .name('tokengolf')
-  .description('⛳ Gamify your Claude Code sessions')
-  .version('0.1.0');
+program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.1.0');
 
 program
   .command('start')
@@ -47,7 +44,13 @@ program
     }
     const detected = opts.spent ? null : autoDetectCost(run);
     const spent = opts.spent ? parseFloat(opts.spent) : (detected?.spent ?? run.spent);
-    const completed = { ...run, spent, status: 'won', modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null, endedAt: new Date().toISOString() };
+    const completed = {
+      ...run,
+      spent,
+      status: 'won',
+      modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null,
+      endedAt: new Date().toISOString(),
+    };
     const saved = saveRun(completed);
     clearCurrentRun();
     render(React.createElement(ScoreCard, { run: saved }));
@@ -65,7 +68,13 @@ program
     }
     const detected = opts.spent ? null : autoDetectCost(run);
     const spent = opts.spent ? parseFloat(opts.spent) : (detected?.spent ?? run.budget + 0.01);
-    const died = { ...run, spent, status: 'died', modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null, endedAt: new Date().toISOString() };
+    const died = {
+      ...run,
+      spent,
+      status: 'died',
+      modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null,
+      endedAt: new Date().toISOString(),
+    };
     const saved = saveRun(died);
     clearCurrentRun();
     render(React.createElement(ScoreCard, { run: saved }));

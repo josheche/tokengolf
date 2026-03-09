@@ -8,10 +8,14 @@
   },
   "scripts": {
     "build": "esbuild src/cli.js --bundle --platform=node --format=esm --loader:.js=jsx --packages=external --outfile=dist/cli.js && chmod +x dist/cli.js",
-    "prepare": "npm run build",
+    "prepare": "npm run build && husky",
     "dev": "node --import tsx/esm src/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "eslint src/ hooks/",
+    "lint:fix": "eslint src/ hooks/ --fix",
+    "format": "prettier --write src/ hooks/",
+    "format:check": "prettier --check src/ hooks/",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
@@ -21,7 +25,12 @@
     "react": "^18.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "esbuild": "^0.25.0",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "prettier": "^3.8.1",
     "vitest": "^4.0.18"
   },
   "engines": {

@@ -7,7 +7,9 @@ const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 
 let input = '';
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', chunk => { input += chunk; });
+process.stdin.on('data', (chunk) => {
+  input += chunk;
+});
 process.stdin.on('end', () => {
   try {
     const event = JSON.parse(input);
@@ -20,6 +22,8 @@ process.stdin.on('end', () => {
     if (!run || run.status !== 'active') process.exit(0);
 
     fs.writeFileSync(STATE_FILE, JSON.stringify({ ...run, spent: cost }, null, 2));
-  } catch { /* no run or no cost data */ }
+  } catch {
+    /* no run or no cost data */
+  }
   process.exit(0);
 });

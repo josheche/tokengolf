@@ -7,7 +7,9 @@ const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 
 let input = '';
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', chunk => { input += chunk; });
+process.stdin.on('data', (chunk) => {
+  input += chunk;
+});
 process.stdin.on('end', () => {
   try {
     const run = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));

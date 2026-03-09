@@ -4,9 +4,9 @@ import os from 'os';
 
 // Pricing per million tokens (Anthropic list prices)
 const PRICING = {
-  'claude-opus-4':   { input: 15.00, output: 75.00, cacheWrite: 18.75, cacheRead: 1.50 },
-  'claude-sonnet-4': { input:  3.00, output: 15.00, cacheWrite:  3.75, cacheRead: 0.30 },
-  'claude-haiku-4':  { input:  0.80, output:  4.00, cacheWrite:  1.00, cacheRead: 0.08 },
+  'claude-opus-4': { input: 15.0, output: 75.0, cacheWrite: 18.75, cacheRead: 1.5 },
+  'claude-sonnet-4': { input: 3.0, output: 15.0, cacheWrite: 3.75, cacheRead: 0.3 },
+  'claude-haiku-4': { input: 0.8, output: 4.0, cacheWrite: 1.0, cacheRead: 0.08 },
 };
 
 function getPrice(model) {
@@ -33,14 +33,17 @@ export function parseCostFromTranscript(transcriptPath) {
           const model = entry.message.model;
           const p = getPrice(model);
           const u = entry.message.usage;
-          const cost = (u.input_tokens || 0) / 1e6 * p.input
-            + (u.output_tokens || 0) / 1e6 * p.output
-            + (u.cache_creation_input_tokens || 0) / 1e6 * p.cacheWrite
-            + (u.cache_read_input_tokens || 0) / 1e6 * p.cacheRead;
+          const cost =
+            ((u.input_tokens || 0) / 1e6) * p.input +
+            ((u.output_tokens || 0) / 1e6) * p.output +
+            ((u.cache_creation_input_tokens || 0) / 1e6) * p.cacheWrite +
+            ((u.cache_read_input_tokens || 0) / 1e6) * p.cacheRead;
           total += cost;
           byModel[model] = (byModel[model] || 0) + cost;
         }
-      } catch { /* skip malformed lines */ }
+      } catch {
+        /* skip malformed lines */
+      }
     }
     return total > 0 ? { total, byModel } : null;
   } catch {
@@ -51,9 +54,13 @@ export function parseCostFromTranscript(transcriptPath) {
 // Returns all transcript paths modified at or after sinceMs
 function findTranscriptsSince(projectDir, sinceMs) {
   try {
-    return fs.readdirSync(projectDir)
-      .filter(f => f.endsWith('.jsonl'))
-      .map(f => ({ p: path.join(projectDir, f), mtime: fs.statSync(path.join(projectDir, f)).mtimeMs }))
+    return fs
+      .readdirSync(projectDir)
+      .filter((f) => f.endsWith('.jsonl'))
+      .map((f) => ({
+        p: path.join(projectDir, f),
+        mtime: fs.statSync(path.join(projectDir, f)).mtimeMs,
+      }))
       .filter(({ mtime }) => mtime >= sinceMs)
       .map(({ p }) => p);
   } catch {
@@ -71,7 +78,7 @@ export function parseThinkingFromTranscripts(paths) {
         try {
           const entry = JSON.parse(line);
           if (entry.type === 'assistant' && Array.isArray(entry.message?.content)) {
-            const thinkBlocks = entry.message.content.filter(b => b.type === 'thinking');
+            const thinkBlocks = entry.message.content.filter((b) => b.type === 'thinking');
             if (thinkBlocks.length > 0) {
               invocations++;
               for (const block of thinkBlocks) {
@@ -79,9 +86,13 @@ export function parseThinkingFromTranscripts(paths) {
               }
             }
           }
-        } catch { /* skip malformed lines */ }
+        } catch {
+          /* skip malformed lines */
+        }
       }
-    } catch { /* skip unreadable files */ }
+    } catch {
+      /* skip unreadable files */
+    }
   }
   return invocations > 0 ? { thinkingInvocations: invocations, thinkingTokens: tokens } : null;
 }
@@ -122,7 +133,9 @@ export function parseModelSwitches(transcriptPath) {
           if (lastFamily !== null && family !== lastFamily) switches++;
           lastFamily = family;
         }
-      } catch { /* skip */ }
+      } catch {
+        /* skip */
+      }
     }
     return { switches };
   } catch {
@@ -136,13 +149,16 @@ export function findTranscript(sessionId, projectDir) {
       const p = path.join(projectDir, `${sessionId}.jsonl`);
       fs.accessSync(p);
       return p;
-    } catch { /* fall through */ }
+    } catch {
+      /* fall through */
+    }
   }
   // Fall back to most recently modified transcript
   try {
-    const files = fs.readdirSync(projectDir)
-      .filter(f => f.endsWith('.jsonl'))
-      .map(f => ({ f, mtime: fs.statSync(path.join(projectDir, f)).mtimeMs }))
+    const files = fs
+      .readdirSync(projectDir)
+      .filter((f) => f.endsWith('.jsonl'))
+      .map((f) => ({ f, mtime: fs.statSync(path.join(projectDir, f)).mtimeMs }))
       .sort((a, b) => b.mtime - a.mtime);
     return files.length ? path.join(projectDir, files[0].f) : null;
   } catch {
@@ -156,9 +172,10 @@ export function autoDetectCost(run) {
 
   // Scan all transcripts modified since session start to capture subagent sidechains
   const sinceMs = run.startedAt ? new Date(run.startedAt).getTime() : 0;
-  const paths = sinceMs > 0
-    ? findTranscriptsSince(projectDir, sinceMs)
-    : [findTranscript(run.sessionId, projectDir)].filter(Boolean);
+  const paths =
+    sinceMs > 0
+      ? findTranscriptsSince(projectDir, sinceMs)
+      : [findTranscript(run.sessionId, projectDir)].filter(Boolean);
 
   const parsed = paths.length > 0 ? parseAllTranscripts(paths) : null;
 
@@ -172,10 +189,16 @@ export function autoDetectCost(run) {
 
   // Model switch detection: only on primary transcript (user-initiated switches)
   const primaryPath = findTranscript(run.sessionId, projectDir);
-  const { switches: modelSwitches } = primaryPath ? parseModelSwitches(primaryPath) : { switches: 0 };
+  const { switches: modelSwitches } = primaryPath
+    ? parseModelSwitches(primaryPath)
+    : { switches: 0 };
 
   // Distinct model families across ALL transcripts (includes subagents)
-  const families = new Set(Object.keys(parsed?.byModel ?? {}).map(modelFamily).filter(f => f !== 'unknown'));
+  const families = new Set(
+    Object.keys(parsed?.byModel ?? {})
+      .map(modelFamily)
+      .filter((f) => f !== 'unknown')
+  );
   const distinctModels = families.size;
 
   return {
