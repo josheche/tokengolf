@@ -131,8 +131,8 @@ export function calculateAchievements(run) {
       achievements.push({ key: 'archmagus', label: 'Archmagus — Opus at max effort, completed', emoji: '👑' });
   }
 
-  // Fast mode achievements
-  if (run.fastMode) {
+  // Fast mode achievements (Opus-only feature)
+  if (run.fastMode && mc === MODEL_CLASSES.opus) {
     if (pct !== null && pct < 1.0)
       achievements.push({ key: 'lightning', label: 'Lightning Run — Opus fast mode, completed under budget', emoji: '⚡' });
     if (pct !== null && pct <= 0.25)

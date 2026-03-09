@@ -22,7 +22,7 @@ try {
   compactionEvents.push({
     trigger,
     timestamp: new Date().toISOString(),
-    contextPct: event.context_window_usage_pct ?? null,
+    contextPct: event.context_window?.used_percentage ?? event.context_window_usage_pct ?? null,
     customInstructions: event.custom_instructions || null,
   });
 

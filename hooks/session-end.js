@@ -126,6 +126,7 @@ try {
   if (!run || run.status !== 'active') process.exit(0);
 
   const result = autoDetectCost(run);
+  if (!result) process.exit(0); // no transcripts found, nothing to save
 
   // reason 'other' = unexpected exit (usage limit hit = Fainted)
   // clean exits: 'clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'

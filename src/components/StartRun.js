@@ -127,7 +127,6 @@ export function StartRun() {
                 onConfirm={() => {
                   setCurrentRun({
                     quest, model, budget, effort,
-                    fastMode: false,
                     spent: 0,
                     status: 'active',
                     floor: 1,

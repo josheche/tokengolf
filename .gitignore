@@ -2,4 +2,5 @@ node_modules/
 dist/
 .DS_Store
 *.log
-.claude/*
+.claude/*hooks/statusline-wrapper.sh
+
