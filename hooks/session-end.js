@@ -71,8 +71,7 @@ function renderScorecard(run) {
 
   const ti = run.thinkingInvocations || 0;
   const thinkRow = ti > 0
-    ? `${M}🔮 ${ti} ultrathink${ti > 1 ? ' invocations' : ' invocation'}${RESET}` +
-      (run.thinkingTokens > 0 ? `  ${DIM}~${(run.thinkingTokens / 1000).toFixed(1)}K thinking tokens${RESET}` : '')
+    ? `${M}🔮 ${ti} ultrathink${ti > 1 ? ' invocations' : ' invocation'}${RESET}`
     : null;
 
   const lines = [

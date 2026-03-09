@@ -97,9 +97,6 @@ export function ScoreCard({ run }) {
             <Box gap={3} alignItems="center">
               <Text color="gray" dimColor>Extended thinking:</Text>
               <Text color="magenta">🔮 {run.thinkingInvocations}× invoked</Text>
-              {run.thinkingTokens > 0 && (
-                <Text color="gray" dimColor>~{(run.thinkingTokens / 1000).toFixed(1)}K tokens</Text>
-              )}
             </Box>
           </Box>
         )}
