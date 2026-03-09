@@ -64,6 +64,7 @@ tokengolf install     # patch ~/.claude/settings.json with hooks
 | 🏹 Rogue | Haiku | — *(skips effort step)* | Glass cannon. Prompt precisely or die. |
 | ⚔️ Fighter | Sonnet | Low / **Medium** / High | Balanced. The default run. |
 | 🧙 Warlock | Opus | Low / **Medium** / High / Max | Powerful but costly. |
+| ⚜️ Paladin | Opus (plan mode) | Low / **Medium** / High / Max | Strategic planner. Thinks before acting. |
 | ⚡ Warlock·Fast | Opus + fast mode | any | 2× cost. Maximum danger mode. |
 
 `max` effort is Opus-only — the API returns an error if used on other models. Fast mode is toggled mid-session with `/fast` in Claude Code and is auto-detected by TokenGolf.
