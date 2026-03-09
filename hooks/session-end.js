@@ -20,7 +20,7 @@ function writeTTY(text) {
 }
 
 function renderScorecard(run) {
-  const W = 68;
+  const W = Math.min(Math.max((process.stdout.columns || 88) - 4, 72), 120);
   const won = run.status === 'won';
   const flowMode = !run.budget;
 

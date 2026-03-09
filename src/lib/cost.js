@@ -133,8 +133,8 @@ export function autoDetectCost(run) {
 
   const parsed = paths.length > 0 ? parseAllTranscripts(paths) : null;
 
-  // Prefer Stop-hook cost (exact), fall back to transcript parse
-  const spent = run.spent > 0 ? run.spent : (parsed?.total ?? null);
+  // Always prefer fresh transcript parse; fall back to run.spent if no transcripts found
+  const spent = parsed?.total ?? (run.spent > 0 ? run.spent : null);
   if (spent === null) return null;
 
   // Always use parsed model breakdown (Stop hook doesn't capture it)
