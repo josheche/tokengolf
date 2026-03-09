@@ -43,6 +43,9 @@ export function installHooks() {
             e.command?.includes("session-end.js") ||
             e.command?.includes("pre-compact.js") ||
             e.command?.includes("post-tool-use.js") ||
+            e.command?.includes("post-tool-use-failure.js") ||
+            e.command?.includes("subagent-start.js") ||
+            e.command?.includes("stop.js") ||
             e.command?.includes("user-prompt-submit.js"),
         ),
     );
@@ -109,6 +112,37 @@ export function installHooks() {
     ],
   });
 
+  upsertHook("PostToolUseFailure", {
+    matcher: "",
+    hooks: [
+      {
+        type: "command",
+        command: `node ${path.join(HOOKS_DIR, "post-tool-use-failure.js")}`,
+        timeout: 5,
+      },
+    ],
+  });
+
+  upsertHook("SubagentStart", {
+    hooks: [
+      {
+        type: "command",
+        command: `node ${path.join(HOOKS_DIR, "subagent-start.js")}`,
+        timeout: 5,
+      },
+    ],
+  });
+
+  upsertHook("Stop", {
+    hooks: [
+      {
+        type: "command",
+        command: `node ${path.join(HOOKS_DIR, "stop.js")}`,
+        timeout: 5,
+      },
+    ],
+  });
+
   // Install statusLine (non-destructive: wrap existing if present)
   try {
     fs.chmodSync(STATUSLINE_PATH, 0o755);
@@ -157,7 +191,10 @@ export function installHooks() {
   console.log("  ✓ UserPromptSubmit → counts prompts + 50% nudge");
   console.log("  ✓ SessionEnd       → auto-displays scorecard on /exit");
   console.log(
-    "  ✓ PreCompact       → tracks compaction events for gear achievements",
+    "  ✓ PreCompact           → tracks compaction events for gear achievements",
   );
+  console.log("  ✓ PostToolUseFailure   → tracks failed tool calls");
+  console.log("  ✓ SubagentStart        → tracks subagent spawns");
+  console.log("  ✓ Stop                 → tracks turn count");
   console.log("\n  ✅ Done! Start a run: tokengolf start\n");
 }

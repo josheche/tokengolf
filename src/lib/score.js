@@ -20,12 +20,14 @@ export function getEffortLevel(effort) {
 export const MODEL_BUDGET_TIERS = {
   haiku: { diamond: 0.15, gold: 0.4, silver: 1.0, bronze: 2.5 },
   sonnet: { diamond: 0.5, gold: 1.5, silver: 4.0, bronze: 10.0 },
+  opusplan: { diamond: 1.5, gold: 4.5, silver: 12.0, bronze: 30.0 },
   opus: { diamond: 2.5, gold: 7.5, silver: 20.0, bronze: 50.0 },
 };
 
 export function getModelBudgets(model) {
   const m = (model || "").toLowerCase();
   if (m.includes("haiku")) return MODEL_BUDGET_TIERS.haiku;
+  if (m.includes("opusplan")) return MODEL_BUDGET_TIERS.opusplan;
   if (m.includes("opus")) return MODEL_BUDGET_TIERS.opus;
   return MODEL_BUDGET_TIERS.sonnet;
 }
@@ -44,6 +46,13 @@ export const MODEL_CLASSES = {
     emoji: "⚔️",
     difficulty: "Normal",
     color: "cyan",
+  },
+  opusplan: {
+    name: "Paladin",
+    label: "Paladin",
+    emoji: "⚜️",
+    difficulty: "Calculated",
+    color: "yellow",
   },
   opus: {
     name: "Opus",
@@ -70,9 +79,10 @@ export function getTier(spent) {
 }
 
 export function getModelClass(model = "") {
-  const key = Object.keys(MODEL_CLASSES).find((k) =>
-    model.toLowerCase().includes(k),
-  );
+  const m = model.toLowerCase();
+  // Check opusplan before opus to avoid substring collision
+  if (m.includes("opusplan")) return MODEL_CLASSES.opusplan;
+  const key = Object.keys(MODEL_CLASSES).find((k) => m.includes(k));
   return MODEL_CLASSES[key] || MODEL_CLASSES.sonnet;
 }
 
@@ -106,6 +116,16 @@ export function formatElapsed(startedAt) {
   return `${s}s`;
 }
 
+// Returns opus's share of total spend as a 0–100 integer, or null (for Paladin runs)
+export function getOpusPct(modelBreakdown, totalSpent) {
+  if (!modelBreakdown || !totalSpent) return null;
+  const opusCost = Object.entries(modelBreakdown)
+    .filter(([m]) => m.toLowerCase().includes("opus"))
+    .reduce((sum, [, c]) => sum + c, 0);
+  if (opusCost === 0) return null;
+  return Math.round((opusCost / totalSpent) * 100);
+}
+
 // Returns haiku's share of total spend as a 0–100 integer, or null
 export function getHaikuPct(modelBreakdown, totalSpent) {
   if (!modelBreakdown || !totalSpent) return null;
@@ -122,6 +142,16 @@ export function calculateAchievements(run) {
   const pct = run.budget ? run.spent / run.budget : null;
   const mc = getModelClass(run.model);
 
+  const isPaladin = mc === MODEL_CLASSES.opusplan;
+
+  // Indecisive fires on death too (like Hubris)
+  if ((run.modelSwitches ?? 0) >= 3)
+    achievements.push({
+      key: "indecisive",
+      label: `Indecisive — ${run.modelSwitches} model switches mid-session`,
+      emoji: "🎲",
+    });
+
   // Hubris fires on death too — ultrathink and still busted
   if (run.thinkingInvocations > 0 && run.status === "died")
     achievements.push({
@@ -130,7 +160,23 @@ export function calculateAchievements(run) {
       emoji: "🤦",
     });
 
-  if (!won) return achievements;
+  // Death marks
+  if (!won) {
+    if (run.budget && run.spent / run.budget >= 2.0)
+      achievements.push({ key: "blowout", label: "Blowout — Spent 2× budget", emoji: "💥" });
+    else if (run.budget && run.spent / run.budget > 1.0 && run.spent / run.budget <= 1.1)
+      achievements.push({ key: "so_close", label: "So Close — Died within 10% of budget", emoji: "😭" });
+    if ((run.totalToolCalls || 0) >= 30)
+      achievements.push({ key: "tool_happy", label: `Tool Happy — Died with ${run.totalToolCalls} tool calls`, emoji: "🔨" });
+    if ((run.promptCount || 0) <= 2)
+      achievements.push({ key: "silent_death", label: "Silent Death — Died with ≤2 prompts", emoji: "🪦" });
+    if ((run.failedToolCalls ?? 0) >= 5)
+      achievements.push({ key: "fumble", label: `Fumble — Died with ${run.failedToolCalls} failed tool calls`, emoji: "🤡" });
+    if (run.budget && run.spent / run.budget >= 0.5)
+      if ((run.promptCount || 0) >= 3 && run.spent / (run.promptCount || 1) >= 0.50)
+        achievements.push({ key: "expensive_taste", label: "Expensive Taste — Over $0.50 per prompt", emoji: "🍷" });
+    return achievements;
+  }
 
   if (mc === MODEL_CLASSES.haiku) {
     achievements.push({
@@ -150,6 +196,18 @@ export function calculateAchievements(run) {
       label: "Silver — Completed with Sonnet",
       emoji: "🥈",
     });
+  } else if (mc === MODEL_CLASSES.opusplan) {
+    achievements.push({
+      key: "paladin",
+      label: "Paladin — Completed a run as Paladin",
+      emoji: "⚜️",
+    });
+    if (pct !== null && pct <= 0.25)
+      achievements.push({
+        key: "grand_strategist",
+        label: "Grand Strategist — LEGENDARY efficiency as Paladin",
+        emoji: "♟️",
+      });
   } else if (mc === MODEL_CLASSES.opus) {
     achievements.push({
       key: "bronze_opus",
@@ -309,6 +367,83 @@ export function calculateAchievements(run) {
       emoji: "🤫",
     });
 
+  // Paladin planning-ratio achievements
+  if (mc === MODEL_CLASSES.opusplan) {
+    const opusPct = getOpusPct(run.modelBreakdown, run.spent);
+    if (opusPct !== null) {
+      if (opusPct > 60)
+        achievements.push({
+          key: "architect",
+          label: `Architect — Opus handled ${opusPct}% of cost (heavy planner)`,
+          emoji: "🧠",
+        });
+      if (opusPct < 25)
+        achievements.push({
+          key: "blitz",
+          label: `Blitz — Opus handled only ${opusPct}% of cost (light plan, fast execution)`,
+          emoji: "⚡",
+        });
+      if (opusPct >= 40 && opusPct <= 60)
+        achievements.push({
+          key: "equilibrium",
+          label: `Equilibrium — Opus and Sonnet balanced at ${opusPct}% / ${100 - opusPct}%`,
+          emoji: "⚖️",
+        });
+    }
+  }
+
+  // Model-switching achievements (skip for Paladin — multi-model is by design)
+  const switches = run.modelSwitches ?? 0;
+  const distinct = run.distinctModels ?? 0;
+  if (!isPaladin) {
+    if (distinct === 1)
+      achievements.push({
+        key: "purist",
+        label: "Purist — Single model family throughout",
+        emoji: "🎯",
+      });
+    if (distinct >= 2 && pct !== null && pct < 1.0)
+      achievements.push({
+        key: "chameleon",
+        label: `Chameleon — ${distinct} model families used, completed under budget`,
+        emoji: "🦎",
+      });
+    if (switches === 1 && pct !== null && pct < 1.0)
+      achievements.push({
+        key: "tactical_switch",
+        label: "Tactical Switch — Exactly 1 model switch, completed under budget",
+        emoji: "🔀",
+      });
+    if (switches === 0 && distinct <= 1)
+      achievements.push({
+        key: "committed",
+        label: "Committed — No model switches, one model family",
+        emoji: "🔒",
+      });
+
+    // Class Defection: declared one class but leaned heavily on another
+    if (run.modelBreakdown && run.spent > 0) {
+      const declared = (run.model || '').toLowerCase();
+      const isHaikuRun = declared.includes('haiku');
+      const isSonnetRun = declared.includes('sonnet') && !declared.includes('opus');
+      const opusPct2 = getOpusPct(run.modelBreakdown, run.spent) ?? 0;
+      const haikuPct2 = getHaikuPct(run.modelBreakdown, run.spent) ?? 0;
+      const nonHaikuPct = 100 - haikuPct2;
+      if (isHaikuRun && nonHaikuPct > 50)
+        achievements.push({
+          key: "class_defection",
+          label: `Class Defection — Declared Haiku but ${nonHaikuPct}% cost on heavier models`,
+          emoji: "⚠️",
+        });
+      else if (isSonnetRun && opusPct2 > 40)
+        achievements.push({
+          key: "class_defection",
+          label: `Class Defection — Declared Sonnet but ${opusPct2}% cost on Opus`,
+          emoji: "⚠️",
+        });
+    }
+  }
+
   // Multi-model achievements based on Haiku usage ratio
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);
   if (haikuPct !== null) {
@@ -325,6 +460,87 @@ export function calculateAchievements(run) {
         emoji: "🎲",
       });
   }
+
+  // Prompting skill achievements
+  const promptCount = run.promptCount || 0;
+  const totalToolCalls = run.totalToolCalls || 0;
+  if (promptCount === 1)
+    achievements.push({ key: "one_shot", label: "One Shot — Completed in a single prompt", emoji: "🎯" });
+  if (promptCount >= 20)
+    achievements.push({ key: "conversationalist", label: `Conversationalist — ${promptCount} prompts`, emoji: "💬" });
+  if (promptCount <= 3 && totalToolCalls >= 10)
+    achievements.push({ key: "terse", label: `Terse — ${promptCount} prompts, ${totalToolCalls} tool calls`, emoji: "🤐" });
+  if (promptCount >= 15 && totalToolCalls / promptCount < 1)
+    achievements.push({ key: "backseat_driver", label: "Backseat Driver — Many prompts, few tool calls", emoji: "🪑" });
+  if (promptCount >= 2 && totalToolCalls / promptCount >= 5)
+    achievements.push({ key: "high_leverage", label: `High Leverage — ${(totalToolCalls / promptCount).toFixed(1)}× tools per prompt`, emoji: "🏗️" });
+
+  // Tool mastery achievements
+  const toolCalls = run.toolCalls || {};
+  const editCount = toolCalls['Edit'] || 0;
+  const writeCount = toolCalls['Write'] || 0;
+  const readCount = toolCalls['Read'] || 0;
+  const bashCount = toolCalls['Bash'] || 0;
+  const distinctTools = Object.keys(toolCalls).filter(k => toolCalls[k] > 0).length;
+
+  if (editCount === 0 && writeCount === 0 && readCount >= 1)
+    achievements.push({ key: "read_only", label: "Read Only — No edits or writes", emoji: "👁️" });
+  if (editCount >= 10)
+    achievements.push({ key: "editor", label: `Editor — ${editCount} Edit calls`, emoji: "✏️" });
+  if (bashCount >= 10 && totalToolCalls >= 1 && bashCount / totalToolCalls >= 0.5)
+    achievements.push({ key: "bash_warrior", label: `Bash Warrior — ${bashCount} Bash calls (${Math.round(bashCount/totalToolCalls*100)}% of tools)`, emoji: "🐚" });
+  if (totalToolCalls >= 5 && readCount / totalToolCalls >= 0.6)
+    achievements.push({ key: "scout", label: `Scout — ${Math.round(readCount/totalToolCalls*100)}% Read calls`, emoji: "🔍" });
+  if (editCount >= 1 && editCount <= 3 && pct !== null && pct < 1.0)
+    achievements.push({ key: "surgeon", label: `Surgeon — Only ${editCount} Edit call${editCount > 1 ? 's' : ''}, under budget`, emoji: "🔪" });
+  if (distinctTools >= 5)
+    achievements.push({ key: "toolbox", label: `Toolbox — ${distinctTools} distinct tools used`, emoji: "🧰" });
+
+  // Cost per prompt
+  if (promptCount >= 3) {
+    const costPerPrompt = run.spent / promptCount;
+    if (costPerPrompt < 0.01)
+      achievements.push({ key: "cheap_shots", label: `Cheap Shots — $${costPerPrompt.toFixed(4)} per prompt`, emoji: "🪙" });
+    if (costPerPrompt >= 0.50)
+      achievements.push({ key: "expensive_taste", label: `Expensive Taste — $${costPerPrompt.toFixed(2)} per prompt`, emoji: "🍷" });
+  }
+
+  // Time-based achievements
+  if (run.startedAt && run.endedAt) {
+    const elapsedMs = new Date(run.endedAt).getTime() - new Date(run.startedAt).getTime();
+    const elapsedMin = elapsedMs / 60000;
+    if (elapsedMin < 5)
+      achievements.push({ key: "speedrun", label: `Speedrun — Completed in ${Math.round(elapsedMin * 60)}s`, emoji: "⏱️" });
+    if (elapsedMin > 60 && elapsedMin <= 180)
+      achievements.push({ key: "marathon", label: `Marathon — ${Math.round(elapsedMin)}m session`, emoji: "🏃" });
+    if (elapsedMin > 180)
+      achievements.push({ key: "endurance", label: `Endurance — ${Math.round(elapsedMin / 60)}h session`, emoji: "🫠" });
+  }
+
+  // Phase 2: new hook fields (default 0 if not present)
+  const failedToolCalls = run.failedToolCalls ?? 0;
+  const subagentSpawns = run.subagentSpawns ?? 0;
+  const turnCount = run.turnCount ?? 0;
+
+  // Failed tool call achievements
+  if (failedToolCalls === 0 && totalToolCalls >= 5)
+    achievements.push({ key: "clean_run", label: "Clean Run — No tool failures", emoji: "✅" });
+  if (failedToolCalls >= 10)
+    achievements.push({ key: "stubborn", label: `Stubborn — ${failedToolCalls} failed tool calls, still won`, emoji: "🐂" });
+
+  // Subagent achievements
+  if (subagentSpawns === 0)
+    achievements.push({ key: "lone_wolf", label: "Lone Wolf — No subagents spawned", emoji: "🐺" });
+  if (subagentSpawns >= 5)
+    achievements.push({ key: "summoner", label: `Summoner — ${subagentSpawns} subagents spawned`, emoji: "📡" });
+  if (subagentSpawns >= 10 && pct !== null && pct < 0.5)
+    achievements.push({ key: "army", label: `Army of One — ${subagentSpawns} subagents, EFFICIENT cost`, emoji: "🪖" });
+
+  // Turn count achievements
+  if (promptCount >= 2 && turnCount >= 1 && turnCount / promptCount >= 3)
+    achievements.push({ key: "agentic", label: `Agentic — ${(turnCount / promptCount).toFixed(1)} turns per prompt`, emoji: "🤖" });
+  if (promptCount >= 3 && turnCount === promptCount)
+    achievements.push({ key: "obedient", label: "Obedient — One turn per prompt", emoji: "🐕" });
 
   return achievements;
 }

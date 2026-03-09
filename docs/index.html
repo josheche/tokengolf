@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TokenGolf — Flow mode tracks you. Roguelike mode trains you.</title>
+    <title>TokenGolf — Every token matters.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -460,6 +460,27 @@
         font-family: monospace;
       }
 
+      /* ── Achievement category headers ── */
+      .achievement-category {
+        grid-column: 1 / -1;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        margin-top: 0.5rem;
+      }
+      .achievement-category:first-child {
+        border-top: none;
+        padding-top: 0;
+        margin-top: 0;
+      }
+      .achievement-card.death {
+        border-color: #3d1f1f;
+      }
+
       /* ── Footer ── */
       footer {
         border-top: 1px solid var(--border);
@@ -521,6 +542,17 @@
         </a>
       </div>
     </div>
+
+    <!-- ── Why TokenGolf ── -->
+    <section>
+      <h2><span>⛳</span>Why "TokenGolf"?</h2>
+      <p style="color:var(--muted);font-size:1rem;line-height:1.75;max-width:680px;">
+        <a href="https://en.wikipedia.org/wiki/Code_golf" target="_blank">Code golf</a> is the engineering practice of solving a problem in as few characters as possible. The constraint isn't the point — <em>the discipline the constraint creates</em> is the point. Writing the shortest solution forces you to understand the problem deeply and use your tools precisely.
+      </p>
+      <p style="color:var(--muted);font-size:1rem;line-height:1.75;max-width:680px;margin-top:1rem;">
+        Token golf is the same idea applied to AI sessions. Your budget is par. Every unnecessary prompt, every redundant context dump, every "can you also…" tacked onto a request is a stroke over par. The game doesn't literally resemble golf — it borrows the concept: <strong style="color:var(--text);">optimize under constraint, measure your score, improve your game.</strong>
+      </p>
+    </section>
 
     <!-- ── Two Modes ── -->
     <section>
@@ -628,128 +660,267 @@
       </div>
     </section>
 
+    <!-- ── Meta Loop ── -->
+    <section>
+      <h2><span>🔄</span>The Meta Loop</h2>
+      <p style="color:var(--muted);font-size:1rem;line-height:1.75;max-width:680px;margin-bottom:1.5rem;">
+        The dungeon crawl framing maps directly to real session behaviors. These aren't just flavor — they're patterns you already have, named so you can recognize and improve them.
+      </p>
+      <div class="modes-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+        <div class="mode-card">
+          <h3>📦 Overencumbered</h3>
+          <p>Context bloat slowing you down. The model is carrying too much history to reason cleanly.</p>
+        </div>
+        <div class="mode-card">
+          <h3>🏕️ Made Camp</h3>
+          <p>Hit usage limits mid-run. Came back next session and kept going.</p>
+        </div>
+        <div class="mode-card">
+          <h3>🥷 Ghost Run</h3>
+          <p>Surgical context management. You compacted at 30% and still had plenty of room for the boss.</p>
+        </div>
+        <div class="mode-card">
+          <h3>🤦 Hubris</h3>
+          <p>Reached for ultrathink on a tight budget and paid for it. The spell didn't save you.</p>
+        </div>
+        <div class="mode-card">
+          <h3>🤫 Silent Run</h3>
+          <p>Solved it with pure prompting discipline. No extended thinking needed.</p>
+        </div>
+        <div class="mode-card">
+          <h3>🐺 Lone Wolf</h3>
+          <p>No subagents. You held the whole problem in one context and saw it through.</p>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:0.95rem;line-height:1.75;max-width:680px;margin-top:1.5rem;">
+        Roguelike mode surfaces these patterns with stakes. Flow mode lets them compound over time. <strong style="color:var(--text);">Roguelike practice makes Flow sessions better. Better Flow = lower daily spend = better scores without even trying.</strong>
+      </p>
+    </section>
+
     <!-- ── Achievements ── -->
     <section>
       <h2><span>🏆</span>Achievements</h2>
       <div class="achievements-grid">
+        <div class="achievement-category">Class</div>
         <div class="achievement-card">
           <div class="achievement-emoji">💎</div>
-          <div class="achievement-info">
-            <h4>Diamond</h4>
-            <p>Haiku run under $0.10</p>
-          </div>
+          <div class="achievement-info"><h4>Diamond</h4><p>Haiku run under $0.10</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🥇</div>
-          <div class="achievement-info">
-            <h4>Gold</h4>
-            <p>Completed with Haiku</p>
-          </div>
+          <div class="achievement-info"><h4>Gold</h4><p>Completed with Haiku</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🥈</div>
-          <div class="achievement-info">
-            <h4>Silver</h4>
-            <p>Completed with Sonnet</p>
-          </div>
+          <div class="achievement-info"><h4>Silver</h4><p>Completed with Sonnet</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🥉</div>
-          <div class="achievement-info">
-            <h4>Bronze</h4>
-            <p>Completed with Opus</p>
-          </div>
+          <div class="achievement-info"><h4>Bronze</h4><p>Completed with Opus</p></div>
         </div>
+
+        <div class="achievement-category">Efficiency</div>
         <div class="achievement-card">
           <div class="achievement-emoji">🎯</div>
-          <div class="achievement-info">
-            <h4>Sniper</h4>
-            <p>Under 25% of budget used</p>
-          </div>
+          <div class="achievement-info"><h4>Sniper</h4><p>Under 25% of budget used</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">⚡</div>
-          <div class="achievement-info">
-            <h4>Efficient</h4>
-            <p>Under 50% of budget used</p>
-          </div>
+          <div class="achievement-info"><h4>Efficient</h4><p>Under 50% of budget used</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🪙</div>
-          <div class="achievement-info">
-            <h4>Penny Pincher</h4>
-            <p>Total spend under $0.10</p>
-          </div>
+          <div class="achievement-info"><h4>Penny Pincher</h4><p>Total spend under $0.10</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">🏹</div>
-          <div class="achievement-info">
-            <h4>Frugal</h4>
-            <p>Haiku handled ≥50% of session cost</p>
-          </div>
+          <div class="achievement-emoji">🪙</div>
+          <div class="achievement-info"><h4>Cheap Shots</h4><p>Under $0.01 per prompt (≥3 prompts)</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">🎲</div>
-          <div class="achievement-info">
-            <h4>Rogue Run</h4>
-            <p>Haiku handled ≥75% of session cost</p>
-          </div>
+          <div class="achievement-emoji">🍷</div>
+          <div class="achievement-info"><h4>Expensive Taste</h4><p>Over $0.50 per prompt — won or died</p></div>
         </div>
+
+        <div class="achievement-category">Prompting Skill</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🎯</div>
+          <div class="achievement-info"><h4>One Shot</h4><p>Completed in a single prompt</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">💬</div>
+          <div class="achievement-info"><h4>Conversationalist</h4><p>20+ prompts in one run</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🤐</div>
+          <div class="achievement-info"><h4>Terse</h4><p>≤3 prompts, ≥10 tool calls</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🪑</div>
+          <div class="achievement-info"><h4>Backseat Driver</h4><p>15+ prompts, less than 1 tool call per prompt</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏗️</div>
+          <div class="achievement-info"><h4>High Leverage</h4><p>5+ tool calls per prompt (≥2 prompts)</p></div>
+        </div>
+
+        <div class="achievement-category">Tool Mastery</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">👁️</div>
+          <div class="achievement-info"><h4>Read Only</h4><p>Won with no Edit or Write calls</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">✏️</div>
+          <div class="achievement-info"><h4>Editor</h4><p>10+ Edit calls in one run</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🐚</div>
+          <div class="achievement-info"><h4>Bash Warrior</h4><p>10+ Bash calls comprising ≥50% of tools</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🔍</div>
+          <div class="achievement-info"><h4>Scout</h4><p>≥60% of tool calls were Reads (≥5 total)</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🔪</div>
+          <div class="achievement-info"><h4>Surgeon</h4><p>1–3 Edit calls, completed under budget</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🧰</div>
+          <div class="achievement-info"><h4>Toolbox</h4><p>5+ distinct tools used in one run</p></div>
+        </div>
+
+        <div class="achievement-category">Time</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⏱️</div>
+          <div class="achievement-info"><h4>Speedrun</h4><p>Completed in under 5 minutes</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏃</div>
+          <div class="achievement-info"><h4>Marathon</h4><p>Session over 60 minutes</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🫠</div>
+          <div class="achievement-info"><h4>Endurance</h4><p>Session over 3 hours</p></div>
+        </div>
+
+        <div class="achievement-category">Extended Thinking</div>
         <div class="achievement-card">
           <div class="achievement-emoji">🔮</div>
-          <div class="achievement-info">
-            <h4>Silent Run</h4>
-            <p>Won without invoking ultrathink</p>
-          </div>
+          <div class="achievement-info"><h4>Spell Cast</h4><p>Used extended thinking in a won run</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🧠</div>
-          <div class="achievement-info">
-            <h4>Ultrathink</h4>
-            <p>Used extended thinking in a won run</p>
-          </div>
+          <div class="achievement-info"><h4>Calculated Risk</h4><p>Extended thinking + LEGENDARY efficiency</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">⚗️</div>
-          <div class="achievement-info">
-            <h4>Deep Think</h4>
-            <p>3+ ultrathink invocations in one run</p>
-          </div>
+          <div class="achievement-emoji">🌀</div>
+          <div class="achievement-info"><h4>Deep Thinker</h4><p>3+ thinking invocations, completed under budget</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">👻</div>
-          <div class="achievement-info">
-            <h4>Ghost Run</h4>
-            <p>Won with zero compaction events</p>
-          </div>
+          <div class="achievement-emoji">🤫</div>
+          <div class="achievement-info"><h4>Silent Run</h4><p>No extended thinking, SOLID or better</p></div>
+        </div>
+
+        <div class="achievement-category">Multi-Model</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏹</div>
+          <div class="achievement-info"><h4>Frugal</h4><p>Haiku handled ≥50% of session cost</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">🪶</div>
-          <div class="achievement-info">
-            <h4>Ultralight</h4>
-            <p>Context never exceeded 50% during run</p>
-          </div>
+          <div class="achievement-emoji">🎲</div>
+          <div class="achievement-info"><h4>Rogue Run</h4><p>Haiku handled ≥75% of session cost</p></div>
+        </div>
+
+        <div class="achievement-category">Rest &amp; Recovery</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⚡</div>
+          <div class="achievement-info"><h4>No Rest for the Wicked</h4><p>Completed in one session</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏕️</div>
+          <div class="achievement-info"><h4>Made Camp</h4><p>Completed across multiple sessions</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">💪</div>
+          <div class="achievement-info"><h4>Came Back</h4><p>Fainted (hit usage limits) and finished anyway</p></div>
+        </div>
+
+        <div class="achievement-category">Context Management</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">📦</div>
+          <div class="achievement-info"><h4>Overencumbered</h4><p>Context auto-compacted during a won run</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🎒</div>
-          <div class="achievement-info">
-            <h4>Traveling Light</h4>
-            <p>Context never exceeded 75%</p>
-          </div>
+          <div class="achievement-info"><h4>Traveling Light</h4><p>Manual compact at ≤50% context</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">📦</div>
-          <div class="achievement-info">
-            <h4>Overencumbered</h4>
-            <p>Context hit 90%+ during a won run</p>
-          </div>
+          <div class="achievement-emoji">🪶</div>
+          <div class="achievement-info"><h4>Ultralight</h4><p>Manual compact at ≤40% context</p></div>
         </div>
         <div class="achievement-card">
-          <div class="achievement-emoji">😵</div>
-          <div class="achievement-info">
-            <h4>Hubris</h4>
-            <p>Used ultrathink and busted the budget (death achievement)</p>
-          </div>
+          <div class="achievement-emoji">🥷</div>
+          <div class="achievement-info"><h4>Ghost Run</h4><p>Manual compact at ≤30% context</p></div>
+        </div>
+
+        <div class="achievement-category">Tool Reliability</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">✅</div>
+          <div class="achievement-info"><h4>Clean Run</h4><p>Zero failed tool calls (≥5 tool calls total)</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🐂</div>
+          <div class="achievement-info"><h4>Stubborn</h4><p>10+ failed tool calls and still won</p></div>
+        </div>
+
+        <div class="achievement-category">Subagents</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🐺</div>
+          <div class="achievement-info"><h4>Lone Wolf</h4><p>Completed with no subagents spawned</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">📡</div>
+          <div class="achievement-info"><h4>Summoner</h4><p>5+ subagents spawned in one run</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🪖</div>
+          <div class="achievement-info"><h4>Army of One</h4><p>10+ subagents spawned, under 50% budget used</p></div>
+        </div>
+
+        <div class="achievement-category">Turn Discipline</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🤖</div>
+          <div class="achievement-info"><h4>Agentic</h4><p>3+ Claude turns per user prompt</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🐕</div>
+          <div class="achievement-info"><h4>Obedient</h4><p>Exactly one turn per prompt (≥3 prompts)</p></div>
+        </div>
+
+        <div class="achievement-category" style="color:var(--red);">Death Marks</div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">🤦</div>
+          <div class="achievement-info"><h4>Hubris</h4><p>Used extended thinking, busted anyway</p></div>
+        </div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">💥</div>
+          <div class="achievement-info"><h4>Blowout</h4><p>Spent 2× your committed budget</p></div>
+        </div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">😭</div>
+          <div class="achievement-info"><h4>So Close</h4><p>Died within 10% of budget</p></div>
+        </div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">🔨</div>
+          <div class="achievement-info"><h4>Tool Happy</h4><p>Died with 30+ tool calls</p></div>
+        </div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">🪦</div>
+          <div class="achievement-info"><h4>Silent Death</h4><p>Died with ≤2 prompts</p></div>
+        </div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">🤡</div>
+          <div class="achievement-info"><h4>Fumble</h4><p>Died with 5+ failed tool calls</p></div>
         </div>
       </div>
     </section>

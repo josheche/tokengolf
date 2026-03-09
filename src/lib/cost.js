@@ -101,6 +101,35 @@ function parseAllTranscripts(paths) {
   return total > 0 ? { total, byModel } : null;
 }
 
+export function modelFamily(model) {
+  const m = (model || '').toLowerCase();
+  if (m.includes('haiku')) return 'haiku';
+  if (m.includes('sonnet')) return 'sonnet';
+  if (m.includes('opus')) return 'opus';
+  return 'unknown';
+}
+
+export function parseModelSwitches(transcriptPath) {
+  try {
+    const lines = fs.readFileSync(transcriptPath, 'utf8').trim().split('\n');
+    let lastFamily = null;
+    let switches = 0;
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+        if (entry.type === 'assistant' && entry.message?.model) {
+          const family = modelFamily(entry.message.model);
+          if (lastFamily !== null && family !== lastFamily) switches++;
+          lastFamily = family;
+        }
+      } catch { /* skip */ }
+    }
+    return { switches };
+  } catch {
+    return { switches: 0 };
+  }
+}
+
 export function findTranscript(sessionId, projectDir) {
   if (sessionId) {
     try {
@@ -140,10 +169,21 @@ export function autoDetectCost(run) {
   // Always use parsed model breakdown (Stop hook doesn't capture it)
   const modelBreakdown = parsed?.byModel ?? run.modelBreakdown ?? null;
   const thinking = parseThinkingFromTranscripts(paths);
+
+  // Model switch detection: only on primary transcript (user-initiated switches)
+  const primaryPath = findTranscript(run.sessionId, projectDir);
+  const { switches: modelSwitches } = primaryPath ? parseModelSwitches(primaryPath) : { switches: 0 };
+
+  // Distinct model families across ALL transcripts (includes subagents)
+  const families = new Set(Object.keys(parsed?.byModel ?? {}).map(modelFamily).filter(f => f !== 'unknown'));
+  const distinctModels = families.size;
+
   return {
     spent,
     modelBreakdown,
     thinkingInvocations: thinking?.thinkingInvocations ?? 0,
     thinkingTokens: thinking?.thinkingTokens ?? 0,
+    modelSwitches,
+    distinctModels,
   };
 }

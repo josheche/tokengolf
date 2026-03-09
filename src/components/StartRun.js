@@ -5,9 +5,10 @@ import { setCurrentRun } from '../lib/state.js';
 import { getModelClass, getEffortLevel, getModelBudgets, FLOORS } from '../lib/score.js';
 
 const MODEL_OPTIONS = [
-  { label: '⚔️  Sonnet  — Balanced. The default run.  [Normal]', value: 'claude-sonnet-4-6' },
-  { label: '🏹 Haiku   — Glass cannon. Hard mode.     [Hard]',   value: 'claude-haiku-4-5-20251001' },
-  { label: '🧙 Opus    — Powerful but expensive.      [Easy]',   value: 'claude-opus-4-6' },
+  { label: '⚔️  Sonnet  — Balanced. The default run.  [Normal]',      value: 'claude-sonnet-4-6' },
+  { label: '🏹 Haiku   — Glass cannon. Hard mode.     [Hard]',        value: 'claude-haiku-4-5-20251001' },
+  { label: '⚜️  Paladin — Opus plans, Sonnet executes. [Calculated]', value: 'opusplan' },
+  { label: '🧙 Opus    — Powerful but expensive.      [Easy]',        value: 'claude-opus-4-6' },
 ];
 
 const EFFORT_OPTIONS_BASE = [
@@ -20,7 +21,9 @@ const EFFORT_OPTIONS_OPUS = [
   { label: '💥 Max    — Absolute max, no token constraints (Opus only)', value: 'max'  },
 ];
 const getEffortOptions = (model) =>
-  model.toLowerCase().includes('opus') ? EFFORT_OPTIONS_OPUS : EFFORT_OPTIONS_BASE;
+  model.toLowerCase().includes('opus') && !model.toLowerCase().includes('opusplan')
+    ? EFFORT_OPTIONS_OPUS
+    : EFFORT_OPTIONS_BASE;
 
 function getBudgetOptions(model) {
   const b = getModelBudgets(model);

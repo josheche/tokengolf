@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
-import { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct, formatCost, getHaikuPct } from '../lib/score.js';
+import { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct, formatCost, getHaikuPct, getOpusPct, MODEL_CLASSES } from '../lib/score.js';
 
 export function ScoreCard({ run }) {
   const { exit } = useApp();
@@ -19,6 +19,7 @@ export function ScoreCard({ run }) {
   const efficiency = flowMode ? null : getEfficiencyRating(run.spent, run.budget);
   const pct = flowMode ? null : getBudgetPct(run.spent, run.budget);
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);
+  const opusPct = getOpusPct(run.modelBreakdown, run.spent);
 
   return (
     <Box flexDirection="column" paddingX={1} paddingY={1} gap={1}>
@@ -111,10 +112,13 @@ export function ScoreCard({ run }) {
                   🏹 {haikuPct}% Haiku
                 </Text>
               )}
+              {mc === MODEL_CLASSES.opusplan && opusPct !== null && (
+                <Text color="yellow">⚜️ {opusPct}% Opus (planning)</Text>
+              )}
             </Box>
             <Box gap={3} flexWrap="wrap">
               {Object.entries(run.modelBreakdown).map(([model, cost]) => {
-                const short = model.includes('haiku') ? 'Haiku' : model.includes('sonnet') ? 'Sonnet' : 'Opus';
+                const short = model.includes('haiku') ? 'Haiku' : model.includes('sonnet') ? 'Sonnet' : model.includes('opusplan') ? 'Paladin' : 'Opus';
                 const pctOfTotal = Math.round((cost / run.spent) * 100);
                 return (
                   <Text key={model} color="gray">{short} <Text color="white">{pctOfTotal}%</Text> <Text dimColor>{formatCost(cost)}</Text></Text>

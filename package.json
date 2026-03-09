@@ -10,6 +10,8 @@
     "build": "esbuild src/cli.js --bundle --platform=node --format=esm --loader:.js=jsx --packages=external --outfile=dist/cli.js && chmod +x dist/cli.js",
     "prepare": "npm run build",
     "dev": "node --import tsx/esm src/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
@@ -19,7 +21,8 @@
     "react": "^18.0.0"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=18.0.0"
