@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
-import { getTier, getModelClass, getEfficiencyRating, getBudgetPct, formatCost, getHaikuPct } from '../lib/score.js';
+import { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct, formatCost, getHaikuPct } from '../lib/score.js';
 
 export function ScoreCard({ run }) {
   const { exit } = useApp();
@@ -51,8 +51,23 @@ export function ScoreCard({ run }) {
           )}
           <Box flexDirection="column">
             <Text color="gray" dimColor>MODEL</Text>
-            <Text color="cyan">{mc.emoji} {mc.name}</Text>
+            <Text color="cyan">{mc.emoji} {mc.name}{[
+              run.effort && run.effort !== 'medium' ? getEffortLevel(run.effort)?.label : null,
+              run.fastMode ? 'Fast' : null,
+            ].filter(Boolean).map(s => `·${s}`).join('')}</Text>
           </Box>
+          {run.effort && (
+            <Box flexDirection="column">
+              <Text color="gray" dimColor>EFFORT</Text>
+              <Text color={getEffortLevel(run.effort)?.color}>{getEffortLevel(run.effort)?.emoji} {getEffortLevel(run.effort)?.label}</Text>
+            </Box>
+          )}
+          {run.fastMode && (
+            <Box flexDirection="column">
+              <Text color="gray" dimColor>MODE</Text>
+              <Text color="yellow">↯ Fast</Text>
+            </Box>
+          )}
           <Box flexDirection="column">
             <Text color="gray" dimColor>TIER</Text>
             <Text color={tier.color}>{tier.emoji} {tier.label}</Text>

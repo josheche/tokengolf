@@ -2,13 +2,25 @@ import React, { useState } from 'react';
 import { Box, Text, useApp } from 'ink';
 import { TextInput, Select, ConfirmInput } from '@inkjs/ui';
 import { setCurrentRun } from '../lib/state.js';
-import { getModelClass, FLOORS } from '../lib/score.js';
+import { getModelClass, getEffortLevel, FLOORS } from '../lib/score.js';
 
 const MODEL_OPTIONS = [
   { label: '⚔️  Sonnet  — Balanced. The default run.  [Normal]', value: 'claude-sonnet-4-6' },
   { label: '🏹 Haiku   — Glass cannon. Hard mode.     [Hard]',   value: 'claude-haiku-4-5-20251001' },
   { label: '🧙 Opus    — Powerful but expensive.      [Easy]',   value: 'claude-opus-4-6' },
 ];
+
+const EFFORT_OPTIONS_BASE = [
+  { label: '⚖️  Medium — Balanced (Anthropic recommended for Sonnet)', value: 'medium' },
+  { label: '🪶 Low    — Fewest tokens, fastest, cheapest',             value: 'low'    },
+  { label: '🔥 High   — Most thorough, costs more',                    value: 'high'   },
+];
+const EFFORT_OPTIONS_OPUS = [
+  ...EFFORT_OPTIONS_BASE,
+  { label: '💥 Max    — Absolute max, no token constraints (Opus only)', value: 'max'  },
+];
+const getEffortOptions = (model) =>
+  model.toLowerCase().includes('opus') ? EFFORT_OPTIONS_OPUS : EFFORT_OPTIONS_BASE;
 
 const BUDGET_OPTIONS = [
   { label: '💎 $0.10  — Diamond. Haiku territory.',  value: '0.10' },
@@ -23,6 +35,7 @@ export function StartRun() {
   const [step, setStep] = useState('quest');
   const [quest, setQuest] = useState('');
   const [model, setModel] = useState('');
+  const [effort, setEffort] = useState('medium');
   const [budgetVal, setBudgetVal] = useState('');
 
   const budget = parseFloat(budgetVal) || 0;
@@ -52,7 +65,24 @@ export function StartRun() {
               <Text color={step === 'model' ? 'cyan' : 'gray'}>🎮 Class    </Text>
               {step !== 'model' && <Text color="white">{mc?.emoji} {mc?.name} [{mc?.difficulty}]</Text>}
             </Box>
-            {step === 'model' && <Select options={MODEL_OPTIONS} onChange={v => { setModel(v); setStep('budget'); }} />}
+            {step === 'model' && <Select options={MODEL_OPTIONS} onChange={v => {
+              setModel(v);
+              if (v.toLowerCase().includes('haiku')) { setEffort(null); setStep('budget'); }
+              else setStep('effort');
+            }} />}
+          </Box>
+        )}
+
+        {/* Effort */}
+        {(step === 'effort' || step === 'budget' || step === 'custom' || step === 'confirm') && effort !== null && (
+          <Box flexDirection="column" gap={0}>
+            <Box gap={2}>
+              <Text color={step === 'effort' ? 'cyan' : 'gray'}>⚡ Effort   </Text>
+              {step !== 'effort' && effort && <Text color="white">{getEffortLevel(effort)?.emoji} {getEffortLevel(effort)?.label}</Text>}
+            </Box>
+            {step === 'effort' && (
+              <Select options={getEffortOptions(model)} onChange={v => { setEffort(v); setStep('budget'); }} />
+            )}
           </Box>
         )}
 
@@ -85,6 +115,7 @@ export function StartRun() {
               <Text bold color="yellow">Ready?</Text>
               <Text color="gray">Quest   <Text color="white">{quest}</Text></Text>
               <Text color="gray">Model   <Text color="white">{mc?.emoji} {mc?.name} [{mc?.difficulty}]</Text></Text>
+              {effort && <Text color="gray">Effort  <Text color="white">{getEffortLevel(effort)?.emoji} {getEffortLevel(effort)?.label}</Text></Text>}
               <Text color="gray">Budget  <Text color="green">${budget.toFixed(2)}</Text></Text>
             </Box>
             <Box gap={1}>
@@ -92,7 +123,8 @@ export function StartRun() {
               <ConfirmInput
                 onConfirm={() => {
                   setCurrentRun({
-                    quest, model, budget,
+                    quest, model, budget, effort,
+                    fastMode: false,
                     spent: 0,
                     status: 'active',
                     floor: 1,

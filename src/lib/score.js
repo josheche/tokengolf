@@ -6,6 +6,17 @@ export const BUDGET_TIERS = [
   { label: 'Reckless',emoji: '💸', max: Infinity, color: 'red' },
 ];
 
+export const EFFORT_LEVELS = {
+  low:    { label: 'Low',    emoji: '🪶', color: 'green'   },
+  medium: { label: 'Medium', emoji: '⚖️',  color: 'white'   },
+  high:   { label: 'High',   emoji: '🔥', color: 'yellow'  },
+  max:    { label: 'Max',    emoji: '💥', color: 'magenta', opusOnly: true },
+};
+
+export function getEffortLevel(effort) {
+  return EFFORT_LEVELS[effort] || null;
+}
+
 export const MODEL_CLASSES = {
   haiku:  { name: 'Haiku',  label: 'Rogue',   emoji: '🏹', difficulty: 'Hard',   color: 'red' },
   sonnet: { name: 'Sonnet', label: 'Fighter', emoji: '⚔️',  difficulty: 'Normal', color: 'cyan' },
@@ -90,6 +101,51 @@ export function calculateAchievements(run) {
     if (pct <= 0.50) achievements.push({ key: 'efficient', label: 'Efficient — Under 50% of budget', emoji: '⚡' });
   }
   if (run.spent < 0.10) achievements.push({ key: 'penny', label: 'Penny Pincher — Under $0.10', emoji: '🪙' });
+
+  // Effort-based achievements
+  if (run.effort) {
+    if (run.effort === 'low' && pct !== null && pct < 1.0)
+      achievements.push({ key: 'speedrunner', label: 'Speedrunner — Low effort, completed under budget', emoji: '🎯' });
+    if ((run.effort === 'high' || run.effort === 'max') && pct !== null && pct <= 0.25)
+      achievements.push({ key: 'tryhard', label: 'Tryhard — High effort, LEGENDARY efficiency', emoji: '💪' });
+    if (run.effort === 'max' && mc === MODEL_CLASSES.opus)
+      achievements.push({ key: 'archmagus', label: 'Archmagus — Opus at max effort, completed', emoji: '👑' });
+  }
+
+  // Fast mode achievements
+  if (run.fastMode) {
+    if (pct !== null && pct < 1.0)
+      achievements.push({ key: 'lightning', label: 'Lightning Run — Opus fast mode, completed under budget', emoji: '⚡' });
+    if (pct !== null && pct <= 0.25)
+      achievements.push({ key: 'daredevil', label: 'Daredevil — Opus fast mode, LEGENDARY efficiency', emoji: '🎰' });
+  }
+
+  // Rest / multi-session achievements
+  const sessions = run.sessionCount || 1;
+  if (sessions >= 2)
+    achievements.push({ key: 'made_camp', label: `Made Camp — Completed across ${sessions} sessions`, emoji: '🏕️' });
+  if (sessions === 1)
+    achievements.push({ key: 'no_rest', label: 'No Rest for the Wicked — Completed in one session', emoji: '⚡' });
+  if (run.fainted)
+    achievements.push({ key: 'came_back', label: 'Came Back — Fainted and finished anyway', emoji: '💪' });
+
+  // Compaction achievements
+  const compactionEvents = run.compactionEvents || [];
+  const manualCompactions = compactionEvents.filter(e => e.trigger === 'manual');
+  const autoCompactions   = compactionEvents.filter(e => e.trigger === 'auto');
+
+  if (autoCompactions.length > 0)
+    achievements.push({ key: 'overencumbered', label: 'Overencumbered — Context auto-compacted during run', emoji: '📦' });
+
+  if (manualCompactions.length > 0) {
+    const minPct = Math.min(...manualCompactions.map(e => e.contextPct ?? 100));
+    if (minPct <= 30)
+      achievements.push({ key: 'ghost_run',      label: `Ghost Run — Manual compact at ${minPct}% context`,      emoji: '🥷' });
+    else if (minPct <= 40)
+      achievements.push({ key: 'ultralight',     label: `Ultralight — Manual compact at ${minPct}% context`,     emoji: '🪶' });
+    else if (minPct <= 50)
+      achievements.push({ key: 'traveling_light', label: `Traveling Light — Manual compact at ${minPct}% context`, emoji: '🎒' });
+  }
 
   // Multi-model achievements based on Haiku usage ratio
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);
