@@ -18,7 +18,8 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 
 ### Flow Mode
 - Passive. No interruption. Just runs in the background.
-- Post-session: shows score + achievements.
+- SessionStart hook auto-creates a flow run if none is active.
+- Post-session: `tokengolf win` shows score + achievements with no pre-configuration.
 - For people in flow state who don't want friction.
 
 ### Roguelike Mode
@@ -59,25 +60,33 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 | CLOSE CALL | < 100% | yellow |
 | BUSTED | > 100% | red |
 
-### Achievements (examples)
+### Achievements
 - 💎 Diamond — Haiku under $0.10
 - 🥇 Gold — Completed with Haiku
 - 🥈 Silver — Completed with Sonnet
 - 🥉 Bronze — Completed with Opus
-- ⚡ Efficient — Under 50% of budget used
 - 🎯 Sniper — Under 25% of budget used
+- ⚡ Efficient — Under 50% of budget used
 - 🪙 Penny Pincher — Total spend under $0.10
+- 🏹 Frugal — Haiku handled ≥50% of session cost
+- 🎲 Rogue Run — Haiku handled ≥75% of session cost
 
 ---
 
 ## Tech Stack
 
 - **Runtime**: Node.js (ESM, `"type": "module"`)
+- **Build**: esbuild (JSX transform, `npm run build` → `dist/cli.js`)
 - **TUI**: [Ink v5](https://github.com/vadimdemedes/ink) + [@inkjs/ui v2](https://github.com/vadimdemedes/ink-ui)
 - **CLI parsing**: Commander.js
 - **Persistence**: JSON files in `~/.tokengolf/` (no native deps, zero compilation)
 - **Claude Code integration**: Hooks via `~/.claude/settings.json`
-- **Language**: JavaScript (no TypeScript for now — keep it simple)
+- **Language**: JavaScript (no TypeScript — keep it simple)
+
+### Build pipeline
+Source is JSX (`src/`) → esbuild bundles to `dist/cli.js`. The `bin` in `package.json` points to `dist/cli.js`. Run `npm run build` after any source change. `prepare` runs build automatically on `npm link`/`npm install`.
+
+**Do not test with `node src/cli.js`** — use `node dist/cli.js` or `tokengolf` after `npm link`.
 
 ### Why JSON not SQLite
 `better-sqlite3` requires native compilation which causes install failures. JSON files in `~/.tokengolf/` are sufficient for the data volume (hundreds of runs max) and have zero friction.
@@ -98,17 +107,19 @@ tokengolf/
 │   └── lib/
 │       ├── state.js              # Read/write ~/.tokengolf/current-run.json
 │       ├── store.js              # Read/write ~/.tokengolf/runs.json
-│       ├── score.js              # Tiers, ratings, model classes, formatting
+│       ├── score.js              # Tiers, ratings, model classes, achievements
+│       ├── cost.js               # Auto-detect cost from ~/.claude/ transcripts
 │       └── install.js            # Patches ~/.claude/settings.json with hooks
 ├── hooks/
-│   ├── session-start.js          # Injects run context into Claude's conversation
+│   ├── session-start.js          # Injects run context; auto-creates flow run
+│   ├── session-stop.js           # Captures exact cost from Stop event
 │   ├── post-tool-use.js          # Tracks tool calls, fires budget warnings
 │   └── user-prompt-submit.js     # Counts prompts, fires 50% nudge
+├── dist/
+│   └── cli.js                    # Built output (gitignored? check .gitignore)
 ├── CLAUDE.md                     # This file
-├── PROMPT.md                     # Suggested Claude Code kickoff prompt
 ├── package.json
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 ---
@@ -116,23 +127,29 @@ tokengolf/
 ## State Files (in `~/.tokengolf/`)
 
 ### `current-run.json`
-Active run state. Written by `tokengolf start`, read/updated by hooks, cleared on `tokengolf win` or `tokengolf bust`.
+Active run state. Written by `tokengolf start` or auto-created by SessionStart hook (flow mode). Cleared on `tokengolf win` or `tokengolf bust`.
 
 ```json
 {
+  "id": "run_1741345200000",
   "quest": "implement pagination for /users",
-  "model": "claude-sonnet-4-5",
+  "model": "claude-sonnet-4-6",
   "budget": 0.30,
   "spent": 0.11,
   "status": "active",
+  "mode": "roguelike",
   "floor": 2,
   "totalFloors": 5,
   "promptCount": 8,
   "totalToolCalls": 14,
   "toolCalls": { "Read": 6, "Edit": 4, "Bash": 4 },
+  "sessionId": "abc123",
+  "cwd": "/Users/me/projects/my-app",
   "startedAt": "2026-03-07T10:00:00Z"
 }
 ```
+
+Flow mode runs have `"quest": null, "budget": null, "mode": "flow"`.
 
 ### `runs.json`
 Array of all completed runs. Append-only.
@@ -145,7 +162,8 @@ Array of all completed runs. Append-only.
     "status": "won",
     "spent": 0.18,
     "budget": 0.30,
-    "model": "claude-sonnet-4-5",
+    "model": "claude-sonnet-4-6",
+    "modelBreakdown": { "claude-sonnet-4-6": 0.15, "claude-haiku-4-5-20251001": 0.03 },
     "achievements": [...],
     "startedAt": "...",
     "endedAt": "..."
@@ -159,10 +177,11 @@ Array of all completed runs. Append-only.
 
 | Command | Description |
 |---------|-------------|
-| `tokengolf start` | Declare quest, model, budget — begin a run |
+| `tokengolf start` | Declare quest, model, budget — begin a roguelike run |
 | `tokengolf status` | Show live status of current run |
-| `tokengolf win` | Mark current run as complete (won) |
-| `tokengolf bust` | Mark current run as budget busted (died) |
+| `tokengolf win` | Complete current run (auto-detects cost from transcripts) |
+| `tokengolf win --spent 0.18` | Complete with manually specified cost |
+| `tokengolf bust` | Mark run as budget busted (permadeath) |
 | `tokengolf scorecard` | Show last run's score card |
 | `tokengolf stats` | Career stats dashboard |
 | `tokengolf install` | Patch `~/.claude/settings.json` with hooks |
@@ -171,13 +190,18 @@ Array of all completed runs. Append-only.
 
 ## Claude Code Hooks
 
-Three hooks in `hooks/` directory, installed via `tokengolf install`:
+Four hooks in `hooks/` directory, installed via `tokengolf install`. All hooks must complete in < 5 seconds. Synchronous JSON file I/O only — no async, no network.
 
 ### `SessionStart`
-- Reads `current-run.json`
+- Does NOT read stdin (SessionStart doesn't pipe data)
+- Reads `current-run.json`; if no active run, auto-creates a flow mode run
 - Outputs `additionalContext` injected into Claude's conversation
 - Shows quest, budget remaining, floor, efficiency tips
-- Claude sees this and adjusts behavior accordingly
+
+### `Stop`
+- Reads stdin (Stop event JSON from Claude Code)
+- Extracts `total_cost_usd` from the event
+- Writes exact cost to `current-run.json` so `tokengolf win` uses it
 
 ### `PostToolUse`
 - Reads stdin (event JSON with `tool_name`)
@@ -188,49 +212,64 @@ Three hooks in `hooks/` directory, installed via `tokengolf install`:
 - Increments `promptCount`
 - At 50% budget: injects halfway nudge as `additionalContext`
 
-### Hook timeout
-All hooks must complete in < 5 seconds. They do synchronous JSON file I/O only — this is fine.
+### Hook installation
+`tokengolf install` patches `~/.claude/settings.json`. Uses `fs.realpathSync(process.argv[1])` to resolve npm link symlinks to real hook paths. Hook entries are tagged with `_tg: true` for reliable dedup on re-install.
+
+---
+
+## Cost Detection (`src/lib/cost.js`)
+
+`autoDetectCost(run)` is called by `tokengolf win/bust`. It:
+1. Uses `run.spent` from the Stop hook if already captured (exact)
+2. Falls back to parsing `~/.claude/projects/<cwd>/` transcript files
+3. Scans ALL `.jsonl` files modified since `run.startedAt` — this captures subagent sidechain files (where Haiku usage lives), not just the main session file
+4. Returns `{ spent, modelBreakdown }` where `modelBreakdown` is a per-model cost map
+
+`process.cwd()` is used (not `run.cwd`) because the user always runs `tokengolf win` from their project directory.
 
 ---
 
 ## Key Design Decisions
 
-1. **No real-time cost tracking in hooks** — Claude Code hooks don't receive cost data natively yet (filed as a feature request). Cost is self-reported via `tokengolf win/bust` or parsed from transcript post-session. This is a known gap — design for it to be filled in later.
+1. **Stop hook for exact cost** — The `Stop` hook receives `total_cost_usd` from Claude Code and writes it to `current-run.json`. This is the authoritative cost source. Transcript parsing is a fallback and is used for `modelBreakdown` in all cases (Stop hook doesn't capture per-model data).
 
-2. **Honor system for v0** — Players self-report cost via `tokengolf win`. Automatic cost parsing from `~/.claude/projects/*/transcript.jsonl` is a v0.3 feature.
+2. **Scan all transcripts for multi-model** — Claude Code creates separate `.jsonl` files for subagent sidechains. Haiku usage (from background agents) only appears in these sidechain files. `autoDetectCost` scans all files modified since session start.
 
-3. **Win condition is manual** — `tokengolf win` or `tokengolf bust`. Automatic detection via watching `git push` / test output is a v0.2 feature.
+3. **Win condition is still manual** — `tokengolf win` or `tokengolf bust`. Automatic detection is a future feature.
 
-4. **Floors are cosmetic for now** — The floor structure exists in the data model but isn't enforced in v0. It's a UI element on `ActiveRun` and `StartRun`. Full roguelike floor mechanics with per-floor budgets come in v0.4.
+4. **Floors are cosmetic** — Floor structure exists in the data model but isn't enforced. It's a UI element. Full roguelike floor mechanics with per-floor budgets are a future feature.
 
-5. **Flow mode is implicit** — Any Claude Code session without an active run is effectively Flow mode. The explicit Flow mode toggle and post-session automatic score is a v0.2 feature.
+5. **Flow mode is automatic** — SessionStart hook creates a flow run if none exists. No commands needed. Just run `tokengolf win` at the end.
 
 ---
 
-## Current Status: v0.1 — Core scaffold
+## Current Status: v0.2
 
 ### Done
-- [x] Full project scaffold
+- [x] Full project scaffold with esbuild pipeline
 - [x] All CLI commands wired up
 - [x] Ink components: StartRun, ActiveRun, ScoreCard, StatsView
 - [x] JSON persistence (state.js + store.js)
-- [x] Scoring logic (tiers, ratings, achievements)
-- [x] All 3 Claude Code hooks
-- [x] `tokengolf install` hook installer
+- [x] Scoring logic (tiers, ratings, achievements, multi-model)
+- [x] All 4 Claude Code hooks (SessionStart, Stop, PostToolUse, UserPromptSubmit)
+- [x] `tokengolf install` hook installer with symlink resolution
+- [x] Auto cost detection from transcripts (`cost.js`)
+- [x] Stop hook for exact cost capture
+- [x] Flow mode auto-tracking (SessionStart creates run if none exists)
+- [x] Multi-model breakdown in ScoreCard
+- [x] Haiku efficiency achievements (Frugal, Rogue Run)
 
-### Next up (v0.2)
-- [ ] Test the full flow end-to-end
-- [ ] Parse cost from `~/.claude/` transcript automatically
+### Next up (v0.3)
+- [ ] Get scorecard to auto-display at session end (no `tokengolf win` needed)
 - [ ] `tokengolf floor` command to advance floor manually
-- [ ] Automatic Flow mode session tracking
-- [ ] Polish ScoreCard ASCII art
+- [ ] Status line integration
+- [ ] Polish ScoreCard UI with ink-ui components
 
-### Later (v0.3+)
+### Later (v0.4+)
 - [ ] Leaderboard / shareable run URLs
 - [ ] Team mode (shared `runs.json` via git)
-- [ ] ink-web browser rendering for run sharing
 - [ ] Roguelike floor mechanics with per-floor sub-budgets
-- [ ] Real-time cost tracking (when Anthropic exposes it in hooks)
+- [ ] Real-time budget display during session
 
 ---
 
@@ -241,14 +280,12 @@ When making changes:
 - Ink components are functional React — hooks only, no classes
 - State mutations always go through `state.js` and `store.js` — never write to `~/.tokengolf/` directly from components
 - Hooks must be fast (< 1s) — no async, no network, JSON file I/O only
-- Run `node src/cli.js <command>` to test without `npm link`
+- **Always run `npm run build` after source changes**
+- Test hooks standalone: `echo '{"tool_name":"Read"}' | node hooks/post-tool-use.js`
+- Remember hooks run in a separate process with no access to shell env vars
+- Always `process.exit(0)` at the end of hooks
 
 When adding a new CLI command:
 1. Add it to `src/cli.js`
 2. Add a component in `src/components/` if it needs a TUI
 3. Document it in this file and README.md
-
-When modifying hooks:
-- Test them standalone: `echo '{"tool_name":"Read"}' | node hooks/post-tool-use.js`
-- Remember hooks run in a separate process with no access to shell env vars
-- Always `process.exit(0)` at the end

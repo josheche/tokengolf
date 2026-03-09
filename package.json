@@ -1,6 +1,6 @@
 {
   "name": "tokengolf",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gamify your Claude Code sessions. Flow mode tracks you. Roguelike mode trains you.",
   "type": "module",
   "bin": {
@@ -9,7 +9,8 @@
   "scripts": {
     "build": "esbuild src/cli.js --bundle --platform=node --format=esm --loader:.js=jsx --packages=external --outfile=dist/cli.js && chmod +x dist/cli.js",
     "prepare": "npm run build",
-    "dev": "node --import tsx/esm src/cli.js"
+    "dev": "node --import tsx/esm src/cli.js",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
