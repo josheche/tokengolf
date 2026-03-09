@@ -9,6 +9,16 @@ const { getCurrentRun, clearCurrentRun } = await import(path.join(__dir, '../src
 const { saveRun } = await import(path.join(__dir, '../src/lib/store.js'));
 const { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct } = await import(path.join(__dir, '../src/lib/score.js'));
 
+function writeTTY(text) {
+  try {
+    const ttyFd = fs.openSync('/dev/tty', 'w');
+    fs.writeSync(ttyFd, text);
+    fs.closeSync(ttyFd);
+  } catch {
+    process.stdout.write(text); // fallback
+  }
+}
+
 function renderScorecard(run) {
   const W = 68;
   const won = run.status === 'won';
@@ -47,7 +57,12 @@ function renderScorecard(run) {
     ? `${BOLD}${run.quest.slice(0, 60)}${RESET}`
     : `${DIM}Flow Mode${RESET}`;
 
-  const spentStr = `${won ? G : R}$${run.spent.toFixed(4)}${RESET}`;
+  const spentBefore = run.spentBeforeThisSession || 0;
+  const spentThisSession = run.spent - spentBefore;
+  const multiSession = sessions > 1 && spentBefore > 0;
+
+  const spentStr = `${won ? G : R}$${run.spent.toFixed(4)}${RESET}` +
+    (multiSession ? `  ${DIM}(+$${spentThisSession.toFixed(4)} this session)${RESET}` : '');
 
   let midRow = spentStr;
   if (!flowMode) {
@@ -64,7 +79,7 @@ function renderScorecard(run) {
   ].filter(Boolean).join('·');
   midRow += `  ${C}${mc.emoji} ${mc.name}${modelSuffix ? '·' + modelSuffix : ''}${RESET}`;
   midRow += `  ${tier.emoji} ${tier.label}`;
-  if (sessions > 1) midRow += `  ${DIM}${sessions} sessions${RESET}`;
+  if (multiSession) midRow += `  ${DIM}${sessions} sessions${RESET}`;
 
   const achievements = run.achievements || [];
   const achStr = achievements.map(a => `${a.emoji} ${a.key}`).join('  ');
@@ -133,7 +148,7 @@ try {
     const { setCurrentRun } = await import(path.join(__dir, '../src/lib/state.js'));
     setCurrentRun({ ...run, spent: result.spent, fainted: true, ...thinkingFields });
     const saved = { ...run, spent: result.spent, modelBreakdown: result.modelBreakdown, status, fainted: true, ...thinkingFields };
-    process.stdout.write('\n' + renderScorecard({ ...saved, achievements: [] }) + '\n\n');
+    writeTTY('\n' + renderScorecard({ ...saved, achievements: [] }) + '\n\n');
     process.exit(0);
   }
 
@@ -148,7 +163,7 @@ try {
 
   clearCurrentRun();
 
-  process.stdout.write('\n' + renderScorecard(saved) + '\n\n');
+  writeTTY('\n' + renderScorecard(saved) + '\n\n');
 } catch {
   // silent fail
 }

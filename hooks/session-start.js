@@ -55,10 +55,11 @@ try {
     };
     fs.writeFileSync(STATE_FILE, JSON.stringify(run, null, 2));
   } else {
-    // Continuing an existing run — increment session count
+    // Continuing an existing run — increment session count, snapshot spent for per-session tracking
     run = {
       ...run,
       sessionCount: (run.sessionCount || 1) + 1,
+      spentBeforeThisSession: run.spent || 0,
       cwd: run.cwd || cwd,
       effort: 'effort' in run ? run.effort : detectEffort(),
       fastMode: 'fastMode' in run ? run.fastMode : detectFastMode(),
