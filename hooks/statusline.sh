@@ -59,8 +59,8 @@ sep = f" {DIM}|{RESET} "
 ctx_str = None
 if ctx_pct is not None:
     if   ctx_pct >= 90: ctx_str = f"{R}📦 {ctx_pct:.0f}%{RESET}"
-    elif ctx_pct >= 75: ctx_str = f"{Y}📦 {ctx_pct:.0f}%{RESET}"
-    elif ctx_pct >= 50: ctx_str = f"{DIM}🪶 {ctx_pct:.0f}%{RESET}"
+    elif ctx_pct >= 75: ctx_str = f"{Y}🎒 {ctx_pct:.0f}%{RESET}"
+    elif ctx_pct >= 50: ctx_str = f"{G}🪶 {ctx_pct:.0f}%{RESET}"
 
 prefix = f"{BOLD}{C}{'💤' if fainted else '⛳'}{RESET}"
 parts = [f"{prefix} {quest}", cost_str]
