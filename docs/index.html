@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TokenGolf — Flow mode tracks you. Roguelike mode trains you.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="TokenGolf turns Claude Code sessions into a game. Track token efficiency, earn achievements, and level up your prompting skills."
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0d1117;
+        --card: #161b22;
+        --border: #30363d;
+        --text: #e6edf3;
+        --muted: #8b949e;
+        --green: #3fb950;
+        --green-dim: #238636;
+        --cyan: #79c0ff;
+        --magenta: #d2a8ff;
+        --yellow: #e3b341;
+        --red: #f85149;
+        --orange: #ffa657;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        line-height: 1.6;
+      }
+
+      a {
+        color: var(--cyan);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      code,
+      .mono {
+        font-family:
+          "SF Mono", "Cascadia Mono", "Fira Code", "Consolas", monospace;
+      }
+
+      /* ── Hero ── */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: clamp(1.5rem, 6vh, 4rem);
+        text-align: center;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        padding-bottom: 4rem;
+        background-image: url("assets/tokengolf-bg-min.jpg");
+        background-size: cover;
+        background-position: center 30%;
+        background-repeat: no-repeat;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.55) 0%,
+          rgba(0, 0, 0, 0.45) 40%,
+          rgba(13, 17, 23, 0.95) 100%
+        );
+      }
+
+      .hero > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-eyebrow {
+        font-family: "SF Mono", "Cascadia Mono", monospace;
+        color: #6ee87a;
+        font-size: 2.5rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+      }
+
+      .hero h1 {
+        font-family: "Libre Baskerville", Georgia, serif;
+        font-size: clamp(3rem, 10vw, 6rem);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1;
+        margin-bottom: 1rem;
+        text-shadow:
+          0 2px 16px rgba(0, 0, 0, 0.7),
+          0 1px 3px rgba(0, 0, 0, 0.5);
+      }
+
+      .hero h1 span {
+        color: #ffffff;
+        -webkit-text-fill-color: #ffffff;
+      }
+
+      .hero-tagline {
+        font-size: clamp(1rem, 3vw, 1.4rem);
+        color: rgba(255, 255, 255, 0.92);
+        font-style: italic;
+        margin-bottom: 1.25rem;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+      }
+
+      .hero-sub {
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.85);
+        max-width: 540px;
+        margin-bottom: 2.5rem;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+      }
+
+      /* Install box */
+      .install-box {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        background: rgba(13, 17, 23, 0.45);
+        backdrop-filter: blur(12px) saturate(1.2);
+        -webkit-backdrop-filter: blur(12px) saturate(1.2);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 9999px;
+        padding: 0.4rem 0.4rem 0.4rem 1.25rem;
+        max-width: 420px;
+        width: 100%;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+      }
+
+      .install-cmd {
+        flex: 1;
+        font-family: "SF Mono", "Cascadia Mono", monospace;
+        font-size: 0.95rem;
+        color: var(--green);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: text;
+        user-select: all;
+      }
+
+      .copy-btn {
+        background: var(--green);
+        color: #0d1117;
+        border: none;
+        border-radius: 9999px;
+        padding: 0.45rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          transform 0.1s;
+        white-space: nowrap;
+      }
+
+      .copy-btn:hover {
+        background: #52d765;
+      }
+      .copy-btn:active {
+        transform: scale(0.97);
+      }
+      .copy-btn.copied {
+        background: var(--green-dim);
+        color: #e6edf3;
+      }
+
+      .hero-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .hero-links a {
+        color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .hero-links a:hover {
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      /* ── Sections ── */
+      section {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 5rem 1.5rem;
+        border-top: 1px solid var(--border);
+      }
+
+      section h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        letter-spacing: -0.02em;
+      }
+
+      section h2 span {
+        margin-right: 0.5rem;
+      }
+
+      /* ── Two Modes ── */
+      .modes-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      @media (max-width: 600px) {
+        .modes-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .mode-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.75rem;
+      }
+
+      .mode-card h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+
+      .mode-card p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.65;
+      }
+
+      .mode-card ul {
+        margin-top: 0.75rem;
+        padding-left: 1.25rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .mode-card ul li {
+        margin-bottom: 0.35rem;
+      }
+
+      .mode-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        margin-bottom: 0.75rem;
+      }
+
+      .badge-flow {
+        background: #1f3a2a;
+        color: var(--green);
+      }
+      .badge-rogue {
+        background: #2d1b30;
+        color: var(--magenta);
+      }
+
+      /* ── Classes table ── */
+      .classes-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+
+      .classes-table th {
+        text-align: left;
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .classes-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+
+      .classes-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .classes-table tbody tr:hover td {
+        background: var(--card);
+      }
+
+      .class-emoji {
+        font-size: 1.4rem;
+      }
+
+      .difficulty-hard {
+        color: var(--red);
+        font-weight: 600;
+      }
+      .difficulty-normal {
+        color: var(--yellow);
+        font-weight: 600;
+      }
+      .difficulty-easy {
+        color: var(--green);
+        font-weight: 600;
+      }
+
+      /* ── Achievements grid ── */
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+
+      .achievement-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.1rem 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+      }
+
+      .achievement-emoji {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+      }
+
+      .achievement-info h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+      }
+
+      .achievement-info p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* ── CLI Commands ── */
+      .cli-block {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .cli-block-header {
+        background: #1c2128;
+        padding: 0.6rem 1rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-family: "SF Mono", monospace;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .cli-block-header::before {
+        content: "●  ●  ●";
+        color: #30363d;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+      }
+
+      .cli-block pre {
+        padding: 1.5rem;
+        overflow-x: auto;
+        font-family:
+          "SF Mono", "Cascadia Mono", "Fira Code", "Consolas", monospace;
+        font-size: 0.88rem;
+        line-height: 1.8;
+      }
+
+      .cli-block .cmd {
+        color: var(--cyan);
+      }
+      .cli-block .comment {
+        color: var(--muted);
+      }
+      .cli-block .dollar {
+        color: var(--green);
+        user-select: none;
+      }
+
+      /* ── Tiers ── */
+      .tiers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+      }
+
+      .tier-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.25rem 1rem;
+        text-align: center;
+      }
+
+      .tier-emoji {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      .tier-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+      .tier-amount {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-family: monospace;
+      }
+
+      /* ── Footer ── */
+      footer {
+        border-top: 1px solid var(--border);
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      footer a {
+        color: var(--muted);
+      }
+      footer a:hover {
+        color: var(--text);
+      }
+      footer .footer-links {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Hero ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">⛳</div>
+      <h1>Token<span>Golf</span></h1>
+      <p class="hero-tagline">Every token counts.</p>
+
+      <div class="install-box">
+        <input
+          class="install-cmd mono"
+          id="install-cmd"
+          value="npm install -g tokengolf"
+          readonly
+        />
+        <button class="copy-btn" id="copy-btn" onclick="copyInstall()">
+          Copy
+        </button>
+      </div>
+
+      <div class="hero-links">
+        <a href="https://github.com/josheche/tokengolf" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+            />
+          </svg>
+          GitHub
+        </a>
+        <a href="https://www.npmjs.com/package/tokengolf" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M0 0v16h16V0H0zm4.5 12.5H2v-9h12v9h-4.5v-7H8v7H4.5v-5.5H6v5.5z"
+            />
+          </svg>
+          npm
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Two Modes ── -->
+    <section>
+      <h2><span>🎮</span>Two Modes</h2>
+      <div class="modes-grid">
+        <div class="mode-card">
+          <div class="mode-badge badge-flow">Flow Mode</div>
+          <h3>Passive tracking, zero friction</h3>
+          <p>
+            Just work normally. TokenGolf runs in the background via Claude Code
+            hooks.
+          </p>
+          <ul>
+            <li>Auto-starts on every Claude Code session</li>
+            <li>Scorecard appears on <code>/exit</code></li>
+            <li>No pre-configuration required</li>
+            <li>Perfect when you're in a flow state</li>
+          </ul>
+        </div>
+        <div class="mode-card">
+          <div class="mode-badge badge-rogue">Roguelike Mode</div>
+          <h3>Pre-commit. Stakes. Permadeath.</h3>
+          <p>
+            Declare your quest, pick a budget, choose your class. Bust the
+            budget = the run dies.
+          </p>
+          <ul>
+            <li>5-floor structure (Write → Test → Fix → Review → PR)</li>
+            <li>Budget bust = permadeath, logged as a death</li>
+            <li>Trains deliberate, efficient prompting</li>
+            <li>Roguelike practice makes Flow sessions better</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Character Classes ── -->
+    <section>
+      <h2><span>⚔️</span>Character Classes</h2>
+      <table class="classes-table">
+        <thead>
+          <tr>
+            <th>Class</th>
+            <th>Model</th>
+            <th>Difficulty</th>
+            <th>Feel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="class-emoji">🏹</span> <strong>Rogue</strong></td>
+            <td class="mono">claude-haiku-4-5</td>
+            <td class="difficulty-hard">Hard</td>
+            <td>Glass cannon. Must prompt precisely.</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="class-emoji">⚔️</span> <strong>Fighter</strong>
+            </td>
+            <td class="mono">claude-sonnet-4-6</td>
+            <td class="difficulty-normal">Normal</td>
+            <td>Balanced. The default run.</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="class-emoji">🧙</span> <strong>Warlock</strong>
+            </td>
+            <td class="mono">claude-opus-4-6</td>
+            <td class="difficulty-easy">Easy</td>
+            <td>Powerful but expensive.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Budget Tiers ── -->
+    <section>
+      <h2><span>💰</span>Budget Tiers</h2>
+      <div class="tiers-grid">
+        <div class="tier-card">
+          <span class="tier-emoji">💎</span>
+          <div class="tier-name">Diamond</div>
+          <div class="tier-amount">under $0.10</div>
+        </div>
+        <div class="tier-card">
+          <span class="tier-emoji">🥇</span>
+          <div class="tier-name">Gold</div>
+          <div class="tier-amount">under $0.30</div>
+        </div>
+        <div class="tier-card">
+          <span class="tier-emoji">🥈</span>
+          <div class="tier-name">Silver</div>
+          <div class="tier-amount">under $1.00</div>
+        </div>
+        <div class="tier-card">
+          <span class="tier-emoji">🥉</span>
+          <div class="tier-name">Bronze</div>
+          <div class="tier-amount">under $3.00</div>
+        </div>
+        <div class="tier-card">
+          <span class="tier-emoji">💸</span>
+          <div class="tier-name">Reckless</div>
+          <div class="tier-amount">over $3.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Achievements ── -->
+    <section>
+      <h2><span>🏆</span>Achievements</h2>
+      <div class="achievements-grid">
+        <div class="achievement-card">
+          <div class="achievement-emoji">💎</div>
+          <div class="achievement-info">
+            <h4>Diamond</h4>
+            <p>Haiku run under $0.10</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🥇</div>
+          <div class="achievement-info">
+            <h4>Gold</h4>
+            <p>Completed with Haiku</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🥈</div>
+          <div class="achievement-info">
+            <h4>Silver</h4>
+            <p>Completed with Sonnet</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🥉</div>
+          <div class="achievement-info">
+            <h4>Bronze</h4>
+            <p>Completed with Opus</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🎯</div>
+          <div class="achievement-info">
+            <h4>Sniper</h4>
+            <p>Under 25% of budget used</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⚡</div>
+          <div class="achievement-info">
+            <h4>Efficient</h4>
+            <p>Under 50% of budget used</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🪙</div>
+          <div class="achievement-info">
+            <h4>Penny Pincher</h4>
+            <p>Total spend under $0.10</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏹</div>
+          <div class="achievement-info">
+            <h4>Frugal</h4>
+            <p>Haiku handled ≥50% of session cost</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🎲</div>
+          <div class="achievement-info">
+            <h4>Rogue Run</h4>
+            <p>Haiku handled ≥75% of session cost</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🔮</div>
+          <div class="achievement-info">
+            <h4>Silent Run</h4>
+            <p>Won without invoking ultrathink</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🧠</div>
+          <div class="achievement-info">
+            <h4>Ultrathink</h4>
+            <p>Used extended thinking in a won run</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⚗️</div>
+          <div class="achievement-info">
+            <h4>Deep Think</h4>
+            <p>3+ ultrathink invocations in one run</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">👻</div>
+          <div class="achievement-info">
+            <h4>Ghost Run</h4>
+            <p>Won with zero compaction events</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🪶</div>
+          <div class="achievement-info">
+            <h4>Ultralight</h4>
+            <p>Context never exceeded 50% during run</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🎒</div>
+          <div class="achievement-info">
+            <h4>Traveling Light</h4>
+            <p>Context never exceeded 75%</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">📦</div>
+          <div class="achievement-info">
+            <h4>Overencumbered</h4>
+            <p>Context hit 90%+ during a won run</p>
+          </div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">😵</div>
+          <div class="achievement-info">
+            <h4>Hubris</h4>
+            <p>Used ultrathink and busted the budget (death achievement)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CLI Commands ── -->
+    <section>
+      <h2><span>⌨️</span>CLI Commands</h2>
+      <div class="cli-block">
+        <div class="cli-block-header">terminal</div>
+        <pre>
+<span class="comment"># Install</span>
+<span class="dollar">$</span> <span class="cmd">npm install -g tokengolf</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf install</span>          <span class="comment"># patches ~/.claude/settings.json with hooks</span>
+
+<span class="comment"># Roguelike — declare before you start</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf start</span>            <span class="comment"># quest wizard: model + budget</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf status</span>           <span class="comment"># live run state</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf win</span>              <span class="comment"># complete run, show scorecard</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf bust</span>             <span class="comment"># permadeath — budget busted</span>
+
+<span class="comment"># Flow — just /exit Claude Code, scorecard auto-appears</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf scorecard</span>        <span class="comment"># show last run's results</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf stats</span>            <span class="comment"># career dashboard</span></pre>
+      </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer>
+      <div>
+        Built for Claude Code power users who want to play the long game.
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/josheche/tokengolf" target="_blank"
+          >GitHub</a
+        >
+        <a href="https://www.npmjs.com/package/tokengolf" target="_blank"
+          >npm</a
+        >
+        <span>MIT License</span>
+      </div>
+    </footer>
+
+    <script>
+      function copyInstall() {
+        const cmd = document.getElementById("install-cmd").value;
+        const btn = document.getElementById("copy-btn");
+        navigator.clipboard
+          .writeText(cmd)
+          .then(() => {
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            setTimeout(() => {
+              btn.textContent = "Copy";
+              btn.classList.remove("copied");
+            }, 2000);
+          })
+          .catch(() => {
+            // Fallback: select the text
+            document.getElementById("install-cmd").select();
+          });
+      }
+    </script>
+  </body>
+</html>
