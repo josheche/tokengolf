@@ -1,10 +1,12 @@
 # ⛳ TokenGolf
 
-> Gamify your Claude Code sessions. Flow mode tracks you. Roguelike mode trains you.
+> Every token counts.
 
 Turn Claude Code token efficiency into a game. Declare a quest, commit to a budget, pick a character class. Work normally. At the end, get a score based on how efficiently you used your budget.
 
 **Better prompting → fewer tokens → higher score.**
+
+**[tokengolf.dev](https://josheche.github.io/tokengolf/)** · [npm](https://www.npmjs.com/package/tokengolf) · [GitHub](https://github.com/josheche/tokengolf)
 
 ---
 
@@ -15,9 +17,7 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 ## Install
 
 ```bash
-git clone <repo>
-cd tokengolf
-npm install && npm link
+npm install -g tokengolf
 tokengolf install
 ```
 
