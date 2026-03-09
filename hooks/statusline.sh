@@ -20,18 +20,27 @@ quest   = (run.get('quest') or 'Flow')[:32]
 budget  = run.get('budget')
 floor   = f"{run.get('floor',1)}/{run.get('totalFloors',5)}"
 m       = run.get('model', '').lower()
-model   = 'Haiku' if 'haiku' in m else 'Sonnet' if 'sonnet' in m else 'Opus' if 'opus' in m else '?'
+if   'haiku'  in m: model, model_emoji = 'Haiku',  '🏹'
+elif 'sonnet' in m: model, model_emoji = 'Sonnet', '⚔️'
+elif 'opus'   in m: model, model_emoji = 'Opus',   '🧙'
+else:               model, model_emoji = '?',       '❓'
 effort  = run.get('effort')
 fast    = run.get('fastMode', False)
 fainted = run.get('fainted', False)
 
-label_parts = [model]
+label_parts = [f'{model_emoji} {model}']
 if effort and effort != 'medium': label_parts.append(effort.capitalize())
 if fast: label_parts.append('⚡Fast')
 model_label = '·'.join(label_parts)
 
 R, B, G, Y, M, C, DIM, RESET = '\033[31m','\033[34m','\033[32m','\033[33m','\033[35m','\033[36m','\033[2m','\033[0m'
 BOLD = '\033[1m'
+
+if   cost < 0.10: tier_emoji = '💎'
+elif cost < 0.30: tier_emoji = '🥇'
+elif cost < 1.00: tier_emoji = '🥈'
+elif cost < 3.00: tier_emoji = '🥉'
+else:             tier_emoji = '💸'
 
 if budget:
     pct = cost / budget * 100
@@ -40,10 +49,10 @@ if budget:
     elif pct <= 75:  rating, rc = 'SOLID',      G
     elif pct <= 100: rating, rc = 'CLOSE CALL', Y
     else:            rating, rc = 'BUSTED',     R
-    cost_str   = f"${cost:.4f}/${budget:.2f} {pct:.0f}%"
+    cost_str   = f"{tier_emoji} ${cost:.4f}/${budget:.2f} {pct:.0f}%"
     rating_str = f"{rc}{rating}{RESET}"
 else:
-    cost_str   = f"${cost:.4f}"
+    cost_str   = f"{tier_emoji} ${cost:.4f}"
     rating_str = None
 
 sep = f" {DIM}|{RESET} "
@@ -57,6 +66,7 @@ prefix = f"{BOLD}{C}{'💤' if fainted else '⛳'}{RESET}"
 parts = [f"{prefix} {quest}", cost_str]
 if rating_str: parts.append(rating_str)
 if ctx_str: parts.append(ctx_str)
-parts += [f"Floor {floor}", f"{C}{model_label}{RESET}"]
-print('\n\n' + sep.join(parts))
+parts.append(f"{C}{model_label}{RESET}")
+if budget: parts.append(f"Floor {floor}")
+print('\n' + f'{DIM} ───────────────{RESET}' + '\n' + sep.join(parts) + '\n' + f'{DIM} ───────────────{RESET}')
 PYEOF

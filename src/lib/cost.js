@@ -61,6 +61,31 @@ function findTranscriptsSince(projectDir, sinceMs) {
   }
 }
 
+export function parseThinkingFromTranscripts(paths) {
+  let invocations = 0;
+  let tokens = 0;
+  for (const p of paths) {
+    try {
+      const lines = fs.readFileSync(p, 'utf8').trim().split('\n');
+      for (const line of lines) {
+        try {
+          const entry = JSON.parse(line);
+          if (entry.type === 'assistant' && Array.isArray(entry.message?.content)) {
+            const thinkBlocks = entry.message.content.filter(b => b.type === 'thinking');
+            if (thinkBlocks.length > 0) {
+              invocations++;
+              for (const block of thinkBlocks) {
+                tokens += Math.round((block.thinking?.length || 0) / 4);
+              }
+            }
+          }
+        } catch { /* skip malformed lines */ }
+      }
+    } catch { /* skip unreadable files */ }
+  }
+  return invocations > 0 ? { thinkingInvocations: invocations, thinkingTokens: tokens } : null;
+}
+
 // Aggregate costs across multiple transcript files
 function parseAllTranscripts(paths) {
   let total = 0;
@@ -114,5 +139,11 @@ export function autoDetectCost(run) {
 
   // Always use parsed model breakdown (Stop hook doesn't capture it)
   const modelBreakdown = parsed?.byModel ?? run.modelBreakdown ?? null;
-  return { spent, modelBreakdown };
+  const thinking = parseThinkingFromTranscripts(paths);
+  return {
+    spent,
+    modelBreakdown,
+    thinkingInvocations: thinking?.thinkingInvocations ?? 0,
+    thinkingTokens: thinking?.thinkingTokens ?? 0,
+  };
 }

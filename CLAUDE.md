@@ -145,6 +145,11 @@ Active run state. Written by `tokengolf start` or auto-created by SessionStart h
   "toolCalls": { "Read": 6, "Edit": 4, "Bash": 4 },
   "sessionId": "abc123",
   "cwd": "/Users/me/projects/my-app",
+  "sessionCount": 1,
+  "fainted": false,
+  "compactionEvents": [],
+  "thinkingInvocations": 0,
+  "thinkingTokens": 0,
   "startedAt": "2026-03-07T10:00:00Z"
 }
 ```
@@ -190,60 +195,80 @@ Array of all completed runs. Append-only.
 
 ## Claude Code Hooks
 
-Four hooks in `hooks/` directory, installed via `tokengolf install`. All hooks must complete in < 5 seconds. Synchronous JSON file I/O only — no async, no network.
+Six hooks in `hooks/` directory, installed via `tokengolf install`. Most complete in < 5s (synchronous JSON I/O). `session-end.js` uses async dynamic imports with a 30s timeout.
 
-### `SessionStart`
+### `SessionStart` (`session-start.js`)
 - Does NOT read stdin (SessionStart doesn't pipe data)
 - Reads `current-run.json`; if no active run, auto-creates a flow mode run
+- Auto-detects `effort` from env var or `~/.claude/settings.json`; auto-detects `fastMode` from settings.json
+- Increments `sessionCount` on existing runs
 - Outputs `additionalContext` injected into Claude's conversation
-- Shows quest, budget remaining, floor, efficiency tips
 
-### `Stop`
-- Reads stdin (Stop event JSON from Claude Code)
-- Extracts `total_cost_usd` from the event
-- Writes exact cost to `current-run.json` so `tokengolf win` uses it
-
-### `PostToolUse`
+### `PostToolUse` (`post-tool-use.js`)
 - Reads stdin (event JSON with `tool_name`)
 - Updates `toolCalls` count in `current-run.json`
 - At 80%+ budget: outputs `systemMessage` warning to Claude
 
-### `UserPromptSubmit`
+### `UserPromptSubmit` (`user-prompt-submit.js`)
 - Increments `promptCount`
 - At 50% budget: injects halfway nudge as `additionalContext`
 
+### `PreCompact` (`pre-compact.js`)
+- Reads stdin (compact event JSON with `trigger` and `context_window.used_percentage`)
+- Appends to `compactionEvents` array in `current-run.json`
+- Powers gear achievements (Ghost Run, Ultralight, Traveling Light, Overencumbered)
+
+### `SessionEnd` (`session-end.js`)
+- Reads stdin for `reason` field (detects Fainted if reason is `'other'`)
+- Calls `autoDetectCost(run)` — returns spent, modelBreakdown, thinkingInvocations, thinkingTokens
+- Resting runs: updates state with fainted:true, does NOT clear — run continues next session
+- Won/died runs: calls `saveRun()` (which runs `calculateAchievements()`), clears state, renders ANSI scorecard
+
+### `StatusLine` (`statusline.sh`)
+- Bash script; uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict
+- Receives live session JSON (cost, context %, model) via stdin
+- Shows: quest/mode | tier emoji + cost [/budget pct%] | [efficiency rating] | [ctx %] | model label | [floor]
+- Separator lines (`───────────────`) above and below HUD row
+- statusLine config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`
+
 ### Hook installation
-`tokengolf install` patches `~/.claude/settings.json`. Uses `fs.realpathSync(process.argv[1])` to resolve npm link symlinks to real hook paths. Hook entries are tagged with `_tg: true` for reliable dedup on re-install.
+`tokengolf install` patches `~/.claude/settings.json`. Uses `fs.realpathSync(process.argv[1])` to resolve npm link symlinks to real hook paths. Hook entries tagged with `_tg: true` for reliable dedup. Non-destructive statusLine install: wraps existing statusline if one is configured.
 
 ---
 
 ## Cost Detection (`src/lib/cost.js`)
 
-`autoDetectCost(run)` is called by `tokengolf win/bust`. It:
-1. Uses `run.spent` from the Stop hook if already captured (exact)
-2. Falls back to parsing `~/.claude/projects/<cwd>/` transcript files
-3. Scans ALL `.jsonl` files modified since `run.startedAt` — this captures subagent sidechain files (where Haiku usage lives), not just the main session file
-4. Returns `{ spent, modelBreakdown }` where `modelBreakdown` is a per-model cost map
+`autoDetectCost(run)` is called by `session-end.js` and `tokengolf win/bust`. It:
+1. Parses `~/.claude/projects/<cwd>/` transcript files — all `.jsonl` files modified since `run.startedAt`
+2. Scans ALL files (not just the main session) — this captures subagent sidechain files where Haiku usage lives
+3. Also calls `parseThinkingFromTranscripts(paths)` to count thinking blocks and estimate tokens
+4. Returns `{ spent, modelBreakdown, thinkingInvocations, thinkingTokens }`
 
 `process.cwd()` is used (not `run.cwd`) because the user always runs `tokengolf win` from their project directory.
+
+Thinking tokens are estimated from character count ÷ 4 (approximate — displayed with `~` prefix). Invocations = assistant turns containing at least one `{"type":"thinking"}` content block.
 
 ---
 
 ## Key Design Decisions
 
-1. **Stop hook for exact cost** — The `Stop` hook receives `total_cost_usd` from Claude Code and writes it to `current-run.json`. This is the authoritative cost source. Transcript parsing is a fallback and is used for `modelBreakdown` in all cases (Stop hook doesn't capture per-model data).
+1. **SessionEnd hook is authoritative** — Replaces the dead Stop hook (Stop event didn't include `total_cost_usd`). SessionEnd fires on `/exit`, scans transcripts, saves run, and renders ANSI scorecard. `tokengolf win` is a manual override that still works.
 
-2. **Scan all transcripts for multi-model** — Claude Code creates separate `.jsonl` files for subagent sidechains. Haiku usage (from background agents) only appears in these sidechain files. `autoDetectCost` scans all files modified since session start.
+2. **Scan all transcripts for multi-model + ultrathink** — Claude Code creates separate `.jsonl` files for subagent sidechains (Haiku usage lives there). Same scan also picks up thinking blocks for ultrathink detection. One pass, all data.
 
-3. **Win condition is still manual** — `tokengolf win` or `tokengolf bust`. Automatic detection is a future feature.
+3. **Floors are cosmetic** — Floor structure exists in the data model but isn't enforced. It's a UI element. Full roguelike floor mechanics with per-floor budgets are a future feature.
 
-4. **Floors are cosmetic** — Floor structure exists in the data model but isn't enforced. It's a UI element. Full roguelike floor mechanics with per-floor budgets are a future feature.
+4. **Flow mode is automatic** — SessionStart hook creates a flow run if none exists. Any Claude Code session is tracked. Just `/exit` and the scorecard appears.
 
-5. **Flow mode is automatic** — SessionStart hook creates a flow run if none exists. No commands needed. Just run `tokengolf win` at the end.
+5. **Budget presets are model-calibrated** — `MODEL_BUDGET_TIERS` in score.js defines Diamond/Gold/Silver/Bronze amounts per model class. Wizard calls `getModelBudgets(model)` so Haiku sees $0.15/$0.40/$1.00/$2.50 and Opus sees $2.50/$7.50/$20.00/$50.00. Efficiency ratings (LEGENDARY/EFFICIENT/etc.) still derive as % of whatever budget was committed — no change there.
+
+6. **Ultrathink is natural language, not a slash command** — Writing `ultrathink` in a prompt triggers extended thinking mode. It's tracked via thinking blocks in transcripts, not via any hook. `thinkingInvocations === 0` on a won run = Silent Run achievement; on a died run with invocations > 0 = Hubris (the only death achievement).
+
+7. **Hubris is a death achievement** — `calculateAchievements` normally returns `[]` early for non-won runs. Hubris is the one exception — it fires before the early return. Intentional design: Hubris is a mark of cause-of-death, not a consolation prize.
 
 ---
 
-## Current Status: v0.2
+## Current Status: v0.3
 
 ### Done
 - [x] Full project scaffold with esbuild pipeline
@@ -251,25 +276,28 @@ Four hooks in `hooks/` directory, installed via `tokengolf install`. All hooks m
 - [x] Ink components: StartRun, ActiveRun, ScoreCard, StatsView
 - [x] JSON persistence (state.js + store.js)
 - [x] Scoring logic (tiers, ratings, achievements, multi-model)
-- [x] All 4 Claude Code hooks (SessionStart, Stop, PostToolUse, UserPromptSubmit)
-- [x] `tokengolf install` hook installer with symlink resolution
-- [x] Auto cost detection from transcripts (`cost.js`)
-- [x] Stop hook for exact cost capture
+- [x] 6 Claude Code hooks: SessionStart, PostToolUse, UserPromptSubmit, PreCompact, SessionEnd, StatusLine
+- [x] `tokengolf install` hook installer with symlink resolution + statusLine config
+- [x] Auto cost detection from transcripts (`cost.js`) — multi-file, multi-model
+- [x] SessionEnd hook auto-displays ANSI scorecard on /exit; replaces dead Stop hook
 - [x] Flow mode auto-tracking (SessionStart creates run if none exists)
 - [x] Multi-model breakdown in ScoreCard
 - [x] Haiku efficiency achievements (Frugal, Rogue Run)
+- [x] Effort level wizard step (Low/Medium/High for Sonnet; +Max for Opus; Haiku skips)
+- [x] Fast mode auto-detection from settings.json; tracked in run state
+- [x] Fainted / rest mechanic (usage limit hit = fainted, run continues next session)
+- [x] Context window % in StatusLine HUD with 📦 warning
+- [x] PreCompact hook tracks manual vs auto compaction + context % for gear achievements
+- [x] Multi-session tracking (sessionCount increments on each SessionStart)
+- [x] Model-aware budget presets in wizard (MODEL_BUDGET_TIERS, getModelBudgets)
+- [x] Ultrathink detection from transcripts (thinkingInvocations, thinkingTokens)
+- [x] 5 ultrathink achievements including Hubris (only death achievement)
 
-### Next up (v0.3)
-- [ ] Get scorecard to auto-display at session end (no `tokengolf win` needed)
+### Next up (v0.4)
 - [ ] `tokengolf floor` command to advance floor manually
-- [ ] Status line integration
-- [ ] Polish ScoreCard UI with ink-ui components
-
-### Later (v0.4+)
+- [ ] Roguelike floor mechanics with per-floor sub-budgets
 - [ ] Leaderboard / shareable run URLs
 - [ ] Team mode (shared `runs.json` via git)
-- [ ] Roguelike floor mechanics with per-floor sub-budgets
-- [ ] Real-time budget display during session
 
 ---
 

@@ -91,6 +91,19 @@ export function ScoreCard({ run }) {
           </Box>
         )}
 
+        {/* Extended thinking */}
+        {run.thinkingInvocations > 0 && (
+          <Box flexDirection="column" gap={0} marginTop={1}>
+            <Box gap={3} alignItems="center">
+              <Text color="gray" dimColor>Extended thinking:</Text>
+              <Text color="magenta">🔮 {run.thinkingInvocations}× invoked</Text>
+              {run.thinkingTokens > 0 && (
+                <Text color="gray" dimColor>~{(run.thinkingTokens / 1000).toFixed(1)}K tokens</Text>
+              )}
+            </Box>
+          </Box>
+        )}
+
         {/* Model breakdown */}
         {run.modelBreakdown && Object.keys(run.modelBreakdown).length > 0 && (
           <Box flexDirection="column" gap={0} marginTop={1}>

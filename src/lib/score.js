@@ -17,6 +17,19 @@ export function getEffortLevel(effort) {
   return EFFORT_LEVELS[effort] || null;
 }
 
+export const MODEL_BUDGET_TIERS = {
+  haiku:  { diamond: 0.15, gold: 0.40, silver: 1.00, bronze: 2.50 },
+  sonnet: { diamond: 0.50, gold: 1.50, silver: 4.00, bronze: 10.00 },
+  opus:   { diamond: 2.50, gold: 7.50, silver: 20.00, bronze: 50.00 },
+};
+
+export function getModelBudgets(model) {
+  const m = (model || '').toLowerCase();
+  if (m.includes('haiku'))  return MODEL_BUDGET_TIERS.haiku;
+  if (m.includes('opus'))   return MODEL_BUDGET_TIERS.opus;
+  return MODEL_BUDGET_TIERS.sonnet;
+}
+
 export const MODEL_CLASSES = {
   haiku:  { name: 'Haiku',  label: 'Rogue',   emoji: '🏹', difficulty: 'Hard',   color: 'red' },
   sonnet: { name: 'Sonnet', label: 'Fighter', emoji: '⚔️',  difficulty: 'Normal', color: 'cyan' },
@@ -81,10 +94,16 @@ export function getHaikuPct(modelBreakdown, totalSpent) {
 }
 
 export function calculateAchievements(run) {
-  if (run.status !== 'won') return [];
   const achievements = [];
+  const won = run.status === 'won';
   const pct = run.budget ? run.spent / run.budget : null;
   const mc = getModelClass(run.model);
+
+  // Hubris fires on death too — ultrathink and still busted
+  if (run.thinkingInvocations > 0 && run.status === 'died')
+    achievements.push({ key: 'hubris', label: 'Hubris — Used ultrathink, busted anyway', emoji: '🤦' });
+
+  if (!won) return achievements;
 
   if (mc === MODEL_CLASSES.haiku) {
     achievements.push({ key: 'gold_haiku', label: 'Gold — Completed with Haiku', emoji: '🥇' });
@@ -146,6 +165,19 @@ export function calculateAchievements(run) {
     else if (minPct <= 50)
       achievements.push({ key: 'traveling_light', label: `Traveling Light — Manual compact at ${minPct}% context`, emoji: '🎒' });
   }
+
+  // Ultrathink achievements
+  const ti = run.thinkingInvocations;
+  if (ti > 0) {
+    achievements.push({ key: 'spell_cast', label: `Spell Cast — Used extended thinking (${ti}×)`, emoji: '🔮' });
+    if (pct !== null && pct <= 0.25)
+      achievements.push({ key: 'calculated_risk', label: 'Calculated Risk — Ultrathink + LEGENDARY efficiency', emoji: '🧠' });
+    if (ti >= 3)
+      achievements.push({ key: 'deep_thinker', label: `Deep Thinker — ${ti} ultrathink invocations, completed`, emoji: '🌀' });
+  }
+  // Silent Run: thinking was tracked (field exists), zero invocations, SOLID or better, completed
+  if (run.thinkingInvocations === 0 && pct !== null && pct <= 0.75)
+    achievements.push({ key: 'silent_run', label: 'Silent Run — No extended thinking, completed under budget', emoji: '🤫' });
 
   // Multi-model achievements based on Haiku usage ratio
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);

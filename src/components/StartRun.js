@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Text, useApp } from 'ink';
 import { TextInput, Select, ConfirmInput } from '@inkjs/ui';
 import { setCurrentRun } from '../lib/state.js';
-import { getModelClass, getEffortLevel, FLOORS } from '../lib/score.js';
+import { getModelClass, getEffortLevel, getModelBudgets, FLOORS } from '../lib/score.js';
 
 const MODEL_OPTIONS = [
   { label: '⚔️  Sonnet  — Balanced. The default run.  [Normal]', value: 'claude-sonnet-4-6' },
@@ -22,13 +22,16 @@ const EFFORT_OPTIONS_OPUS = [
 const getEffortOptions = (model) =>
   model.toLowerCase().includes('opus') ? EFFORT_OPTIONS_OPUS : EFFORT_OPTIONS_BASE;
 
-const BUDGET_OPTIONS = [
-  { label: '💎 $0.10  — Diamond. Haiku territory.',  value: '0.10' },
-  { label: '🥇 $0.30  — Gold. Expert prompting.',    value: '0.30' },
-  { label: '🥈 $1.00  — Silver. Solid run.',         value: '1.00' },
-  { label: '🥉 $3.00  — Bronze. Learning.',          value: '3.00' },
-  { label: '✏️  Custom — Set your own.',              value: 'custom' },
-];
+function getBudgetOptions(model) {
+  const b = getModelBudgets(model);
+  return [
+    { label: `💎 Diamond  — $${b.diamond.toFixed(2)}   surgical micro-task`, value: String(b.diamond) },
+    { label: `🥇 Gold     — $${b.gold.toFixed(2)}   focused small task`,    value: String(b.gold)    },
+    { label: `🥈 Silver   — $${b.silver.toFixed(2)}   medium task`,          value: String(b.silver)  },
+    { label: `🥉 Bronze   — $${b.bronze.toFixed(2)}  heavy / complex`,       value: String(b.bronze)  },
+    { label: `✏️  Custom   — set your own`,                                   value: 'custom'          },
+  ];
+}
 
 export function StartRun() {
   const { exit } = useApp();
@@ -94,7 +97,7 @@ export function StartRun() {
               {step === 'confirm' && <Text color="green">${budget.toFixed(2)}</Text>}
             </Box>
             {step === 'budget' && (
-              <Select options={BUDGET_OPTIONS} onChange={v => {
+              <Select options={getBudgetOptions(model)} onChange={v => {
                 if (v === 'custom') { setStep('custom'); }
                 else { setBudgetVal(v); setStep('confirm'); }
               }} />

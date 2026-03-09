@@ -69,6 +69,12 @@ function renderScorecard(run) {
   const achievements = run.achievements || [];
   const achStr = achievements.map(a => `${a.emoji} ${a.key}`).join('  ');
 
+  const ti = run.thinkingInvocations || 0;
+  const thinkRow = ti > 0
+    ? `${M}🔮 ${ti} ultrathink${ti > 1 ? ' invocations' : ' invocation'}${RESET}` +
+      (run.thinkingTokens > 0 ? `  ${DIM}~${(run.thinkingTokens / 1000).toFixed(1)}K thinking tokens${RESET}` : '')
+    : null;
+
   const lines = [
     top(),
     row(header),
@@ -76,6 +82,11 @@ function renderScorecard(run) {
     bar(),
     row(midRow),
   ];
+
+  if (thinkRow) {
+    lines.push(bar());
+    lines.push(row(thinkRow));
+  }
 
   if (achievements.length > 0) {
     lines.push(bar());
@@ -113,11 +124,16 @@ try {
   else if (fainted) status = 'resting'; // hit limit, run continues next session
   else status = 'won';
 
+  const thinkingFields = {
+    thinkingInvocations: result.thinkingInvocations ?? 0,
+    thinkingTokens: result.thinkingTokens ?? 0,
+  };
+
   // For resting runs: update state but don't clear — run continues next session
   if (status === 'resting') {
     const { setCurrentRun } = await import(path.join(__dir, '../src/lib/state.js'));
-    setCurrentRun({ ...run, spent: result.spent, fainted: true });
-    const saved = { ...run, spent: result.spent, modelBreakdown: result.modelBreakdown, status, fainted: true };
+    setCurrentRun({ ...run, spent: result.spent, fainted: true, ...thinkingFields });
+    const saved = { ...run, spent: result.spent, modelBreakdown: result.modelBreakdown, status, fainted: true, ...thinkingFields };
     process.stdout.write('\n' + renderScorecard({ ...saved, achievements: [] }) + '\n\n');
     process.exit(0);
   }
@@ -128,6 +144,7 @@ try {
     modelBreakdown: result.modelBreakdown,
     status,
     endedAt: new Date().toISOString(),
+    ...thinkingFields,
   });
 
   clearCurrentRun();
