@@ -58,5 +58,5 @@ parts = [f"{prefix} {quest}", cost_str]
 if rating_str: parts.append(rating_str)
 if ctx_str: parts.append(ctx_str)
 parts += [f"Floor {floor}", f"{C}{model_label}{RESET}"]
-print('\n' + sep.join(parts))
+print('\n\n' + sep.join(parts))
 PYEOF
