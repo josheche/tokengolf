@@ -20,15 +20,15 @@ quest   = (run.get('quest') or 'Flow')[:32]
 budget  = run.get('budget')
 floor   = f"{run.get('floor',1)}/{run.get('totalFloors',5)}"
 m       = run.get('model', '').lower()
-if   'haiku'  in m: model, model_emoji = 'Haiku',  '🏹'
-elif 'sonnet' in m: model, model_emoji = 'Sonnet', '⚔️'
-elif 'opus'   in m: model, model_emoji = 'Opus',   '🧙'
-else:               model, model_emoji = '?',       '❓'
+if   'haiku'  in m: model = 'Haiku'
+elif 'sonnet' in m: model = 'Sonnet'
+elif 'opus'   in m: model = 'Opus'
+else:               model = '?'
 effort  = run.get('effort')
 fast    = run.get('fastMode', False)
 fainted = run.get('fainted', False)
 
-label_parts = [f'{model_emoji} {model}']
+label_parts = [model]
 if effort and effort != 'medium': label_parts.append(effort.capitalize())
 if fast: label_parts.append('⚡Fast')
 model_label = '·'.join(label_parts)
@@ -60,7 +60,7 @@ ctx_str = None
 if ctx_pct is not None:
     if   ctx_pct >= 90: ctx_str = f"{R}📦 {ctx_pct:.0f}%{RESET}"
     elif ctx_pct >= 75: ctx_str = f"{Y}📦 {ctx_pct:.0f}%{RESET}"
-    elif ctx_pct >= 50: ctx_str = f"{DIM}ctx {ctx_pct:.0f}%{RESET}"
+    elif ctx_pct >= 50: ctx_str = f"{DIM}🪶 {ctx_pct:.0f}%{RESET}"
 
 prefix = f"{BOLD}{C}{'💤' if fainted else '⛳'}{RESET}"
 parts = [f"{prefix} {quest}", cost_str]
