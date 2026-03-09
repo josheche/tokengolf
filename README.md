@@ -159,7 +159,7 @@ After `tokengolf install`, a status line appears in every Claude Code session:
 
 ```
  ───────────────
-⛳ implement pagination | 💎 $0.1203/$0.50 24% | LEGENDARY | 🪶 38% | Sonnet·High | Floor 1/5
+⛳ implement pagination | 💎 $0.1203/$0.50 24% | LEGENDARY | 🪶 38% | ⚔️ Sonnet·High | Floor 1/5
  ───────────────
 ```
 
