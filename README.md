@@ -159,12 +159,14 @@ After `tokengolf install`, a status line appears in every Claude Code session:
 
 ```
  ───────────────
-⛳ implement pagination | 💎 $0.1203/$0.50 24% | LEGENDARY | ctx 38% | ⚔️ Sonnet·High | Floor 1/5
+⛳ implement pagination | 💎 $0.1203/$0.50 24% | LEGENDARY | 🪶 38% | Sonnet·High | Floor 1/5
  ───────────────
 ```
 
 - **tier emoji** (💎🥇🥈🥉💸) updates live as cost accumulates
-- **📦** in context field at 75%+ — you're getting heavy
+- **🪶 green** at 50–74% context — traveling light
+- **🎒 yellow** at 75–89% context — getting heavy
+- **📦 red** at 90%+ context — overencumbered, consider compacting
 - **💤** instead of ⛳ if the previous session fainted (hit usage limits)
 - Roguelike runs show floor progress; Flow runs omit budget/efficiency
 

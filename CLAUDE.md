@@ -227,7 +227,8 @@ Six hooks in `hooks/` directory, installed via `tokengolf install`. Most complet
 ### `StatusLine` (`statusline.sh`)
 - Bash script; uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict
 - Receives live session JSON (cost, context %, model) via stdin
-- Shows: quest/mode | tier emoji + cost [/budget pct%] | [efficiency rating] | [ctx %] | model label | [floor]
+- Shows: quest/mode | tier emoji + cost [/budget pct%] | [efficiency rating] | [🪶/🎒/📦 ctx%] | model label | [floor]
+- Context load: 🪶 green (50–74%), 🎒 yellow (75–89%), 📦 red (90%+); hidden below 50%
 - Separator lines (`───────────────`) above and below HUD row
 - statusLine config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`
 
@@ -286,7 +287,7 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 - [x] Effort level wizard step (Low/Medium/High for Sonnet; +Max for Opus; Haiku skips)
 - [x] Fast mode auto-detection from settings.json; tracked in run state
 - [x] Fainted / rest mechanic (usage limit hit = fainted, run continues next session)
-- [x] Context window % in StatusLine HUD with 📦 warning
+- [x] Context window % in StatusLine HUD: 🪶/🎒/📦 with green/yellow/red
 - [x] PreCompact hook tracks manual vs auto compaction + context % for gear achievements
 - [x] Multi-session tracking (sessionCount increments on each SessionStart)
 - [x] Model-aware budget presets in wizard (MODEL_BUDGET_TIERS, getModelBudgets)
