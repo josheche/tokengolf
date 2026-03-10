@@ -254,7 +254,7 @@ When you `/exit` a Claude Code session, the scorecard appears automatically:
 ╠════════════════════════════════════════════════════════════════════╣
 ║  🔮 1 ultrathink invocation  ~8.4K thinking tokens                ║
 ╠════════════════════════════════════════════════════════════════════╣
-║  🥈 silver_sonnet  🎯 sniper  🔮 spell_cast  🧠 calculated_risk    ║
+║  🥈 silver_sonnet  🎯 sniper  🔮 spell_cast  🧮 calculated_risk    ║
 ╠════════════════════════════════════════════════════════════════════╣
 ║  tokengolf scorecard  ·  tokengolf start  ·  tokengolf stats      ║
 ╚════════════════════════════════════════════════════════════════════╝

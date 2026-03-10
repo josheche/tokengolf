@@ -260,13 +260,13 @@ export function calculateAchievements(run) {
       achievements.push({
         key: 'speedrunner',
         label: 'Speedrunner — Low effort, completed under budget',
-        emoji: '🎯',
+        emoji: '🏎️',
       });
     if ((run.effort === 'high' || run.effort === 'max') && pct !== null && pct <= 0.25)
       achievements.push({
         key: 'tryhard',
         label: 'Tryhard — High effort, LEGENDARY efficiency',
-        emoji: '💪',
+        emoji: '🏋️',
       });
     if (run.effort === 'max' && mc === MODEL_CLASSES.opus)
       achievements.push({
@@ -282,7 +282,7 @@ export function calculateAchievements(run) {
       achievements.push({
         key: 'lightning',
         label: 'Lightning Run — Opus fast mode, completed under budget',
-        emoji: '⚡',
+        emoji: '⛈️',
       });
     if (pct !== null && pct <= 0.25)
       achievements.push({
@@ -304,13 +304,13 @@ export function calculateAchievements(run) {
     achievements.push({
       key: 'no_rest',
       label: 'No Rest for the Wicked — Completed in one session',
-      emoji: '⚡',
+      emoji: '🔥',
     });
   if (run.fainted)
     achievements.push({
       key: 'came_back',
       label: 'Came Back — Fainted and finished anyway',
-      emoji: '💪',
+      emoji: '🧟',
     });
 
   // Compaction achievements
@@ -359,7 +359,7 @@ export function calculateAchievements(run) {
       achievements.push({
         key: 'calculated_risk',
         label: 'Calculated Risk — Ultrathink + LEGENDARY efficiency',
-        emoji: '🧠',
+        emoji: '🧮',
       });
     if (ti >= 3)
       achievements.push({
@@ -384,13 +384,13 @@ export function calculateAchievements(run) {
         achievements.push({
           key: 'architect',
           label: `Architect — Opus handled ${opusPct}% of cost (heavy planner)`,
-          emoji: '🧠',
+          emoji: '🏛️',
         });
       if (opusPct < 25)
         achievements.push({
           key: 'blitz',
           label: `Blitz — Opus handled only ${opusPct}% of cost (light plan, fast execution)`,
-          emoji: '⚡',
+          emoji: '💨',
         });
       if (opusPct >= 40 && opusPct <= 60)
         achievements.push({
@@ -409,7 +409,7 @@ export function calculateAchievements(run) {
       achievements.push({
         key: 'purist',
         label: 'Purist — Single model family throughout',
-        emoji: '🎯',
+        emoji: '🔷',
       });
     if (distinct >= 2 && pct !== null && pct < 1.0)
       achievements.push({
@@ -477,7 +477,7 @@ export function calculateAchievements(run) {
     achievements.push({
       key: 'one_shot',
       label: 'One Shot — Completed in a single prompt',
-      emoji: '🎯',
+      emoji: '🥊',
     });
   if (promptCount >= 20)
     achievements.push({
@@ -548,7 +548,7 @@ export function calculateAchievements(run) {
       achievements.push({
         key: 'cheap_shots',
         label: `Cheap Shots — $${costPerPrompt.toFixed(4)} per prompt`,
-        emoji: '🪙',
+        emoji: '💲',
       });
     if (costPerPrompt >= 0.5)
       achievements.push({
