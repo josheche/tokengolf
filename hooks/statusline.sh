@@ -19,7 +19,7 @@ ctx_pct = (session.get('context_window') or {}).get('used_percentage') or None
 quest   = (run.get('quest') or 'Flow')[:32]
 budget  = run.get('budget')
 floor   = f"{run.get('floor',1)}/{run.get('totalFloors',5)}"
-m       = run.get('model', '').lower()
+sm = session.get('model') or {}; m = (sm.get('id','') if isinstance(sm,dict) else sm or run.get('model','')).lower()
 # opusplan must be checked before opus (opusplan contains 'opus' as substring)
 if   'opusplan' in m: model, model_emoji = 'Paladin', '⚜️'
 elif 'haiku'    in m: model, model_emoji = 'Haiku',   '🏹'
