@@ -114,6 +114,14 @@ program
   });
 
 program
+  .command('demo')
+  .description('Show HUD examples for all game states (great for screenshots)')
+  .action(async () => {
+    const { runDemo } = await import('./lib/demo.js');
+    runDemo();
+  });
+
+program
   .command('install')
   .description('Install Claude Code hooks into ~/.claude/settings.json')
   .action(async () => {
