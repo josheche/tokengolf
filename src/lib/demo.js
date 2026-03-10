@@ -168,9 +168,6 @@ const SCENARIOS = [
 ];
 
 export function runDemo() {
-  const width = 72;
-  const bar = `${DIM}${'─'.repeat(width)}${RESET}`;
-
   console.log('');
   console.log(`${BOLD}${C}⛳ TokenGolf — HUD Demo${RESET}`);
   console.log(`${DIM}Live statusline shown in every Claude Code session${RESET}`);
