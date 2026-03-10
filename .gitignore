@@ -3,3 +3,4 @@ dist/
 .DS_Store
 *.log
 hooks/statusline-wrapper.sh
+.claude/*

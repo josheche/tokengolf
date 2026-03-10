@@ -16,12 +16,14 @@ try {
 
   // Nudge at 50% — once (between 50-60%)
   if (pct >= 0.5 && pct < 0.6) {
-    process.stdout.write(JSON.stringify({
-      hookSpecificOutput: {
-        hookEventName: 'UserPromptSubmit',
-        additionalContext: `[TokenGolf] Halfway point. $${updated.spent.toFixed(4)} of $${updated.budget.toFixed(2)} spent. Quest: "${updated.quest}" — stay focused.`,
-      },
-    }));
+    process.stdout.write(
+      JSON.stringify({
+        hookSpecificOutput: {
+          hookEventName: 'UserPromptSubmit',
+          additionalContext: `[TokenGolf] Halfway point. $${updated.spent.toFixed(4)} of $${updated.budget.toFixed(2)} spent. Quest: "${updated.quest}" — stay focused.`,
+        },
+      })
+    );
   }
 } catch {
   // silent fail

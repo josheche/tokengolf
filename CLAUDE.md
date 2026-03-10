@@ -41,6 +41,7 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 | 🏹 Rogue | Haiku | Hard | Glass cannon. Must prompt precisely. |
 | ⚔️ Fighter | Sonnet | Normal | Balanced. The default run. |
 | 🧙 Warlock | Opus | Easy | Powerful but expensive. |
+| ⚜️ Paladin | Opus (plan mode) | Calculated | Strategic planner. Thinks before acting. |
 
 ### Budget Tiers
 | Tier | Spend | Emoji |
@@ -61,15 +62,108 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 | BUSTED | > 100% | red |
 
 ### Achievements
-- 💎 Diamond — Haiku under $0.10
+
+**Class Medals**
 - 🥇 Gold — Completed with Haiku
+- 💎 Diamond — Haiku under $0.10
 - 🥈 Silver — Completed with Sonnet
+- ⚜️ Paladin — Completed as Paladin (Opus plan mode)
+- ♟️ Grand Strategist — LEGENDARY efficiency as Paladin
 - 🥉 Bronze — Completed with Opus
+
+**Budget Efficiency**
 - 🎯 Sniper — Under 25% of budget used
 - ⚡ Efficient — Under 50% of budget used
 - 🪙 Penny Pincher — Total spend under $0.10
+
+**Effort-Based**
+- 🏎️ Speedrunner — Low effort, completed under budget
+- 🏋️ Tryhard — High/Max effort, LEGENDARY efficiency
+- 👑 Archmagus — Opus at max effort, completed
+
+**Fast Mode (Opus-only)**
+- ⛈️ Lightning Run — Opus fast mode, completed under budget
+- 🎰 Daredevil — Opus fast mode, LEGENDARY efficiency
+
+**Sessions**
+- 🔥 No Rest for the Wicked — Completed in one session
+- 🏕️ Made Camp — Completed across multiple sessions
+- 🧟 Came Back — Fainted and finished anyway
+
+**Gear (Compaction)**
+- 📦 Overencumbered — Context auto-compacted during run
+- 🥷 Ghost Run — Manual compact at ≤30% context
+- 🪶 Ultralight — Manual compact at 31–40% context
+- 🎒 Traveling Light — Manual compact at 41–50% context
+
+**Ultrathink**
+- 🔮 Spell Cast — Used extended thinking (won)
+- 🧮 Calculated Risk — Ultrathink + LEGENDARY efficiency
+- 🌀 Deep Thinker — ≥3 ultrathink invocations, completed
+- 🤫 Silent Run — No extended thinking, SOLID or better, completed
+
+**Paladin Planning Ratio**
+- 🏛️ Architect — Opus handled >60% of cost (heavy planner)
+- 💨 Blitz — Opus handled <25% of cost (light plan, fast execution)
+- ⚖️ Equilibrium — Opus/Sonnet balanced at 40–60%
+
+**Model Loyalty (non-Paladin)**
+- 🔷 Purist — Single model family throughout
+- 🦎 Chameleon — Multiple model families used, under budget
+- 🔀 Tactical Switch — Exactly 1 model switch, under budget
+- 🔒 Committed — No switches, one model family
+- ⚠️ Class Defection — Declared one class but cost skewed to another
+
+**Haiku Efficiency**
 - 🏹 Frugal — Haiku handled ≥50% of session cost
 - 🎲 Rogue Run — Haiku handled ≥75% of session cost
+
+**Prompting Skill**
+- 🥊 One Shot — Completed in a single prompt
+- 💬 Conversationalist — ≥20 prompts
+- 🤐 Terse — ≤3 prompts, ≥10 tool calls
+- 🪑 Backseat Driver — ≥15 prompts, <1 tool call per prompt
+- 🏗️ High Leverage — ≥5 tools per prompt (≥2 prompts)
+
+**Tool Mastery**
+- 👁️ Read Only — No Edit or Write calls (≥1 Read)
+- ✏️ Editor — ≥10 Edit calls
+- 🐚 Bash Warrior — ≥10 Bash calls, ≥50% of tool usage
+- 🔍 Scout — ≥60% Read calls (≥5 total)
+- 🔪 Surgeon — 1–3 Edit calls, completed under budget
+- 🧰 Toolbox — ≥5 distinct tool types used
+
+**Cost per Prompt**
+- 💲 Cheap Shots — Under $0.01 per prompt (≥3 prompts)
+- 🍷 Expensive Taste — Over $0.50 per prompt (≥3 prompts; also a death mark)
+
+**Time**
+- ⏱️ Speedrun — Completed in under 5 minutes
+- 🏃 Marathon — Session 60–180 minutes
+- 🫠 Endurance — Session over 3 hours
+
+**Tool Reliability**
+- ✅ Clean Run — Zero failed tool calls (≥5 total tool uses)
+- 🐂 Stubborn — ≥10 failed tool calls, still won
+
+**Subagents**
+- 🐺 Lone Wolf — No subagents spawned
+- 📡 Summoner — ≥5 subagents spawned
+- 🪖 Army of One — ≥10 subagents, under 50% budget used
+
+**Turn Discipline**
+- 🤖 Agentic — ≥3 Claude turns per user prompt
+- 🐕 Obedient — Exactly 1 turn per prompt (≥3 prompts)
+
+**Death Marks** *(fire before won-only cutoff; some also fire on won runs)*
+- 🎲 Indecisive — ≥3 model switches *(won or died)*
+- 🤦 Hubris — Used ultrathink, busted anyway
+- 💥 Blowout — Spent ≥2× budget
+- 😭 So Close — Died within 10% of budget
+- 🔨 Tool Happy — Died with ≥30 tool calls
+- 🪦 Silent Death — Died with ≤2 prompts
+- 🤡 Fumble — Died with ≥5 failed tool calls
+- 🍷 Expensive Taste — Over $0.50/prompt *(won or died)*
 
 ---
 
@@ -81,6 +175,7 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 - **CLI parsing**: Commander.js
 - **Persistence**: JSON files in `~/.tokengolf/` (no native deps, zero compilation)
 - **Claude Code integration**: Hooks via `~/.claude/settings.json`
+- **Testing**: Vitest (ESM-native, `npm test`)
 - **Language**: JavaScript (no TypeScript — keep it simple)
 
 ### Build pipeline
@@ -109,12 +204,19 @@ tokengolf/
 │       ├── store.js              # Read/write ~/.tokengolf/runs.json
 │       ├── score.js              # Tiers, ratings, model classes, achievements
 │       ├── cost.js               # Auto-detect cost from ~/.claude/ transcripts
-│       └── install.js            # Patches ~/.claude/settings.json with hooks
+│       ├── install.js            # Patches ~/.claude/settings.json with hooks
+│       └── __tests__/
+│           └── score.test.js     # Vitest: 120 tests covering achievements + pure functions
 ├── hooks/
 │   ├── session-start.js          # Injects run context; auto-creates flow run
-│   ├── session-stop.js           # Captures exact cost from Stop event
+│   ├── session-end.js            # Captures cost on /exit; saves run; renders scorecard
 │   ├── post-tool-use.js          # Tracks tool calls, fires budget warnings
-│   └── user-prompt-submit.js     # Counts prompts, fires 50% nudge
+│   ├── post-tool-use-failure.js  # Tracks failedToolCalls
+│   ├── user-prompt-submit.js     # Counts prompts, fires 50% nudge
+│   ├── pre-compact.js            # Tracks compaction events for gear achievements
+│   ├── subagent-start.js         # Tracks subagentSpawns
+│   ├── stop.js                   # Tracks turnCount
+│   └── statusline.sh             # Bash HUD shown in Claude Code statusline
 ├── dist/
 │   └── cli.js                    # Built output (gitignored? check .gitignore)
 ├── CLAUDE.md                     # This file
@@ -150,6 +252,9 @@ Active run state. Written by `tokengolf start` or auto-created by SessionStart h
   "compactionEvents": [],
   "thinkingInvocations": 0,
   "thinkingTokens": 0,
+  "failedToolCalls": 0,
+  "subagentSpawns": 2,
+  "turnCount": 12,
   "startedAt": "2026-03-07T10:00:00Z"
 }
 ```
@@ -195,7 +300,7 @@ Array of all completed runs. Append-only.
 
 ## Claude Code Hooks
 
-Six hooks in `hooks/` directory, installed via `tokengolf install`. Most complete in < 5s (synchronous JSON I/O). `session-end.js` uses async dynamic imports with a 30s timeout.
+Nine hooks in `hooks/` directory, installed via `tokengolf install`. Most complete in < 5s (synchronous JSON I/O). `session-end.js` uses async dynamic imports with a 30s timeout.
 
 ### `SessionStart` (`session-start.js`)
 - Does NOT read stdin (SessionStart doesn't pipe data)
@@ -224,10 +329,26 @@ Six hooks in `hooks/` directory, installed via `tokengolf install`. Most complet
 - Resting runs: updates state with fainted:true, does NOT clear — run continues next session
 - Won/died runs: calls `saveRun()` (which runs `calculateAchievements()`), clears state, renders ANSI scorecard
 
+### `PostToolUseFailure` (`post-tool-use-failure.js`)
+- Reads stdin (event JSON with `tool_name` and error info)
+- Increments `failedToolCalls` in `current-run.json`
+- Powers Fumble death mark (≥5 failed tool calls)
+
+### `SubagentStart` (`subagent-start.js`)
+- Reads stdin (subagent event JSON)
+- Increments `subagentSpawns` in `current-run.json`
+- Powers Lone Wolf / Summoner / Army of One achievements
+
+### `Stop` (`stop.js`)
+- Reads stdin for turn data
+- Increments `turnCount` in `current-run.json`
+- Powers Agentic / Obedient turn discipline achievements
+
 ### `StatusLine` (`statusline.sh`)
 - Bash script; uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict
 - Receives live session JSON (cost, context %, model) via stdin
 - Shows: quest/mode | tier emoji + cost [/budget pct%] | [efficiency rating] | [🪶/🎒/📦 ctx%] | model label | [floor]
+- Model label: `⚔️ Sonnet`, `⚔️ Sonnet·High`, `🏹 Haiku`, `🧙 Opus·Max`, etc. Effort appended only when explicitly set in settings.json (medium omitted — it's the default)
 - Context load: 🪶 green (50–74%), 🎒 yellow (75–89%), 📦 red (90%+); hidden below 50%
 - Separator lines (`───────────────`) above and below HUD row
 - statusLine config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`
@@ -253,7 +374,7 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 
 ## Key Design Decisions
 
-1. **SessionEnd hook is authoritative** — Replaces the dead Stop hook (Stop event didn't include `total_cost_usd`). SessionEnd fires on `/exit`, scans transcripts, saves run, and renders ANSI scorecard. `tokengolf win` is a manual override that still works.
+1. **SessionEnd hook is authoritative for cost/scorecard** — SessionEnd fires on `/exit`, scans transcripts, saves run, and renders ANSI scorecard. `tokengolf win` is a manual override that still works. The Stop hook is also active but only for `turnCount` tracking — it does NOT include `total_cost_usd` so it cannot determine final cost.
 
 2. **Scan all transcripts for multi-model + ultrathink** — Claude Code creates separate `.jsonl` files for subagent sidechains (Haiku usage lives there). Same scan also picks up thinking blocks for ultrathink detection. One pass, all data.
 
@@ -263,9 +384,9 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 
 5. **Budget presets are model-calibrated** — `MODEL_BUDGET_TIERS` in score.js defines Diamond/Gold/Silver/Bronze amounts per model class. Wizard calls `getModelBudgets(model)` so Haiku sees $0.15/$0.40/$1.00/$2.50 and Opus sees $2.50/$7.50/$20.00/$50.00. Efficiency ratings (LEGENDARY/EFFICIENT/etc.) still derive as % of whatever budget was committed — no change there.
 
-6. **Ultrathink is natural language, not a slash command** — Writing `ultrathink` in a prompt triggers extended thinking mode. It's tracked via thinking blocks in transcripts, not via any hook. `thinkingInvocations === 0` on a won run = Silent Run achievement; on a died run with invocations > 0 = Hubris (the only death achievement).
+6. **Ultrathink is natural language, not a slash command** — Writing `ultrathink` in a prompt triggers extended thinking mode. It's tracked via thinking blocks in transcripts, not via any hook. `thinkingInvocations === 0` on a won run = Silent Run achievement; on a died run with invocations > 0 = Hubris death mark.
 
-7. **Hubris is a death achievement** — `calculateAchievements` normally returns `[]` early for non-won runs. Hubris is the one exception — it fires before the early return. Intentional design: Hubris is a mark of cause-of-death, not a consolation prize.
+7. **Death marks fire before the early return** — `calculateAchievements` has an `if (!won) return []` early exit, but death marks (blowout, so_close, tool_happy, silent_death, fumble, expensive_taste, hubris) fire before it. `indecisive` (model switches) and `expensive_taste` also fire on won runs — they're behavior patterns, not death verdicts.
 
 ---
 
@@ -277,7 +398,7 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 - [x] Ink components: StartRun, ActiveRun, ScoreCard, StatsView
 - [x] JSON persistence (state.js + store.js)
 - [x] Scoring logic (tiers, ratings, achievements, multi-model)
-- [x] 6 Claude Code hooks: SessionStart, PostToolUse, UserPromptSubmit, PreCompact, SessionEnd, StatusLine
+- [x] 9 Claude Code hooks: SessionStart, PostToolUse, PostToolUseFailure, UserPromptSubmit, PreCompact, SessionEnd, SubagentStart, Stop, StatusLine
 - [x] `tokengolf install` hook installer with symlink resolution + statusLine config
 - [x] Auto cost detection from transcripts (`cost.js`) — multi-file, multi-model
 - [x] SessionEnd hook auto-displays ANSI scorecard on /exit; replaces dead Stop hook
@@ -292,7 +413,11 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 - [x] Multi-session tracking (sessionCount increments on each SessionStart)
 - [x] Model-aware budget presets in wizard (MODEL_BUDGET_TIERS, getModelBudgets)
 - [x] Ultrathink detection from transcripts (thinkingInvocations, thinkingTokens)
-- [x] 5 ultrathink achievements including Hubris (only death achievement)
+- [x] 5 ultrathink achievements including Hubris death mark
+- [x] Paladin (⚜️ opusplan) character class with model-aware budgets and statusline support
+- [x] 28 new achievements: prompting skill, tool mastery, cost/prompt, time, subagents, turn discipline, death marks
+- [x] 3 new hooks: PostToolUseFailure, SubagentStart, Stop
+- [x] Vitest test suite — 120 tests covering all achievements + pure score functions
 
 ### Next up (v0.4)
 - [ ] `tokengolf floor` command to advance floor manually
@@ -310,6 +435,7 @@ When making changes:
 - State mutations always go through `state.js` and `store.js` — never write to `~/.tokengolf/` directly from components
 - Hooks must be fast (< 1s) — no async, no network, JSON file I/O only
 - **Always run `npm run build` after source changes**
+- **Run `npm test` after score.js changes** — 83 tests catch achievement regressions
 - Test hooks standalone: `echo '{"tool_name":"Read"}' | node hooks/post-tool-use.js`
 - Remember hooks run in a separate process with no access to shell env vars
 - Always `process.exit(0)` at the end of hooks

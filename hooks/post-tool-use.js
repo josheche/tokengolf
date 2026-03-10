@@ -7,7 +7,9 @@ const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 
 let input = '';
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', chunk => { input += chunk; });
+process.stdin.on('data', (chunk) => {
+  input += chunk;
+});
 process.stdin.on('end', () => {
   try {
     const run = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
@@ -29,12 +31,14 @@ process.stdin.on('end', () => {
     const pct = updated.spent / updated.budget;
     if (pct >= 0.8 && pct < 1.0) {
       const remaining = (updated.budget - updated.spent).toFixed(4);
-      process.stdout.write(JSON.stringify({
-        hookSpecificOutput: {
-          hookEventName: 'PostToolUse',
-          systemMessage: `⚠️ TokenGolf: $${updated.spent.toFixed(4)} of $${updated.budget.toFixed(2)} spent (${Math.round(pct * 100)}%). Only $${remaining} left. Be concise and targeted.`,
-        },
-      }));
+      process.stdout.write(
+        JSON.stringify({
+          hookSpecificOutput: {
+            hookEventName: 'PostToolUse',
+            systemMessage: `⚠️ TokenGolf: $${updated.spent.toFixed(4)} of $${updated.budget.toFixed(2)} spent (${Math.round(pct * 100)}%). Only $${remaining} left. Be concise and targeted.`,
+          },
+        })
+      );
     }
   } catch {
     // silent fail

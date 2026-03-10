@@ -12,18 +12,16 @@ process.stdin.on('data', (chunk) => {
 });
 process.stdin.on('end', () => {
   try {
-    const event = JSON.parse(input);
-
-    // Claude Code passes total_cost_usd in the Stop event
-    const cost = event.total_cost_usd ?? event.cost_usd ?? event.totalCostUsd ?? null;
-    if (cost == null) process.exit(0);
-
     const run = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
     if (!run || run.status !== 'active') process.exit(0);
 
-    fs.writeFileSync(STATE_FILE, JSON.stringify({ ...run, spent: cost }, null, 2));
+    const updated = {
+      ...run,
+      subagentSpawns: (run.subagentSpawns || 0) + 1,
+    };
+    fs.writeFileSync(STATE_FILE, JSON.stringify(updated, null, 2));
   } catch {
-    /* no run or no cost data */
+    // silent fail
   }
   process.exit(0);
 });

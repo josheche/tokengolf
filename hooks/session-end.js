@@ -2,12 +2,15 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const { autoDetectCost } = await import(path.join(__dir, '../src/lib/cost.js'));
 const { getCurrentRun, clearCurrentRun } = await import(path.join(__dir, '../src/lib/state.js'));
 const { saveRun } = await import(path.join(__dir, '../src/lib/store.js'));
-const { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct } = await import(path.join(__dir, '../src/lib/score.js'));
+const { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct } = await import(
+  path.join(__dir, '../src/lib/score.js')
+);
 
 function writeTTY(text) {
   try {
@@ -19,26 +22,70 @@ function writeTTY(text) {
   }
 }
 
+function termWidth(str) {
+  // Compute display width of a string, handling emoji variation selectors and surrogates.
+  // - Supplementary plane chars (> U+FFFF) → 2 cols
+  // - U+FE0F (emoji variation selector after BMP char) → upgrades prev from 1→2, adds 0 itself
+  // - U+FE0F after supplementary → 0 (already 2)
+  // - U+FE0E, ZWJ, zero-width chars → 0
+  // - Everything else → 1
+  /* eslint-disable no-control-regex */
+  const plain = str.replace(/\x1b\[[0-9;]*m/g, '');
+  /* eslint-enable no-control-regex */
+  const cps = [...plain].map((c) => c.codePointAt(0));
+  let width = 0;
+  for (let i = 0; i < cps.length; i++) {
+    const cp = cps[i];
+    if (cp === 0xfe0f) {
+      // Emoji presentation selector: if previous was a narrow BMP char, upgrade it to 2
+      if (i > 0 && cps[i - 1] <= 0xffff && cps[i - 1] !== 0x200d) width += 1;
+      continue;
+    }
+    if (cp === 0xfe0e || cp === 0x200d || (cp >= 0x200b && cp <= 0x200f)) continue;
+    if (cp > 0xffff) {
+      width += 2;
+      continue;
+    }
+    width += 1;
+  }
+  return width;
+}
+
 function renderScorecard(run) {
   const W = Math.min(Math.max((process.stdout.columns || 88) - 4, 72), 120);
   const won = run.status === 'won';
   const flowMode = !run.budget;
 
-  const R = '\x1b[31m', G = '\x1b[32m', Y = '\x1b[33m', C = '\x1b[36m';
-  const M = '\x1b[35m', DIM = '\x1b[2m', RESET = '\x1b[0m', BOLD = '\x1b[1m';
+  const R = '\x1b[31m',
+    G = '\x1b[32m',
+    Y = '\x1b[33m',
+    C = '\x1b[36m';
+  const M = '\x1b[35m',
+    DIM = '\x1b[2m',
+    RESET = '\x1b[0m',
+    BOLD = '\x1b[1m';
   const bc = won ? Y : R;
 
-  const tl = '╔', tr = '╗', bl = '╚', br = '╝';
-  const h = '═', v = '║';
-  const ml = '╠', mr = '╣';
+  const tl = '╔',
+    tr = '╗',
+    bl = '╚',
+    br = '╝';
+  const h = '═',
+    v = '║';
+  const ml = '╠',
+    mr = '╣';
 
-  function bar() { return bc + ml + h.repeat(W) + mr + RESET; }
-  function top() { return bc + tl + h.repeat(W) + tr + RESET; }
-  function bot() { return bc + bl + h.repeat(W) + br + RESET; }
+  function bar() {
+    return bc + ml + h.repeat(W) + mr + RESET;
+  }
+  function top() {
+    return bc + tl + h.repeat(W) + tr + RESET;
+  }
+  function bot() {
+    return bc + bl + h.repeat(W) + br + RESET;
+  }
   function row(content) {
-    // Strip ANSI for length calculation
-    const plain = content.replace(/\x1b\[[0-9;]*m/g, '');
-    const pad = Math.max(0, W - plain.length - 2);
+    const pad = Math.max(0, W - termWidth(content) - 2);
     return bc + v + RESET + ' ' + content + ' '.repeat(pad) + ' ' + bc + v + RESET;
   }
 
@@ -50,8 +97,8 @@ function renderScorecard(run) {
   const header = won
     ? `${BOLD}${Y}🏆  SESSION COMPLETE${RESET}`
     : fainted
-    ? `${BOLD}${Y}💤  FAINTED — Run Continues${RESET}`
-    : `${BOLD}${R}💀  BUDGET BUSTED${RESET}`;
+      ? `${BOLD}${Y}💤  FAINTED — Run Continues${RESET}`
+      : `${BOLD}${R}💀  BUDGET BUSTED${RESET}`;
 
   const questStr = run.quest
     ? `${BOLD}${run.quest.slice(0, 60)}${RESET}`
@@ -61,54 +108,78 @@ function renderScorecard(run) {
   const spentThisSession = run.spent - spentBefore;
   const multiSession = sessions > 1 && spentBefore > 0;
 
-  const spentStr = `${won ? G : R}$${run.spent.toFixed(4)}${RESET}` +
+  const spentStr =
+    `${won ? G : R}$${run.spent.toFixed(4)}${RESET}` +
     (multiSession ? `  ${DIM}(+$${spentThisSession.toFixed(4)} this session)${RESET}` : '');
 
   let midRow = spentStr;
   if (!flowMode) {
     const pct = getBudgetPct(run.spent, run.budget);
     const eff = getEfficiencyRating(run.spent, run.budget);
-    const effC = eff.color === 'magenta' ? M : eff.color === 'cyan' ? C : eff.color === 'green' ? G : eff.color === 'yellow' ? Y : R;
+    const effC =
+      eff.color === 'magenta'
+        ? M
+        : eff.color === 'cyan'
+          ? C
+          : eff.color === 'green'
+            ? G
+            : eff.color === 'yellow'
+              ? Y
+              : R;
     midRow += `  ${DIM}/${RESET}$${run.budget.toFixed(2)}  ${pct}%  ${effC}${eff.emoji} ${eff.label}${RESET}`;
   }
 
   const effortInfo = run.effort ? getEffortLevel(run.effort) : null;
   const modelSuffix = [
-    run.effort && run.effort !== 'medium' && effortInfo ? effortInfo.label : null,
+    run.effort && effortInfo ? effortInfo.label : null,
     run.fastMode ? '⚡Fast' : null,
-  ].filter(Boolean).join('·');
+  ]
+    .filter(Boolean)
+    .join('·');
   midRow += `  ${C}${mc.emoji} ${mc.name}${modelSuffix ? '·' + modelSuffix : ''}${RESET}`;
   midRow += `  ${tier.emoji} ${tier.label}`;
   if (multiSession) midRow += `  ${DIM}${sessions} sessions${RESET}`;
 
   const achievements = run.achievements || [];
-  const achStr = achievements.map(a => `${a.emoji} ${a.key}`).join('  ');
+  const achTokens = achievements.map((a) => `${a.emoji} ${a.key}`);
+  const achLines = [];
+  let currentLine = '';
+  for (const token of achTokens) {
+    const sep = currentLine ? '  ' : '';
+    const testLen = termWidth(currentLine + sep + token);
+    if (currentLine && testLen > W - 2) {
+      achLines.push(currentLine);
+      currentLine = token;
+    } else {
+      currentLine += sep + token;
+    }
+  }
+  if (currentLine) achLines.push(currentLine);
 
   const ti = run.thinkingInvocations || 0;
-  const thinkRow = ti > 0
-    ? `${M}🔮 ${ti} ultrathink${ti > 1 ? ' invocations' : ' invocation'}${RESET}`
-    : null;
+  const thinkRow =
+    ti > 0 ? `${M}🔮 ${ti} ultrathink${ti > 1 ? ' invocations' : ' invocation'}${RESET}` : null;
 
-  const lines = [
-    top(),
-    row(header),
-    row(questStr),
-    bar(),
-    row(midRow),
-  ];
+  const lines = [top(), row(header), row(questStr), bar(), row(midRow)];
 
   if (thinkRow) {
     lines.push(bar());
     lines.push(row(thinkRow));
   }
 
-  if (achievements.length > 0) {
+  if (achLines.length > 0) {
     lines.push(bar());
-    lines.push(row(achStr));
+    for (const line of achLines) {
+      lines.push(row(line));
+    }
   }
 
   lines.push(bar());
-  lines.push(row(`${DIM}tokengolf scorecard${RESET}  ·  ${DIM}tokengolf start${RESET}  ·  ${DIM}tokengolf stats${RESET}`));
+  lines.push(
+    row(
+      `${DIM}tokengolf scorecard${RESET}  ·  ${DIM}tokengolf start${RESET}  ·  ${DIM}tokengolf stats${RESET}`
+    )
+  );
   lines.push(bot());
 
   return lines.join('\n');
@@ -116,27 +187,71 @@ function renderScorecard(run) {
 
 try {
   let stdin = '';
-  try { stdin = fs.readFileSync('/dev/stdin', 'utf8'); } catch {}
+  try {
+    stdin = fs.readFileSync('/dev/stdin', 'utf8');
+  } catch {}
 
   let event = {};
-  try { event = JSON.parse(stdin); } catch {}
+  try {
+    event = JSON.parse(stdin);
+  } catch {}
   const reason = event.reason || 'other';
+
+  // Read authoritative cost from StatusLine sidecar (same source as the HUD)
+  let liveCost = null;
+  try {
+    const raw = fs
+      .readFileSync(path.join(os.homedir(), '.tokengolf', 'session-cost'), 'utf8')
+      .trim();
+    const parsed = parseFloat(raw);
+    if (!isNaN(parsed) && parsed > 0) liveCost = parsed;
+  } catch {}
+  // SessionEnd event may also carry cost (future-proofing)
+  const eventCost = event.cost?.total_cost_usd ?? null;
+  // Priority: liveCost (StatusLine sidecar) > eventCost > transcript parsing
+  const authoritativeCost = liveCost ?? eventCost;
 
   const run = getCurrentRun();
   if (!run || run.status !== 'active') process.exit(0);
 
-  const result = autoDetectCost(run);
-  if (!result) process.exit(0); // no transcripts found, nothing to save
+  let result = autoDetectCost(run);
+  if (!result && authoritativeCost === null) process.exit(0); // no data at all
+  if (!result) result = { spent: 0, modelBreakdown: {}, thinkingInvocations: 0, thinkingTokens: 0 };
+  // Always prefer authoritative cost over manual transcript recomputation
+  if (authoritativeCost !== null) {
+    // Scale model breakdown to match authoritative total (transcript ratios are correct, amounts are not)
+    if (result.modelBreakdown && Object.keys(result.modelBreakdown).length > 0) {
+      const parsedTotal = Object.values(result.modelBreakdown).reduce((s, v) => s + v, 0);
+      if (parsedTotal > 0) {
+        const scale = authoritativeCost / parsedTotal;
+        for (const model of Object.keys(result.modelBreakdown)) {
+          result.modelBreakdown[model] *= scale;
+        }
+      }
+    }
+    result.spent = authoritativeCost;
+  }
+
+  // Merge model breakdown by family (e.g. claude-opus-4-6 + claude-opus-4-20250514 → Opus)
+  if (result.modelBreakdown && Object.keys(result.modelBreakdown).length > 0) {
+    const merged = {};
+    for (const [model, cost] of Object.entries(result.modelBreakdown)) {
+      const m = model.toLowerCase();
+      const family = m.includes('haiku') ? 'Haiku' : m.includes('sonnet') ? 'Sonnet' : 'Opus';
+      merged[family] = (merged[family] || 0) + cost;
+    }
+    result.modelBreakdown = merged;
+  }
 
   // reason 'other' = unexpected exit (usage limit hit = Fainted)
   // clean exits: 'clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'
   const cleanExits = ['clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'];
-  const fainted = !cleanExits.includes(reason) && reason !== 'other' ? false
-    : reason === 'other';
+  const fainted = !cleanExits.includes(reason) && reason !== 'other' ? false : reason === 'other';
 
   let status;
   if (run.budget && result.spent > run.budget) status = 'died';
-  else if (fainted) status = 'resting'; // hit limit, run continues next session
+  else if (fainted)
+    status = 'resting'; // hit limit, run continues next session
   else status = 'won';
 
   const thinkingFields = {
@@ -148,7 +263,14 @@ try {
   if (status === 'resting') {
     const { setCurrentRun } = await import(path.join(__dir, '../src/lib/state.js'));
     setCurrentRun({ ...run, spent: result.spent, fainted: true, ...thinkingFields });
-    const saved = { ...run, spent: result.spent, modelBreakdown: result.modelBreakdown, status, fainted: true, ...thinkingFields };
+    const saved = {
+      ...run,
+      spent: result.spent,
+      modelBreakdown: result.modelBreakdown,
+      status,
+      fainted: true,
+      ...thinkingFields,
+    };
     writeTTY('\n' + renderScorecard({ ...saved, achievements: [] }) + '\n\n');
     process.exit(0);
   }
@@ -163,6 +285,10 @@ try {
   });
 
   clearCurrentRun();
+  // Clean up sidecar cost file
+  try {
+    fs.unlinkSync(path.join(os.homedir(), '.tokengolf', 'session-cost'));
+  } catch {}
 
   writeTTY('\n' + renderScorecard(saved) + '\n\n');
 } catch {

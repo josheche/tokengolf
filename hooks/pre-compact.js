@@ -7,15 +7,21 @@ const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 
 try {
   let stdin = '';
-  try { stdin = fs.readFileSync('/dev/stdin', 'utf8'); } catch {}
+  try {
+    stdin = fs.readFileSync('/dev/stdin', 'utf8');
+  } catch {}
 
   let event = {};
-  try { event = JSON.parse(stdin); } catch {}
+  try {
+    event = JSON.parse(stdin);
+  } catch {}
 
   const trigger = event.trigger || 'auto'; // 'manual' or 'auto'
 
   let run = null;
-  try { run = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); } catch {}
+  try {
+    run = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+  } catch {}
   if (!run || run.status !== 'active') process.exit(0);
 
   const compactionEvents = run.compactionEvents || [];
