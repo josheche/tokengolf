@@ -20,9 +20,10 @@ quest   = (run.get('quest') or 'Flow')[:32]
 budget  = run.get('budget')
 floor   = f"{run.get('floor',1)}/{run.get('totalFloors',5)}"
 m       = run.get('model', '').lower()
-if   'haiku'    in m: model, model_emoji = 'Haiku',   '🏹'
+# opusplan must be checked before opus (opusplan contains 'opus' as substring)
+if   'opusplan' in m: model, model_emoji = 'Paladin', '⚜️'
+elif 'haiku'    in m: model, model_emoji = 'Haiku',   '🏹'
 elif 'sonnet'   in m: model, model_emoji = 'Sonnet',  '⚔️'
-elif 'opusplan' in m: model, model_emoji = 'Paladin', '⚜️'
 elif 'opus'     in m: model, model_emoji = 'Opus',    '🧙'
 else:                 model, model_emoji = '?',        '?'
 effort  = run.get('effort')

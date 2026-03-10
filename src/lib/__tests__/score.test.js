@@ -391,3 +391,206 @@ describe('session achievements', () => {
     expect(keys(wonRun({ fainted: true, sessionCount: 2 }))).toContain('came_back');
   });
 });
+
+// ── getModelClass opusplan ────────────────────────────────────────────────────
+
+describe('getModelClass opusplan', () => {
+  it('opusplan string → MODEL_CLASSES.opusplan', () => {
+    expect(getModelClass('opusplan')).toBe(MODEL_CLASSES.opusplan);
+  });
+});
+
+// ── Paladin achievements ──────────────────────────────────────────────────────
+
+describe('Paladin achievements', () => {
+  it('paladin: opusplan win', () => {
+    expect(keys(wonRun({ model: 'opusplan' }))).toContain('paladin');
+  });
+  it('grand_strategist: opusplan win at ≤25% budget', () => {
+    expect(keys(wonRun({ model: 'opusplan', spent: 0.1, budget: 0.5 }))).toContain(
+      'grand_strategist'
+    );
+  });
+  it('no grand_strategist at 30% budget', () => {
+    expect(keys(wonRun({ model: 'opusplan', spent: 0.15, budget: 0.5 }))).not.toContain(
+      'grand_strategist'
+    );
+  });
+  it('architect: opus pct > 60%', () => {
+    const mb = { 'claude-opus-4-6': 0.07, 'claude-sonnet-4-6': 0.03 };
+    expect(keys(wonRun({ model: 'opusplan', spent: 0.1, modelBreakdown: mb }))).toContain(
+      'architect'
+    );
+  });
+  it('blitz: opus pct < 25%', () => {
+    const mb = { 'claude-opus-4-6': 0.02, 'claude-sonnet-4-6': 0.08 };
+    expect(keys(wonRun({ model: 'opusplan', spent: 0.1, modelBreakdown: mb }))).toContain('blitz');
+  });
+  it('equilibrium: opus pct 40–60%', () => {
+    const mb = { 'claude-opus-4-6': 0.05, 'claude-sonnet-4-6': 0.05 };
+    expect(keys(wonRun({ model: 'opusplan', spent: 0.1, modelBreakdown: mb }))).toContain(
+      'equilibrium'
+    );
+  });
+  it('Paladin does not fire purist/committed/chameleon', () => {
+    const a = keys(wonRun({ model: 'opusplan', spent: 0.1, budget: 0.5 }));
+    expect(a).not.toContain('purist');
+    expect(a).not.toContain('committed');
+    expect(a).not.toContain('chameleon');
+  });
+});
+
+// ── effort-based achievements ─────────────────────────────────────────────────
+
+describe('effort-based achievements', () => {
+  it('speedrunner: low effort, completed under budget', () => {
+    expect(keys(wonRun({ effort: 'low', spent: 0.1, budget: 0.5 }))).toContain('speedrunner');
+  });
+  it('no speedrunner if over budget', () => {
+    expect(keys(wonRun({ effort: 'low', spent: 0.6, budget: 0.5 }))).not.toContain('speedrunner');
+  });
+  it('tryhard: high effort, ≤25% budget', () => {
+    expect(keys(wonRun({ effort: 'high', spent: 0.1, budget: 0.5 }))).toContain('tryhard');
+  });
+  it('no tryhard at 30%', () => {
+    expect(keys(wonRun({ effort: 'high', spent: 0.15, budget: 0.5 }))).not.toContain('tryhard');
+  });
+  it('archmagus: max effort, opus model', () => {
+    expect(keys(wonRun({ effort: 'max', model: 'claude-opus-4-6' }))).toContain('archmagus');
+  });
+  it('no archmagus: max effort, non-opus', () => {
+    expect(keys(wonRun({ effort: 'max', model: 'claude-sonnet-4-6' }))).not.toContain('archmagus');
+  });
+});
+
+// ── fast mode achievements ────────────────────────────────────────────────────
+
+describe('fast mode achievements', () => {
+  it('lightning: opus fastMode, under budget', () => {
+    expect(
+      keys(wonRun({ fastMode: true, model: 'claude-opus-4-6', spent: 0.1, budget: 0.5 }))
+    ).toContain('lightning');
+  });
+  it('daredevil: opus fastMode, ≤25% budget', () => {
+    expect(
+      keys(wonRun({ fastMode: true, model: 'claude-opus-4-6', spent: 0.1, budget: 0.5 }))
+    ).toContain('daredevil');
+  });
+  it('no lightning for non-opus fastMode', () => {
+    expect(
+      keys(wonRun({ fastMode: true, model: 'claude-sonnet-4-6', spent: 0.1, budget: 0.5 }))
+    ).not.toContain('lightning');
+  });
+});
+
+// ── compaction / gear achievements ────────────────────────────────────────────
+
+describe('compaction achievements', () => {
+  it('overencumbered: auto-compaction event', () => {
+    const events = [{ trigger: 'auto', contextPct: 92 }];
+    expect(keys(wonRun({ compactionEvents: events }))).toContain('overencumbered');
+  });
+  it('no overencumbered with only manual compaction', () => {
+    const events = [{ trigger: 'manual', contextPct: 45 }];
+    expect(keys(wonRun({ compactionEvents: events }))).not.toContain('overencumbered');
+  });
+  it('ghost_run: manual compact at ≤30% context', () => {
+    const events = [{ trigger: 'manual', contextPct: 28 }];
+    expect(keys(wonRun({ compactionEvents: events }))).toContain('ghost_run');
+  });
+  it('ultralight: manual compact at 31–40% context', () => {
+    const events = [{ trigger: 'manual', contextPct: 35 }];
+    expect(keys(wonRun({ compactionEvents: events }))).toContain('ultralight');
+  });
+  it('traveling_light: manual compact at 41–50% context', () => {
+    const events = [{ trigger: 'manual', contextPct: 48 }];
+    expect(keys(wonRun({ compactionEvents: events }))).toContain('traveling_light');
+  });
+  it('no compaction achievement above 50%', () => {
+    const events = [{ trigger: 'manual', contextPct: 60 }];
+    const a = keys(wonRun({ compactionEvents: events }));
+    expect(a).not.toContain('ghost_run');
+    expect(a).not.toContain('ultralight');
+    expect(a).not.toContain('traveling_light');
+  });
+});
+
+// ── calculated_risk ───────────────────────────────────────────────────────────
+
+describe('calculated_risk', () => {
+  it('fires with thinking + ≤25% budget', () => {
+    expect(keys(wonRun({ thinkingInvocations: 1, spent: 0.1, budget: 0.5 }))).toContain(
+      'calculated_risk'
+    );
+  });
+  it('no calculated_risk at 30% budget', () => {
+    expect(keys(wonRun({ thinkingInvocations: 1, spent: 0.15, budget: 0.5 }))).not.toContain(
+      'calculated_risk'
+    );
+  });
+});
+
+// ── multi-model achievements ──────────────────────────────────────────────────
+
+describe('frugal + rogue_run', () => {
+  it('frugal: haiku ≥50% of spend', () => {
+    const mb = { 'claude-haiku-4-5-20251001': 0.06, 'claude-sonnet-4-6': 0.04 };
+    expect(keys(wonRun({ modelBreakdown: mb, spent: 0.1 }))).toContain('frugal');
+  });
+  it('rogue_run: haiku ≥75% of spend', () => {
+    const mb = { 'claude-haiku-4-5-20251001': 0.08, 'claude-sonnet-4-6': 0.02 };
+    expect(keys(wonRun({ modelBreakdown: mb, spent: 0.1 }))).toContain('rogue_run');
+  });
+  it('no frugal when haiku < 50%', () => {
+    const mb = { 'claude-haiku-4-5-20251001': 0.04, 'claude-sonnet-4-6': 0.06 };
+    expect(keys(wonRun({ modelBreakdown: mb, spent: 0.1 }))).not.toContain('frugal');
+  });
+  it('no rogue_run when haiku < 75%', () => {
+    const mb = { 'claude-haiku-4-5-20251001': 0.06, 'claude-sonnet-4-6': 0.04 };
+    expect(keys(wonRun({ modelBreakdown: mb, spent: 0.1 }))).not.toContain('rogue_run');
+  });
+});
+
+// ── model switching achievements ──────────────────────────────────────────────
+
+describe('model switching achievements', () => {
+  it('purist: single distinct model', () => {
+    expect(keys(wonRun({ modelSwitches: 0, distinctModels: 1 }))).toContain('purist');
+  });
+  it('committed: 0 switches, ≤1 distinct', () => {
+    expect(keys(wonRun({ modelSwitches: 0, distinctModels: 1 }))).toContain('committed');
+  });
+  it('chameleon: 2+ distinct models, under budget', () => {
+    expect(
+      keys(wonRun({ modelSwitches: 2, distinctModels: 2, spent: 0.1, budget: 0.5 }))
+    ).toContain('chameleon');
+  });
+  it('no chameleon if over budget', () => {
+    expect(
+      keys(wonRun({ modelSwitches: 2, distinctModels: 2, spent: 0.6, budget: 0.5 }))
+    ).not.toContain('chameleon');
+  });
+  it('tactical_switch: exactly 1 switch, under budget', () => {
+    expect(
+      keys(wonRun({ modelSwitches: 1, distinctModels: 2, spent: 0.1, budget: 0.5 }))
+    ).toContain('tactical_switch');
+  });
+  it('class_defection: declared haiku but >50% on heavier models', () => {
+    const mb = { 'claude-haiku-4-5-20251001': 0.04, 'claude-sonnet-4-6': 0.06 };
+    expect(
+      keys(wonRun({ model: 'claude-haiku-4-5-20251001', modelBreakdown: mb, spent: 0.1 }))
+    ).toContain('class_defection');
+  });
+  it('no class_defection: declared haiku, haiku dominant', () => {
+    const mb = { 'claude-haiku-4-5-20251001': 0.07, 'claude-sonnet-4-6': 0.03 };
+    expect(
+      keys(wonRun({ model: 'claude-haiku-4-5-20251001', modelBreakdown: mb, spent: 0.1 }))
+    ).not.toContain('class_defection');
+  });
+  it('class_defection: declared sonnet but >40% on opus', () => {
+    const mb = { 'claude-sonnet-4-6': 0.05, 'claude-opus-4-6': 0.05 };
+    expect(keys(wonRun({ model: 'claude-sonnet-4-6', modelBreakdown: mb, spent: 0.1 }))).toContain(
+      'class_defection'
+    );
+  });
+});

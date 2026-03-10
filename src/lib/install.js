@@ -52,7 +52,7 @@ export function installHooks() {
     settings.hooks[event] = [...filtered, { _tg: true, ...entry }];
   }
 
-  // Remove Stop hook if present (replaced by SessionEnd)
+  // Remove old session-stop.js Stop hook if present (superseded by session-end.js)
   if (settings.hooks.Stop) {
     settings.hooks.Stop = (settings.hooks.Stop || []).filter(
       (h) => !h._tg && !h.hooks?.some((e) => e.command?.includes('session-stop.js'))

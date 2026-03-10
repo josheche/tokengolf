@@ -211,17 +211,27 @@ export function StartRun() {
               <ConfirmInput
                 onConfirm={() => {
                   setCurrentRun({
+                    id: `run_${Date.now()}`,
                     quest,
                     model,
                     budget,
                     effort,
                     spent: 0,
                     status: 'active',
+                    mode: 'roguelike',
                     floor: 1,
                     totalFloors: FLOORS.length,
                     promptCount: 0,
                     totalToolCalls: 0,
                     toolCalls: {},
+                    failedToolCalls: 0,
+                    subagentSpawns: 0,
+                    turnCount: 0,
+                    thinkingInvocations: 0,
+                    thinkingTokens: 0,
+                    fainted: false,
+                    sessionCount: 1,
+                    compactionEvents: [],
                     startedAt: new Date().toISOString(),
                   });
                   exit();

@@ -46,6 +46,7 @@ try {
     // Flow mode: auto-start a tracking run for this session
     if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
     run = {
+      id: `run_${Date.now()}`,
       quest: null,
       model: 'claude-sonnet-4-6',
       budget: null,
@@ -59,6 +60,12 @@ try {
       promptCount: 0,
       totalToolCalls: 0,
       toolCalls: {},
+      failedToolCalls: 0,
+      subagentSpawns: 0,
+      turnCount: 0,
+      thinkingInvocations: 0,
+      thinkingTokens: 0,
+      fainted: false,
       cwd,
       sessionCount: 1,
       compactionEvents: [],

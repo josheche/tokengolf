@@ -94,7 +94,9 @@ export function StatsView({ stats }) {
                 <Text color="white">{stats.bestRun.quest}</Text>
                 <Box gap={3} marginTop={1}>
                   <Text color="green">{formatCost(stats.bestRun.spent)}</Text>
-                  <Text color="gray">of ${stats.bestRun.budget?.toFixed(2)}</Text>
+                  {stats.bestRun.budget ? (
+                    <Text color="gray">of ${stats.bestRun.budget.toFixed(2)}</Text>
+                  ) : null}
                   <Text>{bestMc.emoji}</Text>
                   <Text color={bestTier.color}>
                     {bestTier.emoji} {bestTier.label}
@@ -114,18 +116,20 @@ export function StatsView({ stats }) {
           const won = run.status === 'won';
           const tier = getTier(run.spent);
           const mc = getModelClass(run.model);
-          const pct = getBudgetPct(run.spent, run.budget);
+          const pct = run.budget ? getBudgetPct(run.spent, run.budget) : null;
           return (
             <Box key={i} gap={2}>
               <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
-              <Text color="white">{(run.quest || '').slice(0, 34).padEnd(34)}</Text>
+              <Text color="white">{(run.quest || 'Flow').slice(0, 34).padEnd(34)}</Text>
               <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
-              <Text color="gray">/{formatCost(run.budget)}</Text>
+              {run.budget ? <Text color="gray">/{formatCost(run.budget)}</Text> : null}
               <Text>{mc.emoji}</Text>
               <Text color={tier.color}>{tier.emoji}</Text>
-              <Text color="gray" dimColor>
-                {pct}%
-              </Text>
+              {pct !== null && (
+                <Text color="gray" dimColor>
+                  {pct}%
+                </Text>
+              )}
             </Box>
           );
         })}

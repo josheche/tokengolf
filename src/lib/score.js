@@ -98,7 +98,7 @@ export function getBudgetPct(spent, budget) {
 
 export function formatCost(amount = 0) {
   if (amount === 0) return '$0.00';
-  if (amount < 0.01) return `$${(amount * 100).toFixed(3)}¢`;
+  if (amount < 0.01) return `$${amount.toFixed(5)}`;
   return `$${amount.toFixed(4)}`;
 }
 
