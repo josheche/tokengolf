@@ -19,7 +19,7 @@ TokenGolf patch notes — what changed, what it measures, and why the mechanic e
 #### Prompting Skill
 These measure *how* you communicate, not just how much. The same task done in 1 prompt vs 20 prompts represents fundamentally different skill levels — and different costs.
 
-- **🎯 One Shot** — Won in a single prompt. The platonic ideal: perfectly specified the problem, Claude solved it, done. Rare on complex tasks. Chasing this forces you to front-load your context instead of iterating.
+- **🥊 One Shot** — Won in a single prompt. The platonic ideal: perfectly specified the problem, Claude solved it, done. Rare on complex tasks. Chasing this forces you to front-load your context instead of iterating.
 - **💬 Conversationalist** — 20+ prompts in one run. Not necessarily bad — complex exploratory work takes conversation. But if you're seeing this often, it's a signal to consolidate before prompting.
 - **🤐 Terse** — ≤3 prompts, ≥10 tool calls. You said little and Claude did a lot. Strong delegation: clear brief, trusted execution, minimal correction loop.
 - **🪑 Backseat Driver** — 15+ prompts, fewer than 1 tool call per prompt. High prompt-to-action ratio. You're steering more than executing — which can indicate under-specified initial prompts or excessive check-ins.
@@ -38,7 +38,7 @@ What you reach for reveals how you think. These reward deliberate tool use and r
 #### Cost per Prompt
 Spend ÷ prompts. A ratio that catches two distinct failure modes: prompts that do nothing (low cost, high count) and prompts that burn (high cost, low count).
 
-- **🪙 Cheap Shots** — Under $0.01 per prompt (≥3 prompts). Extremely token-efficient per exchange. Either very focused prompts or a very cheap model.
+- **💲 Cheap Shots** — Under $0.01 per prompt (≥3 prompts). Extremely token-efficient per exchange. Either very focused prompts or a very cheap model.
 - **🍷 Expensive Taste** — Over $0.50 per prompt (≥3 prompts). Each prompt is generating significant cost. Fine if the output justifies it — a red flag if you're asking simple questions. Fires on both won *and* died runs: it's a burn pattern, not a verdict.
 
 #### Time
@@ -138,17 +138,17 @@ The PreCompact hook fires before any compaction event and records whether it was
 
 ### Effort & Fast Mode Achievements
 
-- **🎯 Speedrunner** — Low effort, completed under budget. You dialed back Claude's thinking and still shipped. Efficiency through restraint.
-- **💪 Tryhard** — High or Max effort, LEGENDARY efficiency (<25% budget used). You ran expensive settings and still came in way under. The skill ceiling achievement for roguelike mode.
+- **🏎️ Speedrunner** — Low effort, completed under budget. You dialed back Claude's thinking and still shipped. Efficiency through restraint.
+- **🏋️ Tryhard** — High or Max effort, LEGENDARY efficiency (<25% budget used). You ran expensive settings and still came in way under. The skill ceiling achievement for roguelike mode.
 - **👑 Archmagus** — Opus at Max effort, completed. You ran the most expensive possible configuration and finished. No efficiency requirement — just completion.
-- **⚡ Lightning Run** — Opus fast mode, completed under budget. Fast mode roughly doubles cost per token. Finishing under budget requires either a very generous budget or very focused prompting.
+- **⛈️ Lightning Run** — Opus fast mode, completed under budget. Fast mode roughly doubles cost per token. Finishing under budget requires either a very generous budget or very focused prompting.
 - **🎰 Daredevil** — Opus fast mode, LEGENDARY efficiency. 2× cost model, <25% budget used. The rarest fast mode achievement.
 
 ### Rest & Recovery Achievements
 
-- **⚡ No Rest for the Wicked** — Completed in a single session without fainting. Clean run start to finish.
+- **🔥 No Rest for the Wicked** — Completed in a single session without fainting. Clean run start to finish.
 - **🏕️ Made Camp** — Completed across multiple sessions. You hit limits, rested, came back. The run survived the interruption.
-- **💪 Came Back** — Fainted at least once and still won. Specifically marks the resilience: the run was interrupted by the usage limit and you finished it anyway.
+- **🧟 Came Back** — Fainted at least once and still won. Specifically marks the resilience: the run was interrupted by the usage limit and you finished it anyway.
 
 ### Ultrathink
 
@@ -160,7 +160,7 @@ Detection: thinking blocks appear in session JSONL transcripts as `{"type":"thin
 
 Achievements:
 - **🔮 Spell Cast** — Used extended thinking and won. Informational — marks that ultrathink was in play.
-- **🧠 Calculated Risk** — Ultrathink + LEGENDARY efficiency (<25% budget). You paid for deep thinking and came in well under. The ideal outcome: the thinking paid off.
+- **🧮 Calculated Risk** — Ultrathink + LEGENDARY efficiency (<25% budget). You paid for deep thinking and came in well under. The ideal outcome: the thinking paid off.
 - **🌀 Deep Thinker** — 3+ ultrathink invocations, completed under budget. Committed to the approach across multiple moments. Each invocation was a deliberate bet.
 - **🤫 Silent Run** — Won with zero ultrathink at SOLID or better efficiency. Pure prompting discipline. You solved it without reaching for the spell. A counterweight to Spell Cast — the game rewards both using ultrathink well *and* not needing it.
 - **🤦 Hubris** *(death mark)* — Used ultrathink and busted anyway. The spell didn't save you. Hubris is the only achievement that fires on a lost run — it names the cause of death. You reached for expensive thinking on a tight budget and paid for it.

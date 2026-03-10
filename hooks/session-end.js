@@ -113,7 +113,21 @@ function renderScorecard(run) {
   if (multiSession) midRow += `  ${DIM}${sessions} sessions${RESET}`;
 
   const achievements = run.achievements || [];
-  const achStr = achievements.map((a) => `${a.emoji} ${a.key}`).join('  ');
+  const achTokens = achievements.map((a) => `${a.emoji} ${a.key}`);
+  const achLines = [];
+  let currentLine = '';
+  for (const token of achTokens) {
+    const sep = currentLine ? '  ' : '';
+    // eslint-disable-next-line no-control-regex
+    const testLen = (currentLine + sep + token).replace(/\u001b\[[0-9;]*m/g, '').length;
+    if (currentLine && testLen > W - 2) {
+      achLines.push(currentLine);
+      currentLine = token;
+    } else {
+      currentLine += sep + token;
+    }
+  }
+  if (currentLine) achLines.push(currentLine);
 
   const ti = run.thinkingInvocations || 0;
   const thinkRow =
@@ -126,9 +140,11 @@ function renderScorecard(run) {
     lines.push(row(thinkRow));
   }
 
-  if (achievements.length > 0) {
+  if (achLines.length > 0) {
     lines.push(bar());
-    lines.push(row(achStr));
+    for (const line of achLines) {
+      lines.push(row(line));
+    }
   }
 
   lines.push(bar());
