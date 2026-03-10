@@ -10,9 +10,9 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 
 ---
 
-<p align="center">
-  <img src="assets/demo-hud.png" alt="TokenGolf HUD — all game states" width="720" />
-</p>
+<!-- SCREENSHOT: tokengolf start wizard — quest/class/effort/budget selection -->
+
+---
 
 ## Why "TokenGolf"?
 
@@ -232,7 +232,9 @@ After `tokengolf install`, a status line appears in every Claude Code session:
 - **💤** instead of ⛳ if the previous session fainted (hit usage limits)
 - Roguelike runs show floor progress; Flow runs omit budget/efficiency
 
-Run `tokengolf demo` to see all HUD states rendered in your terminal.
+Run `tokengolf demo` to see all HUD states rendered in your terminal:
+
+![TokenGolf HUD demo — all game states](assets/demo-hud.png)
 
 ---
 
