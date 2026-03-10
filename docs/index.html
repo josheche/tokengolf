@@ -392,6 +392,10 @@
         color: var(--green);
         font-weight: 600;
       }
+      .difficulty-calculated {
+        color: var(--magenta);
+        font-weight: 600;
+      }
 
       /* ── Achievements grid ── */
       .achievements-grid {
@@ -727,8 +731,41 @@
             <td class="difficulty-easy">Easy</td>
             <td>Powerful but expensive.</td>
           </tr>
+          <tr>
+            <td>
+              <span class="class-emoji">⚜️</span> <strong>Paladin</strong>
+            </td>
+            <td class="mono">claude-opus-4-6 (plan mode)</td>
+            <td class="difficulty-calculated">Calculated</td>
+            <td>Strategic planner. Thinks before acting.</td>
+          </tr>
         </tbody>
       </table>
+      </div>
+    </section>
+
+    <!-- ── Effort & Fast Mode ── -->
+    <section>
+      <h2><span>🔥</span>Effort Levels &amp; Fast Mode</h2>
+      <div class="modes-grid">
+        <div class="mode-card">
+          <h3>Effort Levels</h3>
+          <p>Set effort in the roguelike wizard. Higher effort = more thinking = more spend. Tracked in achievements.</p>
+          <ul>
+            <li>🪶 <strong>Low</strong> — quick and cheap</li>
+            <li>⚖️ <strong>Medium</strong> — the default (omitted in UI)</li>
+            <li>🔥 <strong>High</strong> — deeper reasoning</li>
+            <li>💥 <strong>Max</strong> — Opus only, maximum thinking</li>
+          </ul>
+        </div>
+        <div class="mode-card">
+          <h3>Fast Mode</h3>
+          <p>Opus fast mode is auto-detected from your Claude Code settings. Unlocks unique achievements:</p>
+          <ul>
+            <li>⛈️ <strong>Lightning Run</strong> — Opus fast mode, under budget</li>
+            <li>🎰 <strong>Daredevil</strong> — Opus fast mode, LEGENDARY efficiency</li>
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -822,6 +859,14 @@
           <div class="achievement-emoji">🥉</div>
           <div class="achievement-info"><h4>Bronze</h4><p>Completed with Opus</p></div>
         </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⚜️</div>
+          <div class="achievement-info"><h4>Paladin</h4><p>Completed as Paladin (Opus plan mode)</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">♟️</div>
+          <div class="achievement-info"><h4>Grand Strategist</h4><p>LEGENDARY efficiency as Paladin</p></div>
+        </div>
 
         <div class="achievement-category">Efficiency</div>
         <div class="achievement-card">
@@ -843,6 +888,20 @@
         <div class="achievement-card">
           <div class="achievement-emoji">🍷</div>
           <div class="achievement-info"><h4>Expensive Taste</h4><p>Over $0.50 per prompt — won or died</p></div>
+        </div>
+
+        <div class="achievement-category">Effort-Based</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏎️</div>
+          <div class="achievement-info"><h4>Speedrunner</h4><p>Low effort, completed under budget</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏋️</div>
+          <div class="achievement-info"><h4>Tryhard</h4><p>High/Max effort, LEGENDARY efficiency</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">👑</div>
+          <div class="achievement-info"><h4>Archmagus</h4><p>Opus at max effort, completed</p></div>
         </div>
 
         <div class="achievement-category">Prompting Skill</div>
@@ -900,7 +959,7 @@
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🏃</div>
-          <div class="achievement-info"><h4>Marathon</h4><p>Session over 60 minutes</p></div>
+          <div class="achievement-info"><h4>Marathon</h4><p>Session 60–180 minutes</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🫠</div>
@@ -935,6 +994,42 @@
           <div class="achievement-info"><h4>Rogue Run</h4><p>Haiku handled ≥75% of session cost</p></div>
         </div>
 
+        <div class="achievement-category">Paladin Planning Ratio</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🏛️</div>
+          <div class="achievement-info"><h4>Architect</h4><p>Opus handled &gt;60% of cost (heavy planner)</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">💨</div>
+          <div class="achievement-info"><h4>Blitz</h4><p>Opus handled &lt;25% of cost (light plan, fast execution)</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⚖️</div>
+          <div class="achievement-info"><h4>Equilibrium</h4><p>Opus/Sonnet balanced at 40–60%</p></div>
+        </div>
+
+        <div class="achievement-category">Model Loyalty</div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🔷</div>
+          <div class="achievement-info"><h4>Purist</h4><p>Single model family throughout</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🦎</div>
+          <div class="achievement-info"><h4>Chameleon</h4><p>Multiple model families used, under budget</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🔀</div>
+          <div class="achievement-info"><h4>Tactical Switch</h4><p>Exactly 1 model switch, under budget</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">🔒</div>
+          <div class="achievement-info"><h4>Committed</h4><p>No switches, one model family</p></div>
+        </div>
+        <div class="achievement-card">
+          <div class="achievement-emoji">⚠️</div>
+          <div class="achievement-info"><h4>Class Defection</h4><p>Declared one class but cost skewed to another</p></div>
+        </div>
+
         <div class="achievement-category">Rest &amp; Recovery</div>
         <div class="achievement-card">
           <div class="achievement-emoji">🔥</div>
@@ -956,11 +1051,11 @@
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🎒</div>
-          <div class="achievement-info"><h4>Traveling Light</h4><p>Manual compact at ≤50% context</p></div>
+          <div class="achievement-info"><h4>Traveling Light</h4><p>Manual compact at 41–50% context</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🪶</div>
-          <div class="achievement-info"><h4>Ultralight</h4><p>Manual compact at ≤40% context</p></div>
+          <div class="achievement-info"><h4>Ultralight</h4><p>Manual compact at 31–40% context</p></div>
         </div>
         <div class="achievement-card">
           <div class="achievement-emoji">🥷</div>
@@ -1025,6 +1120,10 @@
         <div class="achievement-card death">
           <div class="achievement-emoji">🤡</div>
           <div class="achievement-info"><h4>Fumble</h4><p>Died with 5+ failed tool calls</p></div>
+        </div>
+        <div class="achievement-card death">
+          <div class="achievement-emoji">🎲</div>
+          <div class="achievement-info"><h4>Indecisive</h4><p>3+ model switches — won or died</p></div>
         </div>
       </div>
     </section>
