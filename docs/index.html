@@ -531,42 +531,102 @@
         border-color: #3d1f1f;
       }
 
-      /* ── Screenshots ── */
-      .screenshots-grid {
+      /* ── Terminal Demos ── */
+      .demos-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
         align-items: start;
       }
 
-      @media (max-width: 768px) {
-        .screenshots-grid {
+      @media (max-width: 900px) {
+        .demos-grid {
           grid-template-columns: 1fr;
         }
       }
 
-      .screenshot-item {
+      .demo-item {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        min-width: 0; /* prevent grid blowout */
       }
 
-      .screenshot-item img {
-        width: 100%;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      .demo-item.full-width {
+        grid-column: 1 / -1;
       }
 
-      .screenshot-label {
+      .demo-label {
         font-size: 0.85rem;
         color: var(--muted);
         line-height: 1.5;
       }
 
-      .screenshot-label strong {
+      .demo-label strong {
         color: var(--text);
       }
+
+      /* Terminal block (reuses cli-block styling) */
+      .term {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        min-width: 0; /* allow flex/grid children to shrink below content size */
+      }
+
+      .term-header {
+        background: #1c2128;
+        padding: 0.6rem 1rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-family: "SF Mono", monospace;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .term-header::before {
+        content: "●  ●  ●";
+        color: #30363d;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+      }
+
+      .term pre {
+        padding: 1rem 1.25rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        font-family: "SF Mono", "Cascadia Mono", "Fira Code", "Consolas", monospace;
+        font-size: 0.78rem;
+        line-height: 1.55;
+        color: var(--text);
+      }
+
+      @media (max-width: 600px) {
+        .term pre {
+          font-size: 0.68rem;
+          padding: 0.75rem 0.75rem;
+        }
+      }
+
+      /* Terminal ANSI color classes */
+      .term .t-b { font-weight: 700; }
+      .term .t-dim { opacity: 0.55; }
+      .term .t-red { color: var(--red); }
+      .term .t-green { color: var(--green); }
+      .term .t-yellow { color: var(--yellow); }
+      .term .t-cyan { color: var(--cyan); }
+      .term .t-magenta { color: var(--magenta); }
+      .term .t-white { color: var(--text); }
+      .term .t-muted { color: var(--muted); }
+
+      /* Box-drawing border colors */
+      .term .border-yellow { color: var(--yellow); }
+      .term .border-red { color: var(--red); }
+      .term .border-gray { color: var(--border); }
 
       /* ── Footer ── */
       footer {
@@ -676,25 +736,6 @@
       </div>
     </section>
 
-    <!-- ── Screenshots ── -->
-    <section>
-      <h2><span>📸</span>In Action</h2>
-      <div class="screenshots-grid">
-        <div class="screenshot-item">
-          <img src="assets/demo-hud.png" alt="TokenGolf HUD — all game states" />
-          <div class="screenshot-label">
-            <strong>Live HUD</strong> — appears in every Claude Code session. Shows quest, cost, efficiency rating, context pressure, and model class. Run <code>tokengolf demo</code> to preview all states.
-          </div>
-        </div>
-        <div class="screenshot-item">
-          <img src="assets/scorecard.png" alt="TokenGolf scorecard — session complete" />
-          <div class="screenshot-label">
-            <strong>Auto Scorecard</strong> — appears on <code>/exit</code>. Real scorecard from building TokenGolf itself: $40 flow session, 27 ultrathink invocations, Class Defection for declaring Sonnet but spending 89% on Opus.
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ── Character Classes ── -->
     <section>
       <h2><span>⚔️</span>Character Classes</h2>
@@ -741,6 +782,204 @@
           </tr>
         </tbody>
       </table>
+      </div>
+    </section>
+
+    <!-- ── In Action ── -->
+    <section>
+      <h2><span>📸</span>In Action</h2>
+
+      <!-- HUD -->
+      <div class="demos-grid" style="margin-bottom: 2rem">
+        <div class="demo-item full-width">
+          <div class="term">
+            <div class="term-header">tokengolf demo hud</div>
+            <pre>
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">⛳</span> Flow <span class="t-dim">|</span> 💎 $0.0034 <span class="t-dim">|</span> <span class="t-cyan">⚔️ Sonnet</span>
+<span class="t-dim"> ───────────────</span>
+
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">⛳</span> add pagination to /users <span class="t-dim">|</span> 🥈 $0.5400/$1.50 36% <span class="t-dim">|</span> <span class="t-cyan">EFFICIENT</span> <span class="t-dim">|</span> <span class="t-cyan">⚔️ Sonnet</span> <span class="t-dim">|</span> Floor 2/5
+<span class="t-dim"> ───────────────</span>
+
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">⛳</span> implement SSO with SAML <span class="t-dim">|</span> 🥈 $0.4100/$2.00 21% <span class="t-dim">|</span> <span class="t-magenta">LEGENDARY</span> <span class="t-dim">|</span> <span class="t-cyan">⚔️ Sonnet·High</span> <span class="t-dim">|</span> Floor 1/5
+<span class="t-dim"> ───────────────</span>
+
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">⛳</span> refactor auth middleware <span class="t-dim">|</span> 🥈 $0.8200/$4.00 21% <span class="t-dim">|</span> <span class="t-magenta">LEGENDARY</span> <span class="t-dim">|</span> <span class="t-green">🪶 52%</span> <span class="t-dim">|</span> <span class="t-cyan">🧙 Opus</span> <span class="t-dim">|</span> Floor 3/5
+<span class="t-dim"> ───────────────</span>
+
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">⛳</span> fix N+1 query in dashboard <span class="t-dim">|</span> 🥈 $0.4600/$0.50 92% <span class="t-dim">|</span> <span class="t-yellow">CLOSE CALL</span> <span class="t-dim">|</span> <span class="t-yellow">🎒 78%</span> <span class="t-dim">|</span> <span class="t-cyan">🏹 Haiku</span> <span class="t-dim">|</span> Floor 4/5
+<span class="t-dim"> ───────────────</span>
+
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">⛳</span> migrate postgres schema <span class="t-dim">|</span> 🥉 $2.4100/$2.00 121% <span class="t-dim">|</span> <span class="t-red">BUSTED</span> <span class="t-dim">|</span> <span class="t-cyan">⚔️ Sonnet</span> <span class="t-dim">|</span> Floor 2/5
+<span class="t-dim"> ───────────────</span>
+
+<span class="t-dim"> ───────────────</span>
+<span class="t-b t-cyan">💤</span> write test suite for payments <span class="t-dim">|</span> 🥉 $1.2200/$3.00 41% <span class="t-dim">|</span> <span class="t-cyan">EFFICIENT</span> <span class="t-dim">|</span> <span class="t-green">🪶 67%</span> <span class="t-dim">|</span> <span class="t-cyan">⚔️ Sonnet</span> <span class="t-dim">|</span> Floor 2/5
+<span class="t-dim"> ───────────────</span></pre>
+          </div>
+          <div class="demo-label">
+            <strong>Live HUD</strong> — appears in every Claude Code session. Shows quest, cost, efficiency rating, context load, and model class. Run <code>tokengolf demo hud</code> to preview all states.
+          </div>
+        </div>
+      </div>
+
+      <!-- Scorecards: Won + Death side by side -->
+      <div class="demos-grid" style="margin-bottom: 2rem">
+        <div class="demo-item">
+          <div class="term">
+            <div class="term-header">tokengolf scorecard — won</div>
+            <pre>
+<span class="border-yellow">╔══════════════════════════════════════════════════════╗</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-b t-yellow">🏆  SESSION COMPLETE</span>                               <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-b t-white">add pagination to /users endpoint</span>                  <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-dim">SPENT</span>      <span class="t-dim">BUDGET</span>    <span class="t-dim">USED</span>    <span class="t-dim">MODEL</span>     <span class="t-dim">TIER</span>     <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-b t-green">$0.2300</span>    $1.50     <span class="t-green">15%</span>     <span class="t-cyan">⚔️ Sonnet</span>  <span class="t-yellow">🥇 Gold</span>  <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-b t-magenta">🌟 LEGENDARY</span>                                       <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-dim">Achievements unlocked:</span>                              <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>   <span class="t-yellow">🎯 Sniper — Under 25% budget</span>                       <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>   <span class="t-yellow">🥈 Silver — Completed with Sonnet</span>                  <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>   <span class="t-yellow">🔥 No Rest for the Wicked — One session</span>            <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>   <span class="t-yellow">✅ Clean Run — Zero failed tool calls</span>               <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>   <span class="t-yellow">🧰 Toolbox — 5+ distinct tool types</span>                <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>   <span class="t-yellow">🤫 Silent Run — No extended thinking</span>               <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-dim">Model usage:</span>  <span class="t-cyan">🏹 17% Haiku</span>                        <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-muted">Sonnet</span> <span class="t-white">83%</span> <span class="t-dim">$0.19</span>   <span class="t-muted">Haiku</span> <span class="t-white">17%</span> <span class="t-dim">$0.04</span>          <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-dim">Tool calls:</span>                                        <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>  <span class="t-white">Read</span> ×8  <span class="t-white">Edit</span> ×4  <span class="t-white">Bash</span> ×3  <span class="t-white">Grep</span> ×2  <span class="t-white">Glob</span> ×1  <span class="border-yellow">║</span>
+<span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
+<span class="border-yellow">╚══════════════════════════════════════════════════════╝</span></pre>
+          </div>
+          <div class="demo-label">
+            <strong>ScoreCard (Won)</strong> — appears on <code>/exit</code>. Shows spend, budget, tier, efficiency rating, achievements, model breakdown, and tool usage.
+          </div>
+        </div>
+
+        <div class="demo-item">
+          <div class="term">
+            <div class="term-header">tokengolf scorecard — died</div>
+            <pre>
+<span class="border-red">╔══════════════════════════════════════════════════════╗</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-b t-red">💀  BUDGET BUSTED</span>                                   <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-b t-white">migrate postgres schema to v3</span>                      <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-dim">SPENT</span>     <span class="t-dim">BUDGET</span>    <span class="t-dim">USED</span>    <span class="t-dim">MODEL</span>     <span class="t-dim">TIER</span>      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-b t-red">$3.8700</span>   $1.50     <span class="t-red">258%</span>    <span class="t-cyan">⚔️ Sonnet</span>  💸 Reckless <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-b t-red">💀 BUSTED</span>                                           <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-dim">Achievements unlocked:</span>                              <span class="border-red">║</span>
+<span class="border-red">║</span>   <span class="t-yellow">🤦 Hubris — Ultrathink, busted anyway</span>              <span class="border-red">║</span>
+<span class="border-red">║</span>   <span class="t-yellow">💥 Blowout — Spent 2× budget</span>                       <span class="border-red">║</span>
+<span class="border-red">║</span>   <span class="t-yellow">🤡 Fumble — 5+ failed tool calls</span>                   <span class="border-red">║</span>
+<span class="border-red">║</span>   <span class="t-yellow">🔨 Tool Happy — 30+ tool calls, died</span>               <span class="border-red">║</span>
+<span class="border-red">║</span>   <span class="t-yellow">🍷 Expensive Taste — $0.50+/prompt</span>                 <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-dim">Extended thinking:</span>   <span class="t-magenta">🔮 2× invoked</span>                  <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-red">┌──────────────────────────────────────────────┐</span>    <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-red">│</span> <span class="t-b t-red">Cause of death:</span> Budget exceeded by $2.37    <span class="t-red">│</span>    <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-red">│</span> <span class="t-dim">Tip: Use Read with line ranges, not full.</span>   <span class="t-red">│</span>    <span class="border-red">║</span>
+<span class="border-red">║</span>  <span class="t-red">└──────────────────────────────────────────────┘</span>    <span class="border-red">║</span>
+<span class="border-red">║</span>                                                      <span class="border-red">║</span>
+<span class="border-red">╚══════════════════════════════════════════════════════╝</span></pre>
+          </div>
+          <div class="demo-label">
+            <strong>ScoreCard (Died)</strong> — permadeath. Budget exceeded = death marks unlocked. Hubris, Blowout, Fumble — wear them with shame.
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Run + Stats side by side -->
+      <div class="demos-grid">
+        <div class="demo-item">
+          <div class="term">
+            <div class="term-header">tokengolf status</div>
+            <pre>
+<span class="t-b t-yellow">⛳ TokenGolf</span>   <span class="t-muted">Active Run</span>  <span class="t-dim">42m 18s</span>
+
+<span class="border-yellow">╭──────────────────────────────────────────────────────╮</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-b t-white">refactor database connection pooling</span>                <span class="border-yellow">│</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> 🧙 <span class="t-cyan">Opus</span>   Budget <span class="t-green">$7.50</span>   Spent <span class="t-red">$6.3400</span>   <span class="t-yellow">😅 CLOSE CALL</span> <span class="border-yellow">│</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> 💰 <span class="t-red">████████████████████░░░░</span> <span class="t-red">85%</span>                    <span class="border-yellow">│</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-green">✓</span> <span class="t-green">Floor 1: Write the code</span>                         <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-green">✓</span> <span class="t-green">Floor 2: Write the tests</span>                        <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-yellow">▶</span> <span class="t-white">Floor 3: Fix failing tests</span>                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-dim">○ Floor 4: Code review pass</span>                        <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-dim">○ Floor 5: PR merged — BOSS 🏆</span>                     <span class="border-yellow">│</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-muted">Prompts</span> <span class="t-white">12</span>   <span class="t-muted">Tools</span> <span class="t-white">35</span>                              <span class="border-yellow">│</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-red">┌──────────────────────────────────────────────┐</span>    <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-red">│</span> <span class="t-b t-red">⚠️ BUDGET WARNING — $1.16 left</span>                <span class="t-red">│</span>    <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-red">└──────────────────────────────────────────────┘</span>    <span class="border-yellow">│</span>
+<span class="border-yellow">│</span>                                                      <span class="border-yellow">│</span>
+<span class="border-yellow">╰──────────────────────────────────────────────────────╯</span></pre>
+          </div>
+          <div class="demo-label">
+            <strong>Active Run</strong> — live status with progress bar, floor tracker, and budget warning at 80%+.
+          </div>
+        </div>
+
+        <div class="demo-item">
+          <div class="term">
+            <div class="term-header">tokengolf stats</div>
+            <pre>
+<span class="t-b t-yellow">⛳ TokenGolf</span>   <span class="t-muted">Career Stats</span>
+
+<span class="border-gray">┌──────────────────────────────────────────────────────┐</span>
+<span class="border-gray">│</span>                                                      <span class="border-gray">│</span>
+<span class="border-gray">│</span> <span class="t-dim">RUNS</span>    <span class="t-dim">WINS</span>    <span class="t-dim">DEATHS</span>    <span class="t-dim">WIN RATE</span>    <span class="t-dim">AVG SPEND</span>  <span class="border-gray">│</span>
+<span class="border-gray">│</span> <span class="t-b t-white">24</span>      <span class="t-b t-green">18</span>      <span class="t-b t-red">6</span>         <span class="t-b t-green">75%</span>         <span class="t-b t-cyan">$1.4200</span>    <span class="border-gray">│</span>
+<span class="border-gray">│</span>                                                      <span class="border-gray">│</span>
+<span class="border-gray">└──────────────────────────────────────────────────────┘</span>
+
+<span class="t-yellow">🏆 Personal Best</span>
+<span class="border-yellow">╭──────────────────────────────────────────────────────╮</span>
+<span class="border-yellow">│</span> fix typo in README badge URL                        <span class="border-yellow">│</span>
+<span class="border-yellow">│</span> <span class="t-green">$0.0089</span>   <span class="t-muted">of $0.15</span>   🏹   <span class="t-cyan">💎 Diamond</span>              <span class="border-yellow">│</span>
+<span class="border-yellow">╰──────────────────────────────────────────────────────╯</span>
+
+<span class="t-dim">Recent runs:</span>
+<span class="t-green">✓</span>  add pagination to /users       <span class="t-green">$0.23</span>  <span class="t-muted">/$1.50</span>  ⚔️ <span class="t-yellow">🥇</span> <span class="t-dim">15%</span>
+<span class="t-green">✓</span>  refactor auth middleware       <span class="t-green">$3.41</span>  <span class="t-muted">/$7.50</span>  🧙 💸 <span class="t-dim">45%</span>
+<span class="t-red">✗</span>  migrate postgres schema        <span class="t-red">$3.87</span>  <span class="t-muted">/$1.50</span>  ⚔️ 💸 <span class="t-dim">258%</span>
+<span class="t-green">✓</span>  fix N+1 query                  <span class="t-green">$0.08</span>  <span class="t-muted">/$0.40</span>  🏹 <span class="t-cyan">💎</span> <span class="t-dim">20%</span>
+<span class="t-green">✓</span>  Flow                           <span class="t-green">$0.003</span>         ⚔️ <span class="t-cyan">💎</span>
+<span class="t-green">✓</span>  webhook retry system           <span class="t-green">$2.18</span>  <span class="t-muted">/$4.50</span>  ⚜️ <span class="t-yellow">🥉</span> <span class="t-dim">48%</span>
+<span class="t-red">✗</span>  rewrite billing module         <span class="t-red">$12.4</span>  <span class="t-muted">/$7.50</span>  🧙 💸 <span class="t-dim">165%</span>
+<span class="t-green">✓</span>  add dark mode toggle           <span class="t-green">$0.41</span>  <span class="t-muted">/$1.50</span>  ⚔️ <span class="t-white">🥈</span> <span class="t-dim">27%</span>
+
+<span class="t-dim">Recent achievements:</span>
+<span class="border-gray">┌───────────┐</span> <span class="border-gray">┌───────────┐</span> <span class="border-gray">┌────────────┐</span> <span class="border-gray">┌──────────────┐</span>
+<span class="border-gray">│</span> 🎯 Sniper <span class="border-gray">│</span> <span class="border-gray">│</span> 🥈 Silver <span class="border-gray">│</span> <span class="border-gray">│</span> 🔥 No Rest <span class="border-gray">│</span> <span class="border-gray">│</span> ✅ Clean Run  <span class="border-gray">│</span>
+<span class="border-gray">└───────────┘</span> <span class="border-gray">└───────────┘</span> <span class="border-gray">└────────────┘</span> <span class="border-gray">└──────────────┘</span>
+<span class="border-gray">┌────────────┐</span> <span class="border-gray">┌─────────────┐</span> <span class="border-gray">┌──────────────────┐</span>
+<span class="border-gray">│</span> 💎 Diamond <span class="border-gray">│</span> <span class="border-gray">│</span> 🥊 One Shot <span class="border-gray">│</span> <span class="border-gray">│</span> 🪙 Penny Pincher <span class="border-gray">│</span>
+<span class="border-gray">└────────────┘</span> <span class="border-gray">└─────────────┘</span> <span class="border-gray">└──────────────────┘</span></pre>
+          </div>
+          <div class="demo-label">
+            <strong>Career Stats</strong> — lifetime dashboard. Wins, deaths, win rate, personal best, recent runs, and achievement collection.
+          </div>
+        </div>
       </div>
     </section>
 

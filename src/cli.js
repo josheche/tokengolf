@@ -114,11 +114,51 @@ program
   });
 
 program
-  .command('demo')
-  .description('Show HUD examples for all game states (great for screenshots)')
-  .action(async () => {
-    const { runDemo } = await import('./lib/demo.js');
-    runDemo();
+  .command('demo [component]')
+  .description('Show UI demos — all, hud, scorecard, active, stats')
+  .option('-i, --index <n>', 'Show only the Nth variant (0-based)')
+  .action(async (component, opts) => {
+    const idx = opts.index != null ? parseInt(opts.index) : undefined;
+    const c = (component || 'all').toLowerCase();
+
+    if (c === 'all') {
+      const { runDemo } = await import('./lib/demo.js');
+      runDemo();
+      const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
+      await runScoreCardDemo(idx);
+      const { runActiveDemo } = await import('./lib/demo-active.js');
+      await runActiveDemo(idx);
+      const { runStatsDemo } = await import('./lib/demo-stats.js');
+      await runStatsDemo(idx);
+      process.exit(0);
+    }
+
+    if (c === 'hud') {
+      const { runDemo } = await import('./lib/demo.js');
+      runDemo();
+      return;
+    }
+
+    if (c === 'scorecard') {
+      const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
+      await runScoreCardDemo(idx);
+      process.exit(0);
+    }
+
+    if (c === 'active') {
+      const { runActiveDemo } = await import('./lib/demo-active.js');
+      await runActiveDemo(idx);
+      process.exit(0);
+    }
+
+    if (c === 'stats') {
+      const { runStatsDemo } = await import('./lib/demo-stats.js');
+      await runStatsDemo(idx);
+      process.exit(0);
+    }
+
+    console.log('Unknown demo component. Choose: all, hud, scorecard, active, stats');
+    process.exit(1);
   });
 
 program
