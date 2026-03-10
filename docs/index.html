@@ -951,14 +951,14 @@
       </p>
 
       <div class="tab-bar" role="tablist">
-        <button class="tab-btn" role="tab" aria-selected="true" data-panel="panel-hud">HUD</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-panel="panel-scorecard">ScoreCard</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-panel="panel-status">Status</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-panel="panel-stats">Stats</button>
+        <button class="tab-btn" role="tab" id="tab-hud" aria-selected="true" aria-controls="panel-hud" data-panel="panel-hud">HUD</button>
+        <button class="tab-btn" role="tab" id="tab-scorecard" aria-selected="false" aria-controls="panel-scorecard" data-panel="panel-scorecard">ScoreCard</button>
+        <button class="tab-btn" role="tab" id="tab-status" aria-selected="false" aria-controls="panel-status" data-panel="panel-status">Status</button>
+        <button class="tab-btn" role="tab" id="tab-stats" aria-selected="false" aria-controls="panel-stats" data-panel="panel-stats">Stats</button>
       </div>
 
       <!-- ── HUD panel ── -->
-      <div class="tab-panel active" id="panel-hud">
+      <div class="tab-panel active" id="panel-hud" role="tabpanel" aria-labelledby="tab-hud">
         <div class="demo-item">
           <div class="term" data-glow="cyan">
             <div class="term-header">tokengolf demo hud</div>
@@ -998,7 +998,7 @@
       </div>
 
       <!-- ── ScoreCard panel ── -->
-      <div class="tab-panel" id="panel-scorecard">
+      <div class="tab-panel" id="panel-scorecard" role="tabpanel" aria-labelledby="tab-scorecard">
         <div class="demos-grid">
           <div class="demo-item">
             <div class="term" data-glow="yellow">
@@ -1075,7 +1075,7 @@
       </div>
 
       <!-- ── Status panel ── -->
-      <div class="tab-panel" id="panel-status">
+      <div class="tab-panel" id="panel-status" role="tabpanel" aria-labelledby="tab-status">
         <div class="demo-item" style="max-width: 640px">
           <div class="term" data-glow="yellow">
             <div class="term-header">tokengolf status</div>
@@ -1111,7 +1111,7 @@
       </div>
 
       <!-- ── Stats panel ── -->
-      <div class="tab-panel" id="panel-stats">
+      <div class="tab-panel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
         <div class="demo-item" style="max-width: 640px">
           <div class="term" data-glow="green">
             <div class="term-header">tokengolf stats</div>
@@ -1257,15 +1257,15 @@
       <p class="section-sub">60+ achievements across 5 categories. Every session tells a story.</p>
 
       <div class="tab-bar" role="tablist">
-        <button class="tab-btn" role="tab" aria-selected="true" data-panel="ach-class">Class &amp; Efficiency</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-panel="ach-combat">Combat Style</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-panel="ach-endurance">Endurance</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-panel="ach-arcane">Arcane</button>
-        <button class="tab-btn tab-death" role="tab" aria-selected="false" data-panel="ach-death">Death Marks</button>
+        <button class="tab-btn" role="tab" id="tab-ach-class" aria-selected="true" aria-controls="ach-class" data-panel="ach-class">Class &amp; Efficiency</button>
+        <button class="tab-btn" role="tab" id="tab-ach-combat" aria-selected="false" aria-controls="ach-combat" data-panel="ach-combat">Combat Style</button>
+        <button class="tab-btn" role="tab" id="tab-ach-endurance" aria-selected="false" aria-controls="ach-endurance" data-panel="ach-endurance">Endurance</button>
+        <button class="tab-btn" role="tab" id="tab-ach-arcane" aria-selected="false" aria-controls="ach-arcane" data-panel="ach-arcane">Arcane</button>
+        <button class="tab-btn tab-death" role="tab" id="tab-ach-death" aria-selected="false" aria-controls="ach-death" data-panel="ach-death">Death Marks</button>
       </div>
 
       <!-- Class & Efficiency -->
-      <div class="tab-panel active" id="ach-class">
+      <div class="tab-panel active" id="ach-class" role="tabpanel" aria-labelledby="tab-ach-class">
         <div class="achievements-grid">
           <div class="ach-sub label-caps">Class Medals</div>
           <div class="card achievement-card">
@@ -1334,7 +1334,7 @@
       </div>
 
       <!-- Combat Style -->
-      <div class="tab-panel" id="ach-combat">
+      <div class="tab-panel" id="ach-combat" role="tabpanel" aria-labelledby="tab-ach-combat">
         <div class="achievements-grid">
           <div class="ach-sub label-caps">Prompting Skill</div>
           <div class="card achievement-card">
@@ -1407,7 +1407,7 @@
       </div>
 
       <!-- Endurance -->
-      <div class="tab-panel" id="ach-endurance">
+      <div class="tab-panel" id="ach-endurance" role="tabpanel" aria-labelledby="tab-ach-endurance">
         <div class="achievements-grid">
           <div class="ach-sub label-caps">Time</div>
           <div class="card achievement-card">
@@ -1458,7 +1458,7 @@
       </div>
 
       <!-- Arcane -->
-      <div class="tab-panel" id="ach-arcane">
+      <div class="tab-panel" id="ach-arcane" role="tabpanel" aria-labelledby="tab-ach-arcane">
         <div class="achievements-grid">
           <div class="ach-sub label-caps">Extended Thinking</div>
           <div class="card achievement-card">
@@ -1541,7 +1541,7 @@
       </div>
 
       <!-- Death Marks -->
-      <div class="tab-panel" id="ach-death">
+      <div class="tab-panel" id="ach-death" role="tabpanel" aria-labelledby="tab-ach-death">
         <div class="achievements-grid">
           <div class="card achievement-card death">
             <div class="achievement-emoji">🤦</div>
