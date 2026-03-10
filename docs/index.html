@@ -518,6 +518,43 @@
         border-color: #3d1f1f;
       }
 
+      /* ── Screenshots ── */
+      .screenshots-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      @media (max-width: 768px) {
+        .screenshots-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .screenshot-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .screenshot-item img {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .screenshot-label {
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .screenshot-label strong {
+        color: var(--text);
+      }
+
       /* ── Footer ── */
       footer {
         border-top: 1px solid var(--border);
@@ -622,6 +659,25 @@
             <li>Trains deliberate, efficient prompting</li>
             <li>Roguelike practice makes Flow sessions better</li>
           </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Screenshots ── -->
+    <section>
+      <h2><span>📸</span>In Action</h2>
+      <div class="screenshots-grid">
+        <div class="screenshot-item">
+          <img src="assets/demo-hud.png" alt="TokenGolf HUD — all game states" />
+          <div class="screenshot-label">
+            <strong>Live HUD</strong> — appears in every Claude Code session. Shows quest, cost, efficiency rating, context pressure, and model class. Run <code>tokengolf demo</code> to preview all states.
+          </div>
+        </div>
+        <div class="screenshot-item">
+          <img src="assets/scorecard.png" alt="TokenGolf scorecard — session complete" />
+          <div class="screenshot-label">
+            <strong>Auto Scorecard</strong> — appears on <code>/exit</code>. Real scorecard from building TokenGolf itself: $40 flow session, 27 ultrathink invocations, Class Defection for declaring Sonnet but spending 89% on Opus.
+          </div>
         </div>
       </div>
     </section>
