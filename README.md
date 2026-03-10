@@ -53,6 +53,7 @@ tokengolf bust        # manual permadeath override
 tokengolf scorecard   # last run scorecard
 tokengolf stats       # career dashboard
 tokengolf install     # patch ~/.claude/settings.json with hooks
+tokengolf demo        # show all HUD states (for screenshots)
 ```
 
 ---
@@ -224,12 +225,6 @@ Roguelike mode surfaces these patterns explicitly. Flow mode lets them compound 
 
 After `tokengolf install`, a status line appears in every Claude Code session:
 
-```
- ───────────────
-⛳ implement pagination | 💎 $0.1203/$0.50 24% | LEGENDARY | 🪶 38% | ⚔️ Sonnet·High | Floor 1/5
- ───────────────
-```
-
 - **tier emoji** (💎🥇🥈🥉💸) updates live as cost accumulates
 - **🪶 green** at 50–74% context — traveling light
 - **🎒 yellow** at 75–89% context — getting heavy
@@ -237,7 +232,9 @@ After `tokengolf install`, a status line appears in every Claude Code session:
 - **💤** instead of ⛳ if the previous session fainted (hit usage limits)
 - Roguelike runs show floor progress; Flow runs omit budget/efficiency
 
-<!-- SCREENSHOT: Claude Code split-screen showing the TokenGolf HUD in the status bar -->
+Run `tokengolf demo` to see all HUD states rendered in your terminal:
+
+![TokenGolf HUD demo — all game states](assets/demo-hud.png)
 
 ---
 
