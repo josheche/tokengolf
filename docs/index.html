@@ -474,38 +474,6 @@
       }
 
       /* ── CLI Commands ── */
-      .cli-block {
-        overflow: hidden;
-      }
-
-      .cli-block-header {
-        background: #1c2128;
-        padding: 0.6rem 1rem;
-        font-size: 0.78rem;
-        color: var(--muted);
-        font-family: "SF Mono", monospace;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .cli-block-header::before {
-        content: "●  ●  ●";
-        color: #30363d;
-        font-size: 0.65rem;
-        letter-spacing: 0.2em;
-      }
-
-      .cli-block pre {
-        padding: 1.5rem;
-        overflow-x: auto;
-        font-family:
-          "SF Mono", "Cascadia Mono", "Fira Code", "Consolas", monospace;
-        font-size: 0.88rem;
-        line-height: 1.8;
-      }
-
       .cli-block .cmd {
         color: var(--cyan);
       }
@@ -1578,8 +1546,8 @@
     <!-- ── CLI Commands ── -->
     <section id="cli">
       <h2><span>⌨️</span>CLI Commands</h2>
-      <div class="card cli-block">
-        <div class="cli-block-header">terminal</div>
+      <div class="term cli-block" data-glow="cyan">
+        <div class="term-header">terminal</div>
         <pre>
 <span class="comment"># Install</span>
 <span class="dollar">$</span> <span class="cmd">npm install -g tokengolf</span>
