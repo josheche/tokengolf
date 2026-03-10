@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛳</text></svg>">
-    <title>TokenGolf — Every token matters.</title>
+    <title>TokenGolf: Every token matters.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,13 +19,13 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://josheche.github.io/tokengolf/" />
-    <meta property="og:title" content="TokenGolf — Every token matters." />
+    <meta property="og:title" content="TokenGolf: Every token matters." />
     <meta property="og:description" content="TokenGolf turns Claude Code sessions into a game. Track token efficiency, earn achievements, and level up your prompting skills." />
     <meta property="og:image" content="https://josheche.github.io/tokengolf/assets/tokengolf-bg-min.jpg" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="TokenGolf — Every token matters." />
+    <meta name="twitter:title" content="TokenGolf: Every token matters." />
     <meta name="twitter:description" content="TokenGolf turns Claude Code sessions into a game. Track token efficiency, earn achievements, and level up your prompting skills." />
     <meta name="twitter:image" content="https://josheche.github.io/tokengolf/assets/tokengolf-bg-min.jpg" />
 
@@ -38,7 +38,7 @@
       "url": "https://josheche.github.io/tokengolf/",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "macOS, Linux",
-      "description": "A CLI game that wraps Claude Code sessions with game mechanics — quests, budgets, efficiency ratings, and 60+ achievements. Flow mode tracks you passively. Roguelike mode trains deliberate prompting.",
+      "description": "A CLI game that wraps Claude Code sessions with game mechanics. Quests, budgets, efficiency ratings, and 60+ achievements. Flow mode tracks you passively. Roguelike mode trains deliberate prompting.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -96,6 +96,49 @@
       .mono {
         font-family:
           "SF Mono", "Cascadia Mono", "Fira Code", "Consolas", monospace;
+      }
+
+      /* ── Shared design tokens ── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+
+      .section-prose {
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.75;
+        max-width: 680px;
+      }
+
+      .section-prose + .section-prose {
+        margin-top: 1rem;
+      }
+
+      .section-prose strong {
+        color: var(--text);
+      }
+
+      .section-sub {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.65;
+        margin-bottom: 2rem;
+        max-width: 540px;
+      }
+
+      .section-sub code {
+        color: var(--cyan);
+        font-size: 0.88em;
+      }
+
+      .label-caps {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
       }
 
       /* ── Hero ── */
@@ -269,6 +312,11 @@
         letter-spacing: -0.02em;
       }
 
+      /* Tighten h2 when followed by a subtitle */
+      section h2:has(+ .section-sub) {
+        margin-bottom: 0.5rem;
+      }
+
       section h2 span {
         margin-right: 0.5rem;
       }
@@ -277,7 +325,7 @@
       .modes-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+        gap: 1.25rem;
       }
 
       @media (max-width: 600px) {
@@ -287,8 +335,6 @@
       }
 
       .mode-card {
-        background: var(--card);
-        border: 1px solid var(--border);
         border-radius: 12px;
         padding: 1.75rem;
       }
@@ -318,13 +364,11 @@
 
       .mode-badge {
         display: inline-block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
         padding: 0.2rem 0.6rem;
         border-radius: 4px;
         margin-bottom: 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
       }
 
       .badge-flow {
@@ -401,13 +445,10 @@
       .achievements-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1rem;
+        gap: 1.25rem;
       }
 
       .achievement-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 10px;
         padding: 1.1rem 1.25rem;
         display: flex;
         align-items: flex-start;
@@ -434,9 +475,6 @@
 
       /* ── CLI Commands ── */
       .cli-block {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 10px;
         overflow: hidden;
       }
 
@@ -483,13 +521,10 @@
       .tiers-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 1rem;
+        gap: 1.25rem;
       }
 
       .tier-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 10px;
         padding: 1.25rem 1rem;
         text-align: center;
       }
@@ -510,28 +545,93 @@
         font-family: monospace;
       }
 
-      /* ── Achievement category headers ── */
-      .achievement-category {
-        grid-column: 1 / -1;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-        margin-top: 0.5rem;
-      }
-      .achievement-category:first-child {
-        border-top: none;
-        padding-top: 0;
-        margin-top: 0;
-      }
       .achievement-card.death {
         border-color: #3d1f1f;
       }
 
-      /* ── Terminal Demos ── */
+      .tab-btn[aria-selected="true"].tab-death {
+        background: var(--red);
+        box-shadow: 0 2px 16px rgba(248, 81, 73, 0.3);
+      }
+
+      .tab-btn.tab-death:hover {
+        color: var(--red);
+      }
+
+      /* Achievement sub-category labels inside panels */
+      .ach-sub {
+        padding-top: 0.75rem;
+        margin-top: 0.5rem;
+        grid-column: 1 / -1;
+      }
+
+      .ach-sub:first-child {
+        padding-top: 0;
+        margin-top: 0;
+      }
+
+      /* ── In Action — Arcade Cabinet Gallery ── */
+
+      .in-action {
+        position: relative;
+        overflow: visible;
+      }
+
+
+      /* ── Shared tab switcher ── */
+      .tab-bar {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 2rem;
+        background: #0a0e14;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.3rem;
+        width: fit-content;
+      }
+
+      .tab-btn {
+        position: relative;
+        padding: 0.5rem 1.2rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        background: transparent;
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+        font-family: "SF Mono", "Cascadia Mono", monospace;
+        white-space: nowrap;
+        letter-spacing: -0.01em;
+      }
+
+      .tab-btn:hover {
+        color: var(--text);
+        background: rgba(48, 54, 61, 0.45);
+      }
+
+      .tab-btn[aria-selected="true"] {
+        color: #0d1117;
+        background: var(--cyan);
+        box-shadow: 0 2px 16px rgba(121, 192, 255, 0.3);
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+        animation: panelIn 0.3s ease both;
+      }
+
+      @keyframes panelIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── Layout grids inside panels ── */
       .demos-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -540,16 +640,14 @@
       }
 
       @media (max-width: 900px) {
-        .demos-grid {
-          grid-template-columns: 1fr;
-        }
+        .demos-grid { grid-template-columns: 1fr; }
       }
 
       .demo-item {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        min-width: 0; /* prevent grid blowout */
+        gap: 0.85rem;
+        min-width: 0;
       }
 
       .demo-item.full-width {
@@ -559,44 +657,105 @@
       .demo-label {
         font-size: 0.85rem;
         color: var(--muted);
-        line-height: 1.5;
+        line-height: 1.55;
+        padding-left: 0.15rem;
       }
 
       .demo-label strong {
         color: var(--text);
       }
 
-      /* Terminal block (reuses cli-block styling) */
+      /* ── Terminal chrome ── */
       .term {
-        background: var(--card);
+        position: relative;
+        background: #0c1017;
         border: 1px solid var(--border);
         border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        min-width: 0; /* allow flex/grid children to shrink below content size */
+        min-width: 0;
+        transition: border-color 0.4s, box-shadow 0.4s;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.55);
       }
 
+      /* Scanline overlay */
+      .term::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 2px,
+          rgba(0, 0, 0, 0.035) 2px,
+          rgba(0, 0, 0, 0.035) 4px
+        );
+        border-radius: 10px;
+        z-index: 1;
+      }
+
+      /* Glow variants */
+      .term[data-glow="cyan"] {
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(121,192,255,0.06);
+      }
+      .term[data-glow="cyan"]:hover {
+        border-color: rgba(121,192,255,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(121,192,255,0.12);
+      }
+      .term[data-glow="yellow"] {
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(227,179,65,0.06);
+      }
+      .term[data-glow="yellow"]:hover {
+        border-color: rgba(227,179,65,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(227,179,65,0.12);
+      }
+      .term[data-glow="red"] {
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(248,81,73,0.06);
+      }
+      .term[data-glow="red"]:hover {
+        border-color: rgba(248,81,73,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(248,81,73,0.12);
+      }
+      .term[data-glow="green"] {
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(63,185,80,0.06);
+      }
+      .term[data-glow="green"]:hover {
+        border-color: rgba(63,185,80,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(63,185,80,0.12);
+      }
+
+      /* Header bar */
       .term-header {
-        background: #1c2128;
-        padding: 0.6rem 1rem;
-        font-size: 0.78rem;
+        background: #13181f;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.75rem;
         color: var(--muted);
-        font-family: "SF Mono", monospace;
-        border-bottom: 1px solid var(--border);
+        font-family: "SF Mono", "Cascadia Mono", monospace;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.6);
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.65rem;
       }
 
+      /* macOS traffic lights */
       .term-header::before {
-        content: "●  ●  ●";
-        color: #30363d;
-        font-size: 0.65rem;
-        letter-spacing: 0.2em;
+        content: "";
+        display: block;
+        width: 46px;
+        min-width: 46px;
+        height: 12px;
+        background:
+          radial-gradient(circle 4.5px at 6px 6px, #ff5f57 4px, transparent 4.5px),
+          radial-gradient(circle 4.5px at 22px 6px, #febc2e 4px, transparent 4.5px),
+          radial-gradient(circle 4.5px at 38px 6px, #28c840 4px, transparent 4.5px);
+        opacity: 0.72;
+        flex-shrink: 0;
       }
 
       .term pre {
-        padding: 1rem 1.25rem;
+        position: relative;
+        z-index: 0;
+        padding: 1.1rem 1.35rem;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         font-family: "SF Mono", "Cascadia Mono", "Fira Code", "Consolas", monospace;
@@ -606,10 +765,9 @@
       }
 
       @media (max-width: 600px) {
-        .term pre {
-          font-size: 0.68rem;
-          padding: 0.75rem 0.75rem;
-        }
+        .term pre { font-size: 0.68rem; padding: 0.75rem; }
+        .tab-bar { width: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab-btn { padding: 0.45rem 0.85rem; font-size: 0.72rem; }
       }
 
       /* Terminal ANSI color classes */
@@ -691,22 +849,22 @@
     </div>
 
     <!-- ── Why TokenGolf ── -->
-    <section>
+    <section id="why">
       <h2><span>⛳</span>Why "TokenGolf"?</h2>
-      <p style="color:var(--muted);font-size:1rem;line-height:1.75;max-width:680px;">
-        <a href="https://en.wikipedia.org/wiki/Code_golf" target="_blank">Code golf</a> is the engineering practice of solving a problem in as few characters as possible. The constraint isn't the point — <em>the discipline the constraint creates</em> is the point. Writing the shortest solution forces you to understand the problem deeply and use your tools precisely.
+      <p class="section-prose">
+        <a href="https://en.wikipedia.org/wiki/Code_golf" target="_blank">Code golf</a> is the engineering practice of solving a problem in as few characters as possible. The constraint isn't the point. <em>The discipline the constraint creates</em> is the point. Writing the shortest solution forces you to understand the problem deeply and use your tools precisely.
       </p>
-      <p style="color:var(--muted);font-size:1rem;line-height:1.75;max-width:680px;margin-top:1rem;">
-        Token golf is the same idea applied to AI sessions. Your budget is par. Every unnecessary prompt, every redundant context dump, every "can you also…" tacked onto a request is a stroke over par. The game doesn't literally resemble golf — it borrows the concept: <strong style="color:var(--text);">optimize under constraint, measure your score, improve your game.</strong>
+      <p class="section-prose">
+        Token golf is the same idea applied to AI sessions. Your budget is par. Every unnecessary prompt, every redundant context dump, every "can you also…" tacked onto a request is a stroke over par. The game doesn't literally resemble golf. It borrows the concept: <strong>optimize under constraint, measure your score, improve your game.</strong>
       </p>
     </section>
 
     <!-- ── Two Modes ── -->
-    <section>
+    <section id="modes">
       <h2><span>🎮</span>Two Modes</h2>
       <div class="modes-grid">
-        <div class="mode-card">
-          <div class="mode-badge badge-flow">Flow Mode</div>
+        <div class="card mode-card">
+          <div class="mode-badge label-caps badge-flow">Flow Mode</div>
           <h3>Passive tracking, zero friction</h3>
           <p>
             Just work normally. TokenGolf runs in the background via Claude Code
@@ -719,8 +877,8 @@
             <li>Perfect when you're in a flow state</li>
           </ul>
         </div>
-        <div class="mode-card">
-          <div class="mode-badge badge-rogue">Roguelike Mode</div>
+        <div class="card mode-card">
+          <div class="mode-badge label-caps badge-rogue">Roguelike Mode</div>
           <h3>Pre-commit. Stakes. Permadeath.</h3>
           <p>
             Declare your quest, pick a budget, choose your class. Bust the
@@ -737,7 +895,7 @@
     </section>
 
     <!-- ── Character Classes ── -->
-    <section>
+    <section id="classes">
       <h2><span>⚔️</span>Character Classes</h2>
       <div class="classes-table-wrap">
       <table class="classes-table">
@@ -786,13 +944,23 @@
     </section>
 
     <!-- ── In Action ── -->
-    <section>
+    <section id="in-action" class="in-action">
       <h2><span>📸</span>In Action</h2>
+      <p class="section-sub">
+        Every screen TokenGolf renders in your terminal. Pick a tab to explore, or run <code>tokengolf demo</code> to see them all live.
+      </p>
 
-      <!-- HUD -->
-      <div class="demos-grid" style="margin-bottom: 2rem">
-        <div class="demo-item full-width">
-          <div class="term">
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn" role="tab" id="tab-hud" aria-selected="true" aria-controls="panel-hud" data-panel="panel-hud">HUD</button>
+        <button class="tab-btn" role="tab" id="tab-scorecard" aria-selected="false" aria-controls="panel-scorecard" data-panel="panel-scorecard">ScoreCard</button>
+        <button class="tab-btn" role="tab" id="tab-status" aria-selected="false" aria-controls="panel-status" data-panel="panel-status">Status</button>
+        <button class="tab-btn" role="tab" id="tab-stats" aria-selected="false" aria-controls="panel-stats" data-panel="panel-stats">Stats</button>
+      </div>
+
+      <!-- ── HUD panel ── -->
+      <div class="tab-panel active" id="panel-hud" role="tabpanel" aria-labelledby="tab-hud">
+        <div class="demo-item">
+          <div class="term" data-glow="cyan">
             <div class="term-header">tokengolf demo hud</div>
             <pre>
 <span class="t-dim"> ───────────────</span>
@@ -824,16 +992,17 @@
 <span class="t-dim"> ───────────────</span></pre>
           </div>
           <div class="demo-label">
-            <strong>Live HUD</strong> — appears in every Claude Code session. Shows quest, cost, efficiency rating, context load, and model class. Run <code>tokengolf demo hud</code> to preview all states.
+            <strong>Live HUD</strong> appears in every Claude Code session. Shows quest, cost, efficiency rating, context load, and model class at a glance.
           </div>
         </div>
       </div>
 
-      <!-- Scorecards: Won + Death side by side -->
-      <div class="demos-grid" style="margin-bottom: 2rem">
-        <div class="demo-item">
-          <div class="term">
-            <div class="term-header">tokengolf scorecard — won</div>
+      <!-- ── ScoreCard panel ── -->
+      <div class="tab-panel" id="panel-scorecard" role="tabpanel" aria-labelledby="tab-scorecard">
+        <div class="demos-grid">
+          <div class="demo-item">
+            <div class="term" data-glow="yellow">
+              <div class="term-header">tokengolf scorecard — won</div>
             <pre>
 <span class="border-yellow">╔══════════════════════════════════════════════════════╗</span>
 <span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
@@ -862,14 +1031,14 @@
 <span class="border-yellow">║</span>                                                      <span class="border-yellow">║</span>
 <span class="border-yellow">╚══════════════════════════════════════════════════════╝</span></pre>
           </div>
-          <div class="demo-label">
-            <strong>ScoreCard (Won)</strong> — appears on <code>/exit</code>. Shows spend, budget, tier, efficiency rating, achievements, model breakdown, and tool usage.
+            <div class="demo-label">
+              <strong>ScoreCard (Won)</strong> appears on <code>/exit</code>. Budget, tier, efficiency, achievements, model breakdown, and tool usage.
+            </div>
           </div>
-        </div>
 
-        <div class="demo-item">
-          <div class="term">
-            <div class="term-header">tokengolf scorecard — died</div>
+          <div class="demo-item">
+            <div class="term" data-glow="red">
+              <div class="term-header">tokengolf scorecard — died</div>
             <pre>
 <span class="border-red">╔══════════════════════════════════════════════════════╗</span>
 <span class="border-red">║</span>                                                      <span class="border-red">║</span>
@@ -898,16 +1067,17 @@
 <span class="border-red">║</span>                                                      <span class="border-red">║</span>
 <span class="border-red">╚══════════════════════════════════════════════════════╝</span></pre>
           </div>
-          <div class="demo-label">
-            <strong>ScoreCard (Died)</strong> — permadeath. Budget exceeded = death marks unlocked. Hubris, Blowout, Fumble — wear them with shame.
+            <div class="demo-label">
+              <strong>ScoreCard (Died)</strong> is permadeath. Budget exceeded = death marks. Hubris, Blowout, Fumble. Wear them with shame.
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Active Run + Stats side by side -->
-      <div class="demos-grid">
-        <div class="demo-item">
-          <div class="term">
+      <!-- ── Status panel ── -->
+      <div class="tab-panel" id="panel-status" role="tabpanel" aria-labelledby="tab-status">
+        <div class="demo-item" style="max-width: 640px">
+          <div class="term" data-glow="yellow">
             <div class="term-header">tokengolf status</div>
             <pre>
 <span class="t-b t-yellow">⛳ TokenGolf</span>   <span class="t-muted">Active Run</span>  <span class="t-dim">42m 18s</span>
@@ -935,12 +1105,15 @@
 <span class="border-yellow">╰──────────────────────────────────────────────────────╯</span></pre>
           </div>
           <div class="demo-label">
-            <strong>Active Run</strong> — live status with progress bar, floor tracker, and budget warning at 80%+.
+            <strong>Active Run</strong> shows live status with progress bar, floor tracker, and budget warning at 80%+. Auto-refreshes every 2 seconds.
           </div>
         </div>
+      </div>
 
-        <div class="demo-item">
-          <div class="term">
+      <!-- ── Stats panel ── -->
+      <div class="tab-panel" id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
+        <div class="demo-item" style="max-width: 640px">
+          <div class="term" data-glow="green">
             <div class="term-header">tokengolf stats</div>
             <pre>
 <span class="t-b t-yellow">⛳ TokenGolf</span>   <span class="t-muted">Career Stats</span>
@@ -977,62 +1150,63 @@
 <span class="border-gray">└────────────┘</span> <span class="border-gray">└─────────────┘</span> <span class="border-gray">└──────────────────┘</span></pre>
           </div>
           <div class="demo-label">
-            <strong>Career Stats</strong> — lifetime dashboard. Wins, deaths, win rate, personal best, recent runs, and achievement collection.
+            <strong>Career Stats</strong> is your lifetime dashboard. Wins, deaths, win rate, personal best, recent runs, and achievement collection.
           </div>
         </div>
       </div>
+
     </section>
 
     <!-- ── Effort & Fast Mode ── -->
-    <section>
+    <section id="effort">
       <h2><span>🔥</span>Effort Levels &amp; Fast Mode</h2>
       <div class="modes-grid">
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>Effort Levels</h3>
           <p>Set effort in the roguelike wizard. Higher effort = more thinking = more spend. Tracked in achievements.</p>
           <ul>
-            <li>🪶 <strong>Low</strong> — quick and cheap</li>
-            <li>⚖️ <strong>Medium</strong> — the default (omitted in UI)</li>
-            <li>🔥 <strong>High</strong> — deeper reasoning</li>
-            <li>💥 <strong>Max</strong> — Opus only, maximum thinking</li>
+            <li>🪶 <strong>Low</strong> · quick and cheap</li>
+            <li>⚖️ <strong>Medium</strong> · the default (omitted in UI)</li>
+            <li>🔥 <strong>High</strong> · deeper reasoning</li>
+            <li>💥 <strong>Max</strong> · Opus only, maximum thinking</li>
           </ul>
         </div>
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>Fast Mode</h3>
           <p>Opus fast mode is auto-detected from your Claude Code settings. Unlocks unique achievements:</p>
           <ul>
-            <li>⛈️ <strong>Lightning Run</strong> — Opus fast mode, under budget</li>
-            <li>🎰 <strong>Daredevil</strong> — Opus fast mode, LEGENDARY efficiency</li>
+            <li>⛈️ <strong>Lightning Run</strong> · Opus fast mode, under budget</li>
+            <li>🎰 <strong>Daredevil</strong> · Opus fast mode, LEGENDARY efficiency</li>
           </ul>
         </div>
       </div>
     </section>
 
     <!-- ── Budget Tiers ── -->
-    <section>
+    <section id="budget">
       <h2><span>💰</span>Budget Tiers</h2>
       <div class="tiers-grid">
-        <div class="tier-card">
+        <div class="card tier-card">
           <span class="tier-emoji">💎</span>
           <div class="tier-name">Diamond</div>
           <div class="tier-amount">under $0.10</div>
         </div>
-        <div class="tier-card">
+        <div class="card tier-card">
           <span class="tier-emoji">🥇</span>
           <div class="tier-name">Gold</div>
           <div class="tier-amount">under $0.30</div>
         </div>
-        <div class="tier-card">
+        <div class="card tier-card">
           <span class="tier-emoji">🥈</span>
           <div class="tier-name">Silver</div>
           <div class="tier-amount">under $1.00</div>
         </div>
-        <div class="tier-card">
+        <div class="card tier-card">
           <span class="tier-emoji">🥉</span>
           <div class="tier-name">Bronze</div>
           <div class="tier-amount">under $3.00</div>
         </div>
-        <div class="tier-card">
+        <div class="card tier-card">
           <span class="tier-emoji">💸</span>
           <div class="tier-name">Reckless</div>
           <div class="tier-amount">over $3.00</div>
@@ -1041,336 +1215,370 @@
     </section>
 
     <!-- ── Meta Loop ── -->
-    <section>
+    <section id="meta">
       <h2><span>🔄</span>The Meta Loop</h2>
-      <p style="color:var(--muted);font-size:1rem;line-height:1.75;max-width:680px;margin-bottom:1.5rem;">
-        The dungeon crawl framing maps directly to real session behaviors. These aren't just flavor — they're patterns you already have, named so you can recognize and improve them.
+      <p class="section-sub">
+        The dungeon crawl framing maps directly to real session behaviors. Not just flavor. Patterns you already have, named so you can recognize and improve them.
       </p>
       <div class="modes-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>📦 Overencumbered</h3>
           <p>Context bloat slowing you down. The model is carrying too much history to reason cleanly.</p>
         </div>
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>🏕️ Made Camp</h3>
           <p>Hit usage limits mid-run. Came back next session and kept going.</p>
         </div>
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>🥷 Ghost Run</h3>
           <p>Surgical context management. You compacted at 30% and still had plenty of room for the boss.</p>
         </div>
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>🤦 Hubris</h3>
           <p>Reached for ultrathink on a tight budget and paid for it. The spell didn't save you.</p>
         </div>
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>🤫 Silent Run</h3>
           <p>Solved it with pure prompting discipline. No extended thinking needed.</p>
         </div>
-        <div class="mode-card">
+        <div class="card mode-card">
           <h3>🐺 Lone Wolf</h3>
           <p>No subagents. You held the whole problem in one context and saw it through.</p>
         </div>
       </div>
-      <p style="color:var(--muted);font-size:0.95rem;line-height:1.75;max-width:680px;margin-top:1.5rem;">
-        Roguelike mode surfaces these patterns with stakes. Flow mode lets them compound over time. <strong style="color:var(--text);">Roguelike practice makes Flow sessions better. Better Flow = lower daily spend = better scores without even trying.</strong>
+      <p class="section-prose" style="margin-top:1.5rem;">
+        Roguelike mode surfaces these patterns with stakes. Flow mode lets them compound over time. <strong>Roguelike practice makes Flow sessions better. Better Flow = lower daily spend = better scores without even trying.</strong>
       </p>
     </section>
 
     <!-- ── Achievements ── -->
-    <section>
+    <section id="achievements">
       <h2><span>🏆</span>Achievements</h2>
-      <div class="achievements-grid">
-        <div class="achievement-category">Class</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">💎</div>
-          <div class="achievement-info"><h4>Diamond</h4><p>Haiku run under $0.10</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🥇</div>
-          <div class="achievement-info"><h4>Gold</h4><p>Completed with Haiku</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🥈</div>
-          <div class="achievement-info"><h4>Silver</h4><p>Completed with Sonnet</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🥉</div>
-          <div class="achievement-info"><h4>Bronze</h4><p>Completed with Opus</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">⚜️</div>
-          <div class="achievement-info"><h4>Paladin</h4><p>Completed as Paladin (Opus plan mode)</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">♟️</div>
-          <div class="achievement-info"><h4>Grand Strategist</h4><p>LEGENDARY efficiency as Paladin</p></div>
-        </div>
+      <p class="section-sub">60+ achievements across 5 categories. Every session tells a story.</p>
 
-        <div class="achievement-category">Efficiency</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🎯</div>
-          <div class="achievement-info"><h4>Sniper</h4><p>Under 25% of budget used</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">⚡</div>
-          <div class="achievement-info"><h4>Efficient</h4><p>Under 50% of budget used</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🪙</div>
-          <div class="achievement-info"><h4>Penny Pincher</h4><p>Total spend under $0.10</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">💲</div>
-          <div class="achievement-info"><h4>Cheap Shots</h4><p>Under $0.01 per prompt (≥3 prompts)</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🍷</div>
-          <div class="achievement-info"><h4>Expensive Taste</h4><p>Over $0.50 per prompt — won or died</p></div>
-        </div>
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn" role="tab" id="tab-ach-class" aria-selected="true" aria-controls="ach-class" data-panel="ach-class">Class &amp; Efficiency</button>
+        <button class="tab-btn" role="tab" id="tab-ach-combat" aria-selected="false" aria-controls="ach-combat" data-panel="ach-combat">Combat Style</button>
+        <button class="tab-btn" role="tab" id="tab-ach-endurance" aria-selected="false" aria-controls="ach-endurance" data-panel="ach-endurance">Endurance</button>
+        <button class="tab-btn" role="tab" id="tab-ach-arcane" aria-selected="false" aria-controls="ach-arcane" data-panel="ach-arcane">Arcane</button>
+        <button class="tab-btn tab-death" role="tab" id="tab-ach-death" aria-selected="false" aria-controls="ach-death" data-panel="ach-death">Death Marks</button>
+      </div>
 
-        <div class="achievement-category">Effort-Based</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏎️</div>
-          <div class="achievement-info"><h4>Speedrunner</h4><p>Low effort, completed under budget</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏋️</div>
-          <div class="achievement-info"><h4>Tryhard</h4><p>High/Max effort, LEGENDARY efficiency</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">👑</div>
-          <div class="achievement-info"><h4>Archmagus</h4><p>Opus at max effort, completed</p></div>
-        </div>
+      <!-- Class & Efficiency -->
+      <div class="tab-panel active" id="ach-class" role="tabpanel" aria-labelledby="tab-ach-class">
+        <div class="achievements-grid">
+          <div class="ach-sub label-caps">Class Medals</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">💎</div>
+            <div class="achievement-info"><h4>Diamond</h4><p>Haiku run under $0.10</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🥇</div>
+            <div class="achievement-info"><h4>Gold</h4><p>Completed with Haiku</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🥈</div>
+            <div class="achievement-info"><h4>Silver</h4><p>Completed with Sonnet</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🥉</div>
+            <div class="achievement-info"><h4>Bronze</h4><p>Completed with Opus</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">⚜️</div>
+            <div class="achievement-info"><h4>Paladin</h4><p>Completed as Paladin (Opus plan mode)</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">♟️</div>
+            <div class="achievement-info"><h4>Grand Strategist</h4><p>LEGENDARY efficiency as Paladin</p></div>
+          </div>
 
-        <div class="achievement-category">Prompting Skill</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🥊</div>
-          <div class="achievement-info"><h4>One Shot</h4><p>Completed in a single prompt</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">💬</div>
-          <div class="achievement-info"><h4>Conversationalist</h4><p>20+ prompts in one run</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🤐</div>
-          <div class="achievement-info"><h4>Terse</h4><p>≤3 prompts, ≥10 tool calls</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🪑</div>
-          <div class="achievement-info"><h4>Backseat Driver</h4><p>15+ prompts, less than 1 tool call per prompt</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏗️</div>
-          <div class="achievement-info"><h4>High Leverage</h4><p>5+ tool calls per prompt (≥2 prompts)</p></div>
-        </div>
+          <div class="ach-sub label-caps">Budget Efficiency</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🎯</div>
+            <div class="achievement-info"><h4>Sniper</h4><p>Under 25% of budget used</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">⚡</div>
+            <div class="achievement-info"><h4>Efficient</h4><p>Under 50% of budget used</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🪙</div>
+            <div class="achievement-info"><h4>Penny Pincher</h4><p>Total spend under $0.10</p></div>
+          </div>
 
-        <div class="achievement-category">Tool Mastery</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">👁️</div>
-          <div class="achievement-info"><h4>Read Only</h4><p>Won with no Edit or Write calls</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">✏️</div>
-          <div class="achievement-info"><h4>Editor</h4><p>10+ Edit calls in one run</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🐚</div>
-          <div class="achievement-info"><h4>Bash Warrior</h4><p>10+ Bash calls comprising ≥50% of tools</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔍</div>
-          <div class="achievement-info"><h4>Scout</h4><p>≥60% of tool calls were Reads (≥5 total)</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔪</div>
-          <div class="achievement-info"><h4>Surgeon</h4><p>1–3 Edit calls, completed under budget</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🧰</div>
-          <div class="achievement-info"><h4>Toolbox</h4><p>5+ distinct tools used in one run</p></div>
-        </div>
+          <div class="ach-sub label-caps">Cost per Prompt</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">💲</div>
+            <div class="achievement-info"><h4>Cheap Shots</h4><p>Under $0.01 per prompt (≥3 prompts)</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🍷</div>
+            <div class="achievement-info"><h4>Expensive Taste</h4><p>Over $0.50 per prompt (won or died)</p></div>
+          </div>
 
-        <div class="achievement-category">Time</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">⏱️</div>
-          <div class="achievement-info"><h4>Speedrun</h4><p>Completed in under 5 minutes</p></div>
+          <div class="ach-sub label-caps">Effort-Based</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏎️</div>
+            <div class="achievement-info"><h4>Speedrunner</h4><p>Low effort, completed under budget</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏋️</div>
+            <div class="achievement-info"><h4>Tryhard</h4><p>High/Max effort, LEGENDARY efficiency</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">👑</div>
+            <div class="achievement-info"><h4>Archmagus</h4><p>Opus at max effort, completed</p></div>
+          </div>
         </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏃</div>
-          <div class="achievement-info"><h4>Marathon</h4><p>Session 60–180 minutes</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🫠</div>
-          <div class="achievement-info"><h4>Endurance</h4><p>Session over 3 hours</p></div>
-        </div>
+      </div>
 
-        <div class="achievement-category">Extended Thinking</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔮</div>
-          <div class="achievement-info"><h4>Spell Cast</h4><p>Used extended thinking in a won run</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🧮</div>
-          <div class="achievement-info"><h4>Calculated Risk</h4><p>Extended thinking + LEGENDARY efficiency</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🌀</div>
-          <div class="achievement-info"><h4>Deep Thinker</h4><p>3+ thinking invocations, completed under budget</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🤫</div>
-          <div class="achievement-info"><h4>Silent Run</h4><p>No extended thinking, SOLID or better</p></div>
-        </div>
+      <!-- Combat Style -->
+      <div class="tab-panel" id="ach-combat" role="tabpanel" aria-labelledby="tab-ach-combat">
+        <div class="achievements-grid">
+          <div class="ach-sub label-caps">Prompting Skill</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🥊</div>
+            <div class="achievement-info"><h4>One Shot</h4><p>Completed in a single prompt</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">💬</div>
+            <div class="achievement-info"><h4>Conversationalist</h4><p>20+ prompts in one run</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🤐</div>
+            <div class="achievement-info"><h4>Terse</h4><p>≤3 prompts, ≥10 tool calls</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🪑</div>
+            <div class="achievement-info"><h4>Backseat Driver</h4><p>15+ prompts, less than 1 tool call per prompt</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏗️</div>
+            <div class="achievement-info"><h4>High Leverage</h4><p>5+ tool calls per prompt (≥2 prompts)</p></div>
+          </div>
 
-        <div class="achievement-category">Multi-Model</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏹</div>
-          <div class="achievement-info"><h4>Frugal</h4><p>Haiku handled ≥50% of session cost</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🎲</div>
-          <div class="achievement-info"><h4>Rogue Run</h4><p>Haiku handled ≥75% of session cost</p></div>
-        </div>
+          <div class="ach-sub label-caps">Tool Mastery</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">👁️</div>
+            <div class="achievement-info"><h4>Read Only</h4><p>Won with no Edit or Write calls</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">✏️</div>
+            <div class="achievement-info"><h4>Editor</h4><p>10+ Edit calls in one run</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🐚</div>
+            <div class="achievement-info"><h4>Bash Warrior</h4><p>10+ Bash calls comprising ≥50% of tools</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔍</div>
+            <div class="achievement-info"><h4>Scout</h4><p>≥60% of tool calls were Reads (≥5 total)</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔪</div>
+            <div class="achievement-info"><h4>Surgeon</h4><p>1–3 Edit calls, completed under budget</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🧰</div>
+            <div class="achievement-info"><h4>Toolbox</h4><p>5+ distinct tools used in one run</p></div>
+          </div>
 
-        <div class="achievement-category">Paladin Planning Ratio</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏛️</div>
-          <div class="achievement-info"><h4>Architect</h4><p>Opus handled &gt;60% of cost (heavy planner)</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">💨</div>
-          <div class="achievement-info"><h4>Blitz</h4><p>Opus handled &lt;25% of cost (light plan, fast execution)</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">⚖️</div>
-          <div class="achievement-info"><h4>Equilibrium</h4><p>Opus/Sonnet balanced at 40–60%</p></div>
-        </div>
+          <div class="ach-sub label-caps">Tool Reliability</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">✅</div>
+            <div class="achievement-info"><h4>Clean Run</h4><p>Zero failed tool calls (≥5 tool calls total)</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🐂</div>
+            <div class="achievement-info"><h4>Stubborn</h4><p>10+ failed tool calls and still won</p></div>
+          </div>
 
-        <div class="achievement-category">Model Loyalty</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔷</div>
-          <div class="achievement-info"><h4>Purist</h4><p>Single model family throughout</p></div>
+          <div class="ach-sub label-caps">Turn Discipline</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🤖</div>
+            <div class="achievement-info"><h4>Agentic</h4><p>3+ Claude turns per user prompt</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🐕</div>
+            <div class="achievement-info"><h4>Obedient</h4><p>Exactly one turn per prompt (≥3 prompts)</p></div>
+          </div>
         </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🦎</div>
-          <div class="achievement-info"><h4>Chameleon</h4><p>Multiple model families used, under budget</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔀</div>
-          <div class="achievement-info"><h4>Tactical Switch</h4><p>Exactly 1 model switch, under budget</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔒</div>
-          <div class="achievement-info"><h4>Committed</h4><p>No switches, one model family</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">⚠️</div>
-          <div class="achievement-info"><h4>Class Defection</h4><p>Declared one class but cost skewed to another</p></div>
-        </div>
+      </div>
 
-        <div class="achievement-category">Rest &amp; Recovery</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🔥</div>
-          <div class="achievement-info"><h4>No Rest for the Wicked</h4><p>Completed in one session</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🏕️</div>
-          <div class="achievement-info"><h4>Made Camp</h4><p>Completed across multiple sessions</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🧟</div>
-          <div class="achievement-info"><h4>Came Back</h4><p>Fainted (hit usage limits) and finished anyway</p></div>
-        </div>
+      <!-- Endurance -->
+      <div class="tab-panel" id="ach-endurance" role="tabpanel" aria-labelledby="tab-ach-endurance">
+        <div class="achievements-grid">
+          <div class="ach-sub label-caps">Time</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">⏱️</div>
+            <div class="achievement-info"><h4>Speedrun</h4><p>Completed in under 5 minutes</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏃</div>
+            <div class="achievement-info"><h4>Marathon</h4><p>Session 60–180 minutes</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🫠</div>
+            <div class="achievement-info"><h4>Endurance</h4><p>Session over 3 hours</p></div>
+          </div>
 
-        <div class="achievement-category">Context Management</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">📦</div>
-          <div class="achievement-info"><h4>Overencumbered</h4><p>Context auto-compacted during a won run</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🎒</div>
-          <div class="achievement-info"><h4>Traveling Light</h4><p>Manual compact at 41–50% context</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🪶</div>
-          <div class="achievement-info"><h4>Ultralight</h4><p>Manual compact at 31–40% context</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🥷</div>
-          <div class="achievement-info"><h4>Ghost Run</h4><p>Manual compact at ≤30% context</p></div>
-        </div>
+          <div class="ach-sub label-caps">Rest &amp; Recovery</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔥</div>
+            <div class="achievement-info"><h4>No Rest for the Wicked</h4><p>Completed in one session</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏕️</div>
+            <div class="achievement-info"><h4>Made Camp</h4><p>Completed across multiple sessions</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🧟</div>
+            <div class="achievement-info"><h4>Came Back</h4><p>Fainted (hit usage limits) and finished anyway</p></div>
+          </div>
 
-        <div class="achievement-category">Tool Reliability</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">✅</div>
-          <div class="achievement-info"><h4>Clean Run</h4><p>Zero failed tool calls (≥5 tool calls total)</p></div>
+          <div class="ach-sub label-caps">Context Management</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">📦</div>
+            <div class="achievement-info"><h4>Overencumbered</h4><p>Context auto-compacted during a won run</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🎒</div>
+            <div class="achievement-info"><h4>Traveling Light</h4><p>Manual compact at 41–50% context</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🪶</div>
+            <div class="achievement-info"><h4>Ultralight</h4><p>Manual compact at 31–40% context</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🥷</div>
+            <div class="achievement-info"><h4>Ghost Run</h4><p>Manual compact at ≤30% context</p></div>
+          </div>
         </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🐂</div>
-          <div class="achievement-info"><h4>Stubborn</h4><p>10+ failed tool calls and still won</p></div>
-        </div>
+      </div>
 
-        <div class="achievement-category">Subagents</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🐺</div>
-          <div class="achievement-info"><h4>Lone Wolf</h4><p>Completed with no subagents spawned</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">📡</div>
-          <div class="achievement-info"><h4>Summoner</h4><p>5+ subagents spawned in one run</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🪖</div>
-          <div class="achievement-info"><h4>Army of One</h4><p>10+ subagents spawned, under 50% budget used</p></div>
-        </div>
+      <!-- Arcane -->
+      <div class="tab-panel" id="ach-arcane" role="tabpanel" aria-labelledby="tab-ach-arcane">
+        <div class="achievements-grid">
+          <div class="ach-sub label-caps">Extended Thinking</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔮</div>
+            <div class="achievement-info"><h4>Spell Cast</h4><p>Used extended thinking in a won run</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🧮</div>
+            <div class="achievement-info"><h4>Calculated Risk</h4><p>Extended thinking + LEGENDARY efficiency</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🌀</div>
+            <div class="achievement-info"><h4>Deep Thinker</h4><p>3+ thinking invocations, completed under budget</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🤫</div>
+            <div class="achievement-info"><h4>Silent Run</h4><p>No extended thinking, SOLID or better</p></div>
+          </div>
 
-        <div class="achievement-category">Turn Discipline</div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🤖</div>
-          <div class="achievement-info"><h4>Agentic</h4><p>3+ Claude turns per user prompt</p></div>
-        </div>
-        <div class="achievement-card">
-          <div class="achievement-emoji">🐕</div>
-          <div class="achievement-info"><h4>Obedient</h4><p>Exactly one turn per prompt (≥3 prompts)</p></div>
-        </div>
+          <div class="ach-sub label-caps">Multi-Model</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏹</div>
+            <div class="achievement-info"><h4>Frugal</h4><p>Haiku handled ≥50% of session cost</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🎲</div>
+            <div class="achievement-info"><h4>Rogue Run</h4><p>Haiku handled ≥75% of session cost</p></div>
+          </div>
 
-        <div class="achievement-category" style="color:var(--red);">Death Marks</div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">🤦</div>
-          <div class="achievement-info"><h4>Hubris</h4><p>Used extended thinking, busted anyway</p></div>
+          <div class="ach-sub label-caps">Paladin Planning Ratio</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🏛️</div>
+            <div class="achievement-info"><h4>Architect</h4><p>Opus handled &gt;60% of cost (heavy planner)</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">💨</div>
+            <div class="achievement-info"><h4>Blitz</h4><p>Opus handled &lt;25% of cost (light plan, fast execution)</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">⚖️</div>
+            <div class="achievement-info"><h4>Equilibrium</h4><p>Opus/Sonnet balanced at 40–60%</p></div>
+          </div>
+
+          <div class="ach-sub label-caps">Model Loyalty</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔷</div>
+            <div class="achievement-info"><h4>Purist</h4><p>Single model family throughout</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🦎</div>
+            <div class="achievement-info"><h4>Chameleon</h4><p>Multiple model families used, under budget</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔀</div>
+            <div class="achievement-info"><h4>Tactical Switch</h4><p>Exactly 1 model switch, under budget</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🔒</div>
+            <div class="achievement-info"><h4>Committed</h4><p>No switches, one model family</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">⚠️</div>
+            <div class="achievement-info"><h4>Class Defection</h4><p>Declared one class but cost skewed to another</p></div>
+          </div>
+
+          <div class="ach-sub label-caps">Subagents</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🐺</div>
+            <div class="achievement-info"><h4>Lone Wolf</h4><p>Completed with no subagents spawned</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">📡</div>
+            <div class="achievement-info"><h4>Summoner</h4><p>5+ subagents spawned in one run</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🪖</div>
+            <div class="achievement-info"><h4>Army of One</h4><p>10+ subagents spawned, under 50% budget used</p></div>
+          </div>
         </div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">💥</div>
-          <div class="achievement-info"><h4>Blowout</h4><p>Spent 2× your committed budget</p></div>
-        </div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">😭</div>
-          <div class="achievement-info"><h4>So Close</h4><p>Died within 10% of budget</p></div>
-        </div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">🔨</div>
-          <div class="achievement-info"><h4>Tool Happy</h4><p>Died with 30+ tool calls</p></div>
-        </div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">🪦</div>
-          <div class="achievement-info"><h4>Silent Death</h4><p>Died with ≤2 prompts</p></div>
-        </div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">🤡</div>
-          <div class="achievement-info"><h4>Fumble</h4><p>Died with 5+ failed tool calls</p></div>
-        </div>
-        <div class="achievement-card death">
-          <div class="achievement-emoji">🎲</div>
-          <div class="achievement-info"><h4>Indecisive</h4><p>3+ model switches — won or died</p></div>
+      </div>
+
+      <!-- Death Marks -->
+      <div class="tab-panel" id="ach-death" role="tabpanel" aria-labelledby="tab-ach-death">
+        <div class="achievements-grid">
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">🤦</div>
+            <div class="achievement-info"><h4>Hubris</h4><p>Used extended thinking, busted anyway</p></div>
+          </div>
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">💥</div>
+            <div class="achievement-info"><h4>Blowout</h4><p>Spent 2× your committed budget</p></div>
+          </div>
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">😭</div>
+            <div class="achievement-info"><h4>So Close</h4><p>Died within 10% of budget</p></div>
+          </div>
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">🔨</div>
+            <div class="achievement-info"><h4>Tool Happy</h4><p>Died with 30+ tool calls</p></div>
+          </div>
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">🪦</div>
+            <div class="achievement-info"><h4>Silent Death</h4><p>Died with ≤2 prompts</p></div>
+          </div>
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">🤡</div>
+            <div class="achievement-info"><h4>Fumble</h4><p>Died with 5+ failed tool calls</p></div>
+          </div>
+          <div class="card achievement-card death">
+            <div class="achievement-emoji">🎲</div>
+            <div class="achievement-info"><h4>Indecisive</h4><p>3+ model switches (won or died)</p></div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ── CLI Commands ── -->
-    <section>
+    <section id="cli">
       <h2><span>⌨️</span>CLI Commands</h2>
-      <div class="cli-block">
+      <div class="card cli-block">
         <div class="cli-block-header">terminal</div>
         <pre>
 <span class="comment"># Install</span>
@@ -1406,6 +1614,28 @@
     </footer>
 
     <script>
+      /* ── Generic tab switcher (works for any .tab-bar) ── */
+      document.querySelectorAll(".tab-bar").forEach((bar) => {
+        const tabs = bar.querySelectorAll(".tab-btn");
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            tabs.forEach((t) => t.setAttribute("aria-selected", "false"));
+            tab.setAttribute("aria-selected", "true");
+            const section = bar.closest("section");
+            section.querySelectorAll(".tab-panel").forEach((p) => {
+              p.classList.remove("active");
+            });
+            const panel = document.getElementById(tab.dataset.panel);
+            if (panel) {
+              panel.classList.add("active");
+              panel.style.animation = "none";
+              panel.offsetHeight;
+              panel.style.animation = "";
+            }
+          });
+        });
+      });
+
       function copyInstall() {
         const cmd = document.getElementById("install-cmd").value;
         const btn = document.getElementById("copy-btn");
