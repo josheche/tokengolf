@@ -1,6 +1,6 @@
 {
   "name": "tokengolf",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Gamify your Claude Code sessions. Flow mode tracks you. Roguelike mode trains you.",
   "type": "module",
   "bin": {
