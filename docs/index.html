@@ -337,10 +337,16 @@
       }
 
       /* ── Classes table ── */
+      .classes-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
       .classes-table {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.95rem;
+        min-width: 480px;
       }
 
       .classes-table th {
@@ -352,12 +358,14 @@
         text-transform: uppercase;
         padding: 0.6rem 1rem;
         border-bottom: 1px solid var(--border);
+        white-space: nowrap;
       }
 
       .classes-table td {
         padding: 1rem;
         border-bottom: 1px solid var(--border);
         vertical-align: middle;
+        white-space: nowrap;
       }
 
       .classes-table tr:last-child td {
@@ -686,6 +694,7 @@
     <!-- ── Character Classes ── -->
     <section>
       <h2><span>⚔️</span>Character Classes</h2>
+      <div class="classes-table-wrap">
       <table class="classes-table">
         <thead>
           <tr>
@@ -720,6 +729,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </section>
 
     <!-- ── Budget Tiers ── -->
