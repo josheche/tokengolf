@@ -64,85 +64,106 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 ### Achievements
 
 **Class Medals**
-- 💎 Diamond — Haiku under $0.10
 - 🥇 Gold — Completed with Haiku
+- 💎 Diamond — Haiku under $0.10
 - 🥈 Silver — Completed with Sonnet
+- ⚜️ Paladin — Completed as Paladin (Opus plan mode)
+- ♟️ Grand Strategist — LEGENDARY efficiency as Paladin
 - 🥉 Bronze — Completed with Opus
-- ⚜️ Paladin — Completed with Opus in plan mode
 
 **Budget Efficiency**
 - 🎯 Sniper — Under 25% of budget used
 - ⚡ Efficient — Under 50% of budget used
 - 🪙 Penny Pincher — Total spend under $0.10
-- 💸 Blowout *(death mark)* — Spent >200% of budget
-- 😬 So Close *(death mark)* — Died between 95–100% of budget
 
-**Haiku Mastery**
+**Effort-Based**
+- 🏎️ Speedrunner — Low effort, completed under budget
+- 🏋️ Tryhard — High/Max effort, LEGENDARY efficiency
+- 👑 Archmagus — Opus at max effort, completed
+
+**Fast Mode (Opus-only)**
+- ⛈️ Lightning Run — Opus fast mode, completed under budget
+- 🎰 Daredevil — Opus fast mode, LEGENDARY efficiency
+
+**Sessions**
+- 🔥 No Rest for the Wicked — Completed in one session
+- 🏕️ Made Camp — Completed across multiple sessions
+- 🧟 Came Back — Fainted and finished anyway
+
+**Gear (Compaction)**
+- 📦 Overencumbered — Context auto-compacted during run
+- 🥷 Ghost Run — Manual compact at ≤30% context
+- 🪶 Ultralight — Manual compact at 31–40% context
+- 🎒 Traveling Light — Manual compact at 41–50% context
+
+**Ultrathink**
+- 🔮 Spell Cast — Used extended thinking (won)
+- 🧮 Calculated Risk — Ultrathink + LEGENDARY efficiency
+- 🌀 Deep Thinker — ≥3 ultrathink invocations, completed
+- 🤫 Silent Run — No extended thinking, SOLID or better, completed
+
+**Paladin Planning Ratio**
+- 🏛️ Architect — Opus handled >60% of cost (heavy planner)
+- 💨 Blitz — Opus handled <25% of cost (light plan, fast execution)
+- ⚖️ Equilibrium — Opus/Sonnet balanced at 40–60%
+
+**Model Loyalty (non-Paladin)**
+- 🔷 Purist — Single model family throughout
+- 🦎 Chameleon — Multiple model families used, under budget
+- 🔀 Tactical Switch — Exactly 1 model switch, under budget
+- 🔒 Committed — No switches, one model family
+- ⚠️ Class Defection — Declared one class but cost skewed to another
+
+**Haiku Efficiency**
 - 🏹 Frugal — Haiku handled ≥50% of session cost
 - 🎲 Rogue Run — Haiku handled ≥75% of session cost
 
 **Prompting Skill**
-- 🤫 One-Liner — Completed in 1 prompt
-- 🎯 Surgical — Completed in ≤3 prompts
-- 🪶 Minimal — Completed in ≤5 prompts
-- 💬 Chatty — Completed in ≥20 prompts
-- 🌊 Overflow — Completed in ≥50 prompts
-- 🤐 Indecisive *(death mark)* — Died after ≥30 prompts with no result
+- 🥊 One Shot — Completed in a single prompt
+- 💬 Conversationalist — ≥20 prompts
+- 🤐 Terse — ≤3 prompts, ≥10 tool calls
+- 🪑 Backseat Driver — ≥15 prompts, <1 tool call per prompt
+- 🏗️ High Leverage — ≥5 tools per prompt (≥2 prompts)
 
 **Tool Mastery**
-- 🔬 Focused — ≤10 total tool calls
-- 🛠️ Craftsman — 11–30 total tool calls
-- 🏗️ Builder — 31–100 total tool calls
-- 🤖 Automator — >100 total tool calls
-- 🔧 Tool Happy *(death mark)* — Died with >100 tool calls
-- 💀 Fumble *(death mark)* — Died with >10 failed tool calls
+- 👁️ Read Only — No Edit or Write calls (≥1 Read)
+- ✏️ Editor — ≥10 Edit calls
+- 🐚 Bash Warrior — ≥10 Bash calls, ≥50% of tool usage
+- 🔍 Scout — ≥60% Read calls (≥5 total)
+- 🔪 Surgeon — 1–3 Edit calls, completed under budget
+- 🧰 Toolbox — ≥5 distinct tool types used
 
 **Cost per Prompt**
-- 💡 Laser — Cost per prompt < $0.01
-- 📊 Measured — Cost per prompt $0.01–$0.05
-- 🔥 Burning — Cost per prompt > $0.10
-- 💰 Expensive Taste *(death mark)* — Died with cost/prompt > $0.05
+- 💲 Cheap Shots — Under $0.01 per prompt (≥3 prompts)
+- 🍷 Expensive Taste — Over $0.50 per prompt (≥3 prompts; also a death mark)
 
-**Time / Sessions**
-- ⚡ Speed Run — Won in single session under 10 min
-- 🌙 Night Owl — Run started between midnight and 5am
-- 🏃 Sprint — Completed in <5 min
-- 📅 Marathon — Run spanned multiple sessions
-- 🕰️ Slow Burn — Completed in >2 hours
+**Time**
+- ⏱️ Speedrun — Completed in under 5 minutes
+- 🏃 Marathon — Session 60–180 minutes
+- 🫠 Endurance — Session over 3 hours
+
+**Tool Reliability**
+- ✅ Clean Run — Zero failed tool calls (≥5 total tool uses)
+- 🐂 Stubborn — ≥10 failed tool calls, still won
 
 **Subagents**
-- 👤 Solo — No subagents spawned
-- 👥 Duo — 1–2 subagents spawned
-- 🎪 Orchestrator — ≥5 subagents spawned
-- 🌐 Hivemind — ≥10 subagents spawned
+- 🐺 Lone Wolf — No subagents spawned
+- 📡 Summoner — ≥5 subagents spawned
+- 🪖 Army of One — ≥10 subagents, under 50% budget used
 
 **Turn Discipline**
-- 🎯 Decisive — Won in ≤5 turns
-- 🤔 Deliberate — Won in 6–20 turns
-- 📜 Verbose — Won in >50 turns
+- 🤖 Agentic — ≥3 Claude turns per user prompt
+- 🐕 Obedient — Exactly 1 turn per prompt (≥3 prompts)
 
-**Gear (Context Window)**
-- 👻 Ghost Run — No compaction events
-- 🪶 Ultralight — Peak context < 50%
-- 🎒 Traveling Light — Peak context 50–74%
-- 📦 Overencumbered — Peak context ≥90%
-
-**Ultrathink**
-- 🧠 Deep Thinker — Used ultrathink ≥1 time
-- 🔮 Oracle — Used ultrathink ≥5 times
-- 🌀 Transcendent — Used ultrathink ≥10 times
-- 🤫 Silent Run — Won without using ultrathink
-- 💥 Hubris *(death mark)* — Died after using ultrathink
-
-**Death Marks (fire on bust/death only)**
-- 💸 Blowout — >200% budget
-- 😬 So Close — 95–100% budget
-- 🔧 Tool Happy — >100 tool calls
-- 🤫 Silent Death — Died with 0 ultrathink
-- 💀 Fumble — >10 failed tool calls
-- 💰 Expensive Taste — cost/prompt > $0.05
-- 🤐 Indecisive — ≥30 prompts, no result
-- 💥 Hubris — Died after ultrathink
+**Death Marks** *(fire before won-only cutoff; some also fire on won runs)*
+- 🎲 Indecisive — ≥3 model switches *(won or died)*
+- 🤦 Hubris — Used ultrathink, busted anyway
+- 💥 Blowout — Spent ≥2× budget
+- 😭 So Close — Died within 10% of budget
+- 🔨 Tool Happy — Died with ≥30 tool calls
+- 🪦 Silent Death — Died with ≤2 prompts
+- 🤡 Fumble — Died with ≥5 failed tool calls
+- 🍷 Expensive Taste — Over $0.50/prompt *(won or died)*
 
 ---
 
@@ -185,7 +206,7 @@ tokengolf/
 │       ├── cost.js               # Auto-detect cost from ~/.claude/ transcripts
 │       ├── install.js            # Patches ~/.claude/settings.json with hooks
 │       └── __tests__/
-│           └── score.test.js     # Vitest: 83 tests covering achievements + pure functions
+│           └── score.test.js     # Vitest: 120 tests covering achievements + pure functions
 ├── hooks/
 │   ├── session-start.js          # Injects run context; auto-creates flow run
 │   ├── session-end.js            # Captures cost on /exit; saves run; renders scorecard
@@ -311,22 +332,23 @@ Nine hooks in `hooks/` directory, installed via `tokengolf install`. Most comple
 ### `PostToolUseFailure` (`post-tool-use-failure.js`)
 - Reads stdin (event JSON with `tool_name` and error info)
 - Increments `failedToolCalls` in `current-run.json`
-- Powers Fumble death achievement (>10 failed tool calls)
+- Powers Fumble death mark (≥5 failed tool calls)
 
 ### `SubagentStart` (`subagent-start.js`)
 - Reads stdin (subagent event JSON)
 - Increments `subagentSpawns` in `current-run.json`
-- Powers Solo/Duo/Orchestrator/Hivemind achievements
+- Powers Lone Wolf / Summoner / Army of One achievements
 
 ### `Stop` (`stop.js`)
 - Reads stdin for turn data
 - Increments `turnCount` in `current-run.json`
-- Powers Decisive/Deliberate/Verbose turn discipline achievements
+- Powers Agentic / Obedient turn discipline achievements
 
 ### `StatusLine` (`statusline.sh`)
 - Bash script; uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict
 - Receives live session JSON (cost, context %, model) via stdin
 - Shows: quest/mode | tier emoji + cost [/budget pct%] | [efficiency rating] | [🪶/🎒/📦 ctx%] | model label | [floor]
+- Model label: `⚔️ Sonnet`, `⚔️ Sonnet·High`, `🏹 Haiku`, `🧙 Opus·Max`, etc. Effort appended only when explicitly set in settings.json (medium omitted — it's the default)
 - Context load: 🪶 green (50–74%), 🎒 yellow (75–89%), 📦 red (90%+); hidden below 50%
 - Separator lines (`───────────────`) above and below HUD row
 - statusLine config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`
@@ -364,7 +386,7 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 
 6. **Ultrathink is natural language, not a slash command** — Writing `ultrathink` in a prompt triggers extended thinking mode. It's tracked via thinking blocks in transcripts, not via any hook. `thinkingInvocations === 0` on a won run = Silent Run achievement; on a died run with invocations > 0 = Hubris death mark.
 
-7. **Death marks fire before the early return** — `calculateAchievements` has an `if (!won) return []` early exit, but 8 death marks (blowout, so_close, tool_happy, silent_death, fumble, expensive_taste, indecisive, hubris) fire before it. They are marks of cause-of-death, not consolation prizes.
+7. **Death marks fire before the early return** — `calculateAchievements` has an `if (!won) return []` early exit, but death marks (blowout, so_close, tool_happy, silent_death, fumble, expensive_taste, hubris) fire before it. `indecisive` (model switches) and `expensive_taste` also fire on won runs — they're behavior patterns, not death verdicts.
 
 ---
 
@@ -395,7 +417,7 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 - [x] Paladin (⚜️ opusplan) character class with model-aware budgets and statusline support
 - [x] 28 new achievements: prompting skill, tool mastery, cost/prompt, time, subagents, turn discipline, death marks
 - [x] 3 new hooks: PostToolUseFailure, SubagentStart, Stop
-- [x] Vitest test suite — 83 tests covering all achievements + pure score functions
+- [x] Vitest test suite — 120 tests covering all achievements + pure score functions
 
 ### Next up (v0.4)
 - [ ] `tokengolf floor` command to advance floor manually

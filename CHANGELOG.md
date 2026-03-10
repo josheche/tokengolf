@@ -6,6 +6,11 @@ TokenGolf patch notes — what changed, what it measures, and why the mechanic e
 
 ## [Unreleased]
 
+### Fixed
+- StatusLine HUD effort label now reads exclusively from live `settings.json` — `/model` changes (High, Low, Max) reflect immediately without requiring a new session
+- Medium effort no longer shown in HUD or scorecard — it's the default, so it's omitted (same as not annotating Sonnet as "normal difficulty")
+- Scorecard `modelSuffix` no longer suppressed effort when stored as 'medium' — effort label now shows whenever explicitly stored in run state
+
 ---
 
 ## [0.3.x] — 2026-03-09

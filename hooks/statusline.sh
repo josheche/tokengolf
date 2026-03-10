@@ -29,12 +29,12 @@ else:                 model, model_emoji = '?',        '?'
 try:
     with open(os.path.expanduser('~/.claude/settings.json')) as _sf: _s = json.load(_sf)
 except: _s = {}
-effort  = _s.get('effortLevel') or run.get('effort')
+effort  = _s.get('effortLevel')
 fast    = run.get('fastMode', False)
 fainted = run.get('fainted', False)
 
 label_parts = [f'{model_emoji} {model}']
-if effort and effort != 'medium': label_parts.append(effort.capitalize())
+if effort: label_parts.append(effort.capitalize())
 if fast: label_parts.append('⚡Fast')
 model_label = '·'.join(label_parts)
 

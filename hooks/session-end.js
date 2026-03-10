@@ -130,7 +130,7 @@ function renderScorecard(run) {
 
   const effortInfo = run.effort ? getEffortLevel(run.effort) : null;
   const modelSuffix = [
-    run.effort && run.effort !== 'medium' && effortInfo ? effortInfo.label : null,
+    run.effort && effortInfo ? effortInfo.label : null,
     run.fastMode ? '⚡Fast' : null,
   ]
     .filter(Boolean)
