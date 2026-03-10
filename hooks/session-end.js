@@ -2,6 +2,7 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const { autoDetectCost } = await import(path.join(__dir, '../src/lib/cost.js'));
@@ -195,19 +196,29 @@ try {
     event = JSON.parse(stdin);
   } catch {}
   const reason = event.reason || 'other';
-  // Claude Code reports authoritative session cost in the event — prefer it over transcript recomputation
+
+  // Read authoritative cost from StatusLine sidecar (same source as the HUD)
+  let liveCost = null;
+  try {
+    const raw = fs
+      .readFileSync(path.join(os.homedir(), '.tokengolf', 'session-cost'), 'utf8')
+      .trim();
+    const parsed = parseFloat(raw);
+    if (!isNaN(parsed) && parsed > 0) liveCost = parsed;
+  } catch {}
+  // SessionEnd event may also carry cost (future-proofing)
   const eventCost = event.cost?.total_cost_usd ?? null;
+  // Priority: liveCost (StatusLine sidecar) > eventCost > transcript parsing
+  const authoritativeCost = liveCost ?? eventCost;
 
   const run = getCurrentRun();
   if (!run || run.status !== 'active') process.exit(0);
 
   let result = autoDetectCost(run);
-  if (!result && eventCost === null) process.exit(0); // no data at all, nothing to save
-  // If transcripts not found but we have the event cost, build a minimal result
-  if (!result)
-    result = { spent: eventCost, modelBreakdown: {}, thinkingInvocations: 0, thinkingTokens: 0 };
-  // Always prefer event cost (Claude Code's authoritative total) over transcript recomputation
-  if (eventCost !== null) result.spent = eventCost;
+  if (!result && authoritativeCost === null) process.exit(0); // no data at all
+  if (!result) result = { spent: 0, modelBreakdown: {}, thinkingInvocations: 0, thinkingTokens: 0 };
+  // Always prefer authoritative cost over manual transcript recomputation
+  if (authoritativeCost !== null) result.spent = authoritativeCost;
 
   // reason 'other' = unexpected exit (usage limit hit = Fainted)
   // clean exits: 'clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'
@@ -251,6 +262,10 @@ try {
   });
 
   clearCurrentRun();
+  // Clean up sidecar cost file
+  try {
+    fs.unlinkSync(path.join(os.homedir(), '.tokengolf', 'session-cost'));
+  } catch {}
 
   writeTTY('\n' + renderScorecard(saved) + '\n\n');
 } catch {

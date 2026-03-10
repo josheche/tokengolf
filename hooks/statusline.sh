@@ -15,6 +15,10 @@ try:
 except: sys.exit(0)
 
 cost    = (session.get('cost') or {}).get('total_cost_usd') or run.get('spent', 0)
+# Persist CC's authoritative cost so session-end can read it (SessionEnd doesn't receive cost in stdin)
+try:
+    with open(os.path.join(os.path.expanduser('~'), '.tokengolf', 'session-cost'), 'w') as _cf: _cf.write(str(cost))
+except: pass
 ctx_pct = (session.get('context_window') or {}).get('used_percentage') or None
 quest   = (run.get('quest') or 'Flow')[:32]
 budget  = run.get('budget')
