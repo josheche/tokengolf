@@ -232,6 +232,17 @@ try {
     result.spent = authoritativeCost;
   }
 
+  // Merge model breakdown by family (e.g. claude-opus-4-6 + claude-opus-4-20250514 → Opus)
+  if (result.modelBreakdown && Object.keys(result.modelBreakdown).length > 0) {
+    const merged = {};
+    for (const [model, cost] of Object.entries(result.modelBreakdown)) {
+      const m = model.toLowerCase();
+      const family = m.includes('haiku') ? 'Haiku' : m.includes('sonnet') ? 'Sonnet' : 'Opus';
+      merged[family] = (merged[family] || 0) + cost;
+    }
+    result.modelBreakdown = merged;
+  }
+
   // reason 'other' = unexpected exit (usage limit hit = Fainted)
   // clean exits: 'clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'
   const cleanExits = ['clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'];

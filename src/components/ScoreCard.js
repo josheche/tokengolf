@@ -175,11 +175,12 @@ export function ScoreCard({ run }) {
             </Box>
             <Box gap={3} flexWrap="wrap">
               {Object.entries(run.modelBreakdown).map(([model, cost]) => {
-                const short = model.includes('haiku')
+                const m = model.toLowerCase();
+                const short = m.includes('haiku')
                   ? 'Haiku'
-                  : model.includes('sonnet')
+                  : m.includes('sonnet')
                     ? 'Sonnet'
-                    : model.includes('opusplan')
+                    : m.includes('opusplan') || m.includes('paladin')
                       ? 'Paladin'
                       : 'Opus';
                 const pctOfTotal = Math.round((cost / run.spent) * 100);
