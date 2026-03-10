@@ -218,7 +218,19 @@ try {
   if (!result && authoritativeCost === null) process.exit(0); // no data at all
   if (!result) result = { spent: 0, modelBreakdown: {}, thinkingInvocations: 0, thinkingTokens: 0 };
   // Always prefer authoritative cost over manual transcript recomputation
-  if (authoritativeCost !== null) result.spent = authoritativeCost;
+  if (authoritativeCost !== null) {
+    // Scale model breakdown to match authoritative total (transcript ratios are correct, amounts are not)
+    if (result.modelBreakdown && Object.keys(result.modelBreakdown).length > 0) {
+      const parsedTotal = Object.values(result.modelBreakdown).reduce((s, v) => s + v, 0);
+      if (parsedTotal > 0) {
+        const scale = authoritativeCost / parsedTotal;
+        for (const model of Object.keys(result.modelBreakdown)) {
+          result.modelBreakdown[model] *= scale;
+        }
+      }
+    }
+    result.spent = authoritativeCost;
+  }
 
   // reason 'other' = unexpected exit (usage limit hit = Fainted)
   // clean exits: 'clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'
