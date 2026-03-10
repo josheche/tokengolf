@@ -195,12 +195,19 @@ try {
     event = JSON.parse(stdin);
   } catch {}
   const reason = event.reason || 'other';
+  // Claude Code reports authoritative session cost in the event — prefer it over transcript recomputation
+  const eventCost = event.cost?.total_cost_usd ?? null;
 
   const run = getCurrentRun();
   if (!run || run.status !== 'active') process.exit(0);
 
-  const result = autoDetectCost(run);
-  if (!result) process.exit(0); // no transcripts found, nothing to save
+  let result = autoDetectCost(run);
+  if (!result && eventCost === null) process.exit(0); // no data at all, nothing to save
+  // If transcripts not found but we have the event cost, build a minimal result
+  if (!result)
+    result = { spent: eventCost, modelBreakdown: {}, thinkingInvocations: 0, thinkingTokens: 0 };
+  // Always prefer event cost (Claude Code's authoritative total) over transcript recomputation
+  if (eventCost !== null) result.spent = eventCost;
 
   // reason 'other' = unexpected exit (usage limit hit = Fainted)
   // clean exits: 'clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'
