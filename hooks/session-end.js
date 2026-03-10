@@ -21,6 +21,35 @@ function writeTTY(text) {
   }
 }
 
+function termWidth(str) {
+  // Compute display width of a string, handling emoji variation selectors and surrogates.
+  // - Supplementary plane chars (> U+FFFF) → 2 cols
+  // - U+FE0F (emoji variation selector after BMP char) → upgrades prev from 1→2, adds 0 itself
+  // - U+FE0F after supplementary → 0 (already 2)
+  // - U+FE0E, ZWJ, zero-width chars → 0
+  // - Everything else → 1
+  /* eslint-disable no-control-regex */
+  const plain = str.replace(/\x1b\[[0-9;]*m/g, '');
+  /* eslint-enable no-control-regex */
+  const cps = [...plain].map((c) => c.codePointAt(0));
+  let width = 0;
+  for (let i = 0; i < cps.length; i++) {
+    const cp = cps[i];
+    if (cp === 0xfe0f) {
+      // Emoji presentation selector: if previous was a narrow BMP char, upgrade it to 2
+      if (i > 0 && cps[i - 1] <= 0xffff && cps[i - 1] !== 0x200d) width += 1;
+      continue;
+    }
+    if (cp === 0xfe0e || cp === 0x200d || (cp >= 0x200b && cp <= 0x200f)) continue;
+    if (cp > 0xffff) {
+      width += 2;
+      continue;
+    }
+    width += 1;
+  }
+  return width;
+}
+
 function renderScorecard(run) {
   const W = Math.min(Math.max((process.stdout.columns || 88) - 4, 72), 120);
   const won = run.status === 'won';
@@ -55,9 +84,7 @@ function renderScorecard(run) {
     return bc + bl + h.repeat(W) + br + RESET;
   }
   function row(content) {
-    // Strip ANSI for length calculation
-    const plain = content.replace(/\x1b\[[0-9;]*m/g, ''); // eslint-disable-line no-control-regex
-    const pad = Math.max(0, W - plain.length - 2);
+    const pad = Math.max(0, W - termWidth(content) - 2);
     return bc + v + RESET + ' ' + content + ' '.repeat(pad) + ' ' + bc + v + RESET;
   }
 
@@ -118,8 +145,7 @@ function renderScorecard(run) {
   let currentLine = '';
   for (const token of achTokens) {
     const sep = currentLine ? '  ' : '';
-    // eslint-disable-next-line no-control-regex
-    const testLen = (currentLine + sep + token).replace(/\u001b\[[0-9;]*m/g, '').length;
+    const testLen = termWidth(currentLine + sep + token);
     if (currentLine && testLen > W - 2) {
       achLines.push(currentLine);
       currentLine = token;
