@@ -26,7 +26,10 @@ elif 'haiku'    in m: model, model_emoji = 'Haiku',   '🏹'
 elif 'sonnet'   in m: model, model_emoji = 'Sonnet',  '⚔️'
 elif 'opus'     in m: model, model_emoji = 'Opus',    '🧙'
 else:                 model, model_emoji = '?',        '?'
-effort  = run.get('effort')
+try:
+    with open(os.path.expanduser('~/.claude/settings.json')) as _sf: _s = json.load(_sf)
+except: _s = {}
+effort  = _s.get('effortLevel') or run.get('effort')
 fast    = run.get('fastMode', False)
 fainted = run.get('fainted', False)
 
