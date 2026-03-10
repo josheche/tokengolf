@@ -10,9 +10,9 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 
 ---
 
-<!-- SCREENSHOT: tokengolf start wizard — quest/class/effort/budget selection -->
-
----
+<p align="center">
+  <img src="assets/demo-hud.png" alt="TokenGolf HUD — all game states" width="720" />
+</p>
 
 ## Why "TokenGolf"?
 
@@ -232,32 +232,19 @@ After `tokengolf install`, a status line appears in every Claude Code session:
 - **💤** instead of ⛳ if the previous session fainted (hit usage limits)
 - Roguelike runs show floor progress; Flow runs omit budget/efficiency
 
-Run `tokengolf demo` to see all HUD states rendered in your terminal:
-
-![TokenGolf HUD demo — all game states](assets/demo-hud.png)
+Run `tokengolf demo` to see all HUD states rendered in your terminal.
 
 ---
 
 ## Auto Scorecard
 
-When you `/exit` a Claude Code session, the scorecard appears automatically:
+When you `/exit` a Claude Code session, the scorecard appears automatically — cost, model breakdown, achievements, ultrathink stats, tool usage.
 
-```
-╔════════════════════════════════════════════════════════════════════╗
-║  🏆  SESSION COMPLETE                                              ║
-║  implement pagination for /users                                   ║
-╠════════════════════════════════════════════════════════════════════╣
-║  $0.18/$0.50  36%  ⚡ EFFICIENT  ⚔️ Sonnet·High  🥇 Gold           ║
-╠════════════════════════════════════════════════════════════════════╣
-║  🔮 1 ultrathink invocation  ~8.4K thinking tokens                ║
-╠════════════════════════════════════════════════════════════════════╣
-║  🥈 silver_sonnet  🎯 sniper  🔮 spell_cast  🧮 calculated_risk    ║
-╠════════════════════════════════════════════════════════════════════╣
-║  tokengolf scorecard  ·  tokengolf start  ·  tokengolf stats      ║
-╚════════════════════════════════════════════════════════════════════╝
-```
+<p align="center">
+  <img src="assets/scorecard.png" alt="TokenGolf scorecard — session complete" width="620" />
+</p>
 
-<!-- SCREENSHOT: Auto-displayed scorecard after /exit in Claude Code terminal -->
+*Real scorecard from building TokenGolf itself. $40 flow session, 27 ultrathink invocations, Class Defection for declaring Sonnet but spending 89% on Opus. The game plays you back.*
 
 ---
 
