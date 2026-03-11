@@ -17,7 +17,8 @@
     "format": "prettier --write src/ hooks/",
     "format:check": "prettier --check src/ hooks/",
     "version": "git add CHANGELOG.md",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "postpublish": "./scripts/update-homebrew.sh"
   },
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
