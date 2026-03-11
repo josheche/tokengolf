@@ -90,7 +90,8 @@ parts = [f" {accent}██{RESET} {icon} {quest}  {cost_str}{rating_str}  {model
 if budget: parts.append(f"  {DIM}{floor}{RESET}")
 line1 = ''.join(parts)
 
-# Output
+# Output (leading blank line separates from any existing statusline above)
+print()
 print(line1)
 if ctx_line: print(ctx_line)
 PYEOF
