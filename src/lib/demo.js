@@ -25,7 +25,8 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
   }
 
   const labelParts = [`${modelEmoji} ${modelName}`];
-  if (effort) labelParts.push(effort.charAt(0).toUpperCase() + effort.slice(1));
+  if (effort && effort !== 'medium')
+    labelParts.push(effort.charAt(0).toUpperCase() + effort.slice(1));
   const modelLabel = labelParts.join('·');
 
   let tierEmoji;
@@ -35,8 +36,7 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
   else if (cost < 3.0) tierEmoji = '🥉';
   else tierEmoji = '💸';
 
-  const sep = ` ${DIM}|${RESET} `;
-  let costStr, ratingStr;
+  let costStr, ratingStr, accent;
 
   if (budget) {
     const pct = (cost / budget) * 100;
@@ -57,29 +57,47 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
       rating = 'BUSTED';
       rc = R;
     }
-    costStr = `${tierEmoji} $${cost.toFixed(4)}/$${budget.toFixed(2)} ${pct.toFixed(0)}%`;
-    ratingStr = `${rc}${rating}${RESET}`;
+    accent = pct > 75 ? R : Y;
+    // Budget progress bar
+    const barW = 11;
+    const barFilled = Math.min(barW, Math.round((pct / 100) * barW));
+    const barEmpty = barW - barFilled;
+    const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
+    costStr = `${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${budget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
+    ratingStr = `  ${rc}${rating}${RESET}`;
   } else {
-    costStr = `${tierEmoji} $${cost.toFixed(4)}`;
-    ratingStr = null;
+    accent = Y;
+    costStr = `${tierEmoji} $${cost.toFixed(2)}`;
+    ratingStr = '';
   }
 
-  let ctxStr = null;
-  if (ctxPct != null) {
-    if (ctxPct >= 90) ctxStr = `${R}📦 ${ctxPct}%${RESET}`;
-    else if (ctxPct >= 75) ctxStr = `${Y}🎒 ${ctxPct}%${RESET}`;
-    else if (ctxPct >= 50) ctxStr = `${G}🪶 ${ctxPct}%${RESET}`;
+  // Context bar (line 2, only shown when >= 50%)
+  let ctxLine = null;
+  if (ctxPct != null && ctxPct >= 50) {
+    const ctxW = 10;
+    const ctxFilled = Math.min(ctxW, Math.round((ctxPct / 100) * ctxW));
+    const ctxEmpty = ctxW - ctxFilled;
+    let ctxColor, ctxIcon;
+    if (ctxPct >= 90) {
+      ctxColor = R;
+      ctxIcon = '📦';
+    } else if (ctxPct >= 75) {
+      ctxColor = Y;
+      ctxIcon = '🎒';
+    } else {
+      ctxColor = G;
+      ctxIcon = '🪶';
+    }
+    const ctxBar = `${ctxColor}${'▓'.repeat(ctxFilled)}${'░'.repeat(ctxEmpty)}${RESET}`;
+    ctxLine = ` ${accent}██${RESET} 🧠 ${ctxBar} ${ctxPct}% ${ctxIcon}`;
   }
 
+  // Line 1: accent bar + quest + cost bar + rating + model + floor
   const icon = fainted ? '💤' : '⛳';
-  const prefix = `${BOLD}${C}${icon}${RESET}`;
-  const parts = [`${prefix} ${quest}`, costStr];
-  if (ratingStr) parts.push(ratingStr);
-  if (ctxStr) parts.push(ctxStr);
-  parts.push(`${C}${modelLabel}${RESET}`);
-  if (budget && floor) parts.push(`Floor ${floor}`);
+  let line1 = ` ${accent}██${RESET} ${icon} ${quest}  ${costStr}${ratingStr}  ${modelLabel}`;
+  if (budget && floor) line1 += `  ${DIM}F${floor}${RESET}`;
 
-  return `${DIM} ───────────────${RESET}\n${parts.join(sep)}\n${DIM} ───────────────${RESET}`;
+  return ctxLine ? `${line1}\n${ctxLine}` : line1;
 }
 
 const SCENARIOS = [

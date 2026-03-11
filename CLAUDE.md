@@ -347,10 +347,13 @@ Nine hooks in `hooks/` directory, installed via `tokengolf install`. Most comple
 ### `StatusLine` (`statusline.sh`)
 - Bash script; uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict
 - Receives live session JSON (cost, context %, model) via stdin
-- Shows: quest/mode | tier emoji + cost [/budget pct%] | [efficiency rating] | [🪶/🎒/📦 ctx%] | model label | [floor]
+- **Design D accent bar**: `██` prefix on each line, color-coded (yellow normal, red when budget >75%)
+- Line 1: `██ ⛳ quest  $cost/budget ▓▓▓░░░ pct%  RATING  model  F1/5`
+- Line 2 (optional, when context ≥50%): `██ 🧠 ▓▓▓▓░░░ ctx% 🪶/🎒/📦`
+- Budget progress bar: `▓` filled, `░` empty, 11 chars wide. Red when >75%, yellow otherwise
+- Context progress bar: `▓░` 10 chars wide. Green (50–74%), yellow (75–89%), red (90%+); hidden below 50%
 - Model label: `⚔️ Sonnet`, `⚔️ Sonnet·High`, `🏹 Haiku`, `🧙 Opus·Max`, etc. Effort appended only when explicitly set in settings.json (medium omitted — it's the default)
-- Context load: 🪶 green (50–74%), 🎒 yellow (75–89%), 📦 red (90%+); hidden below 50%
-- Separator lines (`───────────────`) above and below HUD row
+- 1 line when context <50% (flow mode is often just 1 line), 2 lines when context visible
 - statusLine config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`
 
 ### Hook installation

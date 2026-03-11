@@ -253,16 +253,13 @@ Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is 
 After `tokengolf install`, a status line appears in every Claude Code session showing quest, cost, efficiency, context load, and model class.
 
 ```
- ───────────────
- ⛳ add pagination to /users | 🥈 $0.54/$1.50 36% | EFFICIENT | ⚔️ Sonnet | Floor 2/5
- ───────────────
+██ ⛳ add pagination to /users  $0.54/1.50 ▓▓▓▓░░░░░░░ 36%  EFFICIENT  ⚔️ Sonnet  F2/5
 
- ───────────────
- ⛳ refactor auth middleware | 🥈 $0.82/$4.00 21% | LEGENDARY | 🪶 52% | 🧙 Opus | Floor 3/5
- ───────────────
+██ ⛳ refactor auth middleware  $0.82/4.00 ▓▓░░░░░░░░░ 21%  LEGENDARY  🧙 Opus  F3/5
+██ 🧠 ▓▓▓▓▓░░░░░ 52% 🪶
 ```
 
-Context indicators: **🪶** green (50–74%) · **🎒** yellow (75–89%) · **📦** red (90%+). **💤** replaces ⛳ if the previous session fainted.
+Budget bar turns red above 75%. Context bar (line 2) appears at 50%+: **🪶** green · **🎒** yellow · **📦** red. Accent `██` turns red in danger. **💤** replaces ⛳ when fainted.
 
 ---
 
