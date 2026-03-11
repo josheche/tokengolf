@@ -23,10 +23,10 @@ function writeTTY(text) {
 }
 
 function termWidth(str) {
-  // Compute display width of a string, handling emoji variation selectors and surrogates.
+  // Compute display width of a string for achievement line wrapping.
+  // Handles emoji variation selectors and surrogates:
   // - Supplementary plane chars (> U+FFFF) → 2 cols
-  // - U+FE0F (emoji variation selector after BMP char) → upgrades prev from 1→2, adds 0 itself
-  // - U+FE0F after supplementary → 0 (already 2)
+  // - U+FE0F (emoji variation selector after BMP char) → upgrades prev from 1→2
   // - U+FE0E, ZWJ, zero-width chars → 0
   // - Everything else → 1
   /* eslint-disable no-control-regex */
@@ -52,7 +52,7 @@ function termWidth(str) {
 }
 
 function renderScorecard(run) {
-  const W = Math.min(Math.max((process.stdout.columns || 88) - 4, 72), 120);
+  const W = Math.min(Math.max((process.stdout.columns || 88) - 8, 40), 80);
   const won = run.status === 'won';
   const flowMode = !run.budget;
 
@@ -65,28 +65,13 @@ function renderScorecard(run) {
     RESET = '\x1b[0m',
     BOLD = '\x1b[1m';
   const bc = won ? Y : R;
+  const BLK = '██';
 
-  const tl = '╔',
-    tr = '╗',
-    bl = '╚',
-    br = '╝';
-  const h = '═',
-    v = '║';
-  const ml = '╠',
-    mr = '╣';
-
-  function bar() {
-    return bc + ml + h.repeat(W) + mr + RESET;
-  }
-  function top() {
-    return bc + tl + h.repeat(W) + tr + RESET;
-  }
-  function bot() {
-    return bc + bl + h.repeat(W) + br + RESET;
-  }
   function row(content) {
-    const pad = Math.max(0, W - termWidth(content) - 2);
-    return bc + v + RESET + ' ' + content + ' '.repeat(pad) + ' ' + bc + v + RESET;
+    return bc + BLK + RESET + '  ' + content;
+  }
+  function bar() {
+    return bc + BLK + RESET + '  ' + DIM + '─'.repeat(W) + RESET;
   }
 
   const mc = getModelClass(run.model);
@@ -147,7 +132,7 @@ function renderScorecard(run) {
   for (const token of achTokens) {
     const sep = currentLine ? '  ' : '';
     const testLen = termWidth(currentLine + sep + token);
-    if (currentLine && testLen > W - 2) {
+    if (currentLine && testLen > W) {
       achLines.push(currentLine);
       currentLine = token;
     } else {
@@ -160,7 +145,7 @@ function renderScorecard(run) {
   const thinkRow =
     ti > 0 ? `${M}🔮 ${ti} ultrathink${ti > 1 ? ' invocations' : ' invocation'}${RESET}` : null;
 
-  const lines = [top(), row(header), row(questStr), bar(), row(midRow)];
+  const lines = ['', row(header), row(questStr), bar(), row(midRow)];
 
   if (thinkRow) {
     lines.push(bar());
@@ -180,7 +165,7 @@ function renderScorecard(run) {
       `${DIM}tokengolf scorecard${RESET}  ·  ${DIM}tokengolf start${RESET}  ·  ${DIM}tokengolf stats${RESET}`
     )
   );
-  lines.push(bot());
+  lines.push('');
 
   return lines.join('\n');
 }

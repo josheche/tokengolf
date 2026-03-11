@@ -388,9 +388,11 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 
 7. **Death marks fire before the early return** — `calculateAchievements` has an `if (!won) return []` early exit, but death marks (blowout, so_close, tool_happy, silent_death, fumble, expensive_taste, hubris) fire before it. `indecisive` (model switches) and `expensive_taste` also fire on won runs — they're behavior patterns, not death verdicts.
 
+8. **Design D: ██ block accent, no right borders** — All UI cards use a left-only `██` block accent bar instead of full box borders. This eliminates persistent right-border misalignment caused by emoji/unicode width calculation differences across terminals. Color-coded: yellow `██` for won, red `██` for died, gray `██` for neutral (stats, wizard). Ink components use a custom `borderStyle` object with `left: '██'` and `borderRight/Top/Bottom={false}`, `paddingLeft={3}`. session-end.js ANSI scorecard uses `██` prefix + `─` horizontal separators. No screenshots — README uses inline code block demos.
+
 ---
 
-## Current Status: v0.3
+## Current Status: v0.4
 
 ### Done
 - [x] Full project scaffold with esbuild pipeline
@@ -418,6 +420,9 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 - [x] 28 new achievements: prompting skill, tool mastery, cost/prompt, time, subagents, turn discipline, death marks
 - [x] 3 new hooks: PostToolUseFailure, SubagentStart, Stop
 - [x] Vitest test suite — 120 tests covering all achievements + pure score functions
+- [x] Design D block accent UI — ██ left bar, no right borders, color-coded state
+- [x] Landing page terminal demos updated to ██ style
+- [x] README inline code block demos (replaced PNG screenshots)
 
 ### Next up (v0.4)
 - [ ] `tokengolf floor` command to advance floor manually

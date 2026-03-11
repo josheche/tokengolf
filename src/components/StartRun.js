@@ -3,6 +3,7 @@ import { Box, Text, useApp } from 'ink';
 import { TextInput, Select, ConfirmInput } from '@inkjs/ui';
 import { setCurrentRun } from '../lib/state.js';
 import { getModelClass, getEffortLevel, getModelBudgets, FLOORS } from '../lib/score.js';
+import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 const MODEL_OPTIONS = [
   { label: '⚔️  Sonnet  — Balanced. The default run.  [Standard]', value: 'claude-sonnet-4-6' },
@@ -65,9 +66,12 @@ export function StartRun() {
       <Box
         flexDirection="column"
         gap={1}
-        borderStyle="single"
+        borderStyle={ACCENT_BORDER}
         borderColor="gray"
-        paddingX={1}
+        borderRight={false}
+        borderTop={false}
+        borderBottom={false}
+        paddingLeft={ACCENT_PADDING}
         paddingY={1}
       >
         {/* Quest */}
@@ -179,9 +183,21 @@ export function StartRun() {
         {step === 'confirm' && (
           <Box flexDirection="column" gap={1} marginTop={1}>
             <Box
-              borderStyle="round"
+              borderStyle={{
+                topLeft: ' ',
+                top: ' ',
+                topRight: ' ',
+                left: '██',
+                right: ' ',
+                bottomLeft: ' ',
+                bottom: ' ',
+                bottomRight: ' ',
+              }}
               borderColor="yellow"
-              paddingX={1}
+              borderRight={false}
+              borderTop={false}
+              borderBottom={false}
+              paddingLeft={ACCENT_PADDING}
               paddingY={1}
               flexDirection="column"
             >

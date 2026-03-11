@@ -6,6 +6,15 @@ TokenGolf patch notes — what changed, what it measures, and why the mechanic e
 
 ## [Unreleased]
 
+### Changed
+- **Design D block accent UI** — All bordered boxes replaced with left-only `██` block accent bars. Eliminates persistent right-border misalignment caused by emoji/unicode width differences across terminals. Color-coded: yellow for won, red for died, gray for neutral.
+- ScoreCard, StatsView, ActiveRun, StartRun components all use custom Ink `borderStyle` with `left: '██'`, no right/top/bottom borders
+- session-end.js ANSI scorecard uses `██` prefix per line with `─` horizontal separators
+- Achievement badges in StatsView rendered inline (no individual bordered boxes)
+- Death tip in ScoreCard rendered as indented text (no bordered box)
+- Landing page terminal demos updated to match `██` style
+- README screenshots replaced with inline code block demos — no more stale PNGs
+
 ### Fixed
 - StatusLine HUD effort label now reads exclusively from live `settings.json` — `/model` changes (High, Low, Max) reflect immediately without requiring a new session
 - Medium effort no longer shown in HUD or scorecard — it's the default, so it's omitted (same as not annotating Sonnet as "normal difficulty")
