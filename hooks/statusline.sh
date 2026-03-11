@@ -22,7 +22,7 @@ except: pass
 ctx_pct = (session.get('context_window') or {}).get('used_percentage') or None
 quest   = (run.get('quest') or 'Flow')[:32]
 budget  = run.get('budget')
-floor   = f"{run.get('floor',1)}/{run.get('totalFloors',5)}"
+floor   = f"F{run.get('floor',1)}/{run.get('totalFloors',5)}"
 sm = session.get('model') or {}; m = (sm.get('id','') or run.get('model','') if isinstance(sm,dict) else sm or run.get('model','')).lower()
 # opusplan must be checked before opus (opusplan contains 'opus' as substring)
 if   'opusplan' in m: model, model_emoji = 'Paladin', '⚜️'
@@ -38,11 +38,11 @@ fast    = run.get('fastMode', False)
 fainted = run.get('fainted', False)
 
 label_parts = [f'{model_emoji} {model}']
-if effort: label_parts.append(effort.capitalize())
+if effort and effort != 'medium': label_parts.append(effort.capitalize())
 if fast: label_parts.append('⚡Fast')
 model_label = '·'.join(label_parts)
 
-R, B, G, Y, M, C, DIM, RESET = '\033[31m','\033[34m','\033[32m','\033[33m','\033[35m','\033[36m','\033[2m','\033[0m'
+R, G, Y, M, C, DIM, RESET = '\033[31m','\033[32m','\033[33m','\033[35m','\033[36m','\033[2m','\033[0m'
 BOLD = '\033[1m'
 
 if   cost < 0.10: tier_emoji = '💎'
@@ -51,6 +51,7 @@ elif cost < 1.00: tier_emoji = '🥈'
 elif cost < 3.00: tier_emoji = '🥉'
 else:             tier_emoji = '💸'
 
+# Accent bar color: red in danger, yellow otherwise
 if budget:
     pct = cost / budget * 100
     if   pct <= 25:  rating, rc = 'LEGENDARY',  M
@@ -58,24 +59,40 @@ if budget:
     elif pct <= 75:  rating, rc = 'SOLID',      G
     elif pct <= 100: rating, rc = 'CLOSE CALL', Y
     else:            rating, rc = 'BUSTED',     R
-    cost_str   = f"{tier_emoji} ${cost:.4f}/${budget:.2f} {pct:.0f}%"
-    rating_str = f"{rc}{rating}{RESET}"
+    accent = R if pct > 75 else Y
+    # Budget progress bar
+    bar_w = 11
+    bar_filled = min(bar_w, int(pct / 100 * bar_w + 0.5))
+    bar_empty = bar_w - bar_filled
+    bar_color = R if pct > 75 else (Y if pct > 50 else Y)
+    bar = f"{bar_color}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
+    cost_str = f"{DIM}${RESET}{cost:.2f}{DIM}/{budget:.2f}{RESET} {bar} {pct:.0f}%"
+    rating_str = f"  {rc}{rating}{RESET}"
 else:
-    cost_str   = f"{tier_emoji} ${cost:.4f}"
-    rating_str = None
+    accent = Y
+    pct = 0
+    cost_str = f"{tier_emoji} ${cost:.4f}"
+    rating_str = ''
 
-sep = f" {DIM}|{RESET} "
-ctx_str = None
-if ctx_pct is not None:
-    if   ctx_pct >= 90: ctx_str = f"{R}📦 {ctx_pct:.0f}%{RESET}"
-    elif ctx_pct >= 75: ctx_str = f"{Y}🎒 {ctx_pct:.0f}%{RESET}"
-    elif ctx_pct >= 50: ctx_str = f"{G}🪶 {ctx_pct:.0f}%{RESET}"
+# Context bar (line 2, only shown when >= 50%)
+ctx_line = None
+if ctx_pct is not None and ctx_pct >= 50:
+    ctx_w = 10
+    ctx_filled = min(ctx_w, int(ctx_pct / 100 * ctx_w + 0.5))
+    ctx_empty = ctx_w - ctx_filled
+    if   ctx_pct >= 90: ctx_color, ctx_icon = R, '📦'
+    elif ctx_pct >= 75: ctx_color, ctx_icon = Y, '🎒'
+    else:               ctx_color, ctx_icon = G, '🪶'
+    ctx_bar = f"{ctx_color}{'▓' * ctx_filled}{'░' * ctx_empty}{RESET}"
+    ctx_line = f" {accent}██{RESET} 🧠 {ctx_bar} {ctx_pct:.0f}% {ctx_icon}"
 
-prefix = f"{BOLD}{C}{'💤' if fainted else '⛳'}{RESET}"
-parts = [f"{prefix} {quest}", cost_str]
-if rating_str: parts.append(rating_str)
-if ctx_str: parts.append(ctx_str)
-parts.append(f"{C}{model_label}{RESET}")
-if budget: parts.append(f"Floor {floor}")
-print('\n' + f'{DIM} ───────────────{RESET}' + '\n' + sep.join(parts) + '\n' + f'{DIM} ───────────────{RESET}')
+# Line 1: accent bar + quest + cost bar + rating + model + floor
+icon = '💤' if fainted else '⛳'
+parts = [f" {accent}██{RESET} {icon} {quest}  {cost_str}{rating_str}  {model_label}"]
+if budget: parts.append(f"  {DIM}{floor}{RESET}")
+line1 = ''.join(parts)
+
+# Output
+print(line1)
+if ctx_line: print(ctx_line)
 PYEOF

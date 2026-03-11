@@ -7,6 +7,7 @@ TokenGolf patch notes — what changed, what it measures, and why the mechanic e
 ## [Unreleased]
 
 ### Changed
+- **Design D HUD** — StatusLine HUD redesigned with `██` accent bar, inline `▓░` progress bars for budget and context, no separator lines. 1 line when context <50%, 2 lines when context visible. Accent bar turns red when budget >75%. Matches Design D across all UI surfaces.
 - **Design D block accent UI** — All bordered boxes replaced with left-only `██` block accent bars. Eliminates persistent right-border misalignment caused by emoji/unicode width differences across terminals. Color-coded: yellow for won, red for died, gray for neutral.
 - ScoreCard, StatsView, ActiveRun, StartRun components all use custom Ink `borderStyle` with `left: '██'`, no right/top/bottom borders
 - session-end.js ANSI scorecard uses `██` prefix per line with `─` horizontal separators
