@@ -37,9 +37,25 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 
 ## Quick Start
 
+**npm** (recommended)
 ```bash
 npm install -g tokengolf
-tokengolf install          # patches ~/.claude/settings.json with hooks
+```
+
+**Homebrew**
+```bash
+brew tap josheche/tokengolf
+brew install tokengolf
+```
+
+**curl**
+```bash
+curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash
+```
+
+Then set up the hooks:
+```bash
+tokengolf install          # patches ~/.claude/settings.json
 ```
 
 That's it. Open Claude Code, work normally, `/exit` — scorecard appears automatically (Flow mode). Or declare a run first:
