@@ -155,23 +155,33 @@ export function installHooks() {
     (cmd.includes('tokengolf/hooks/statusline') || cmd.includes('tokengolf\\hooks\\statusline'));
   const alreadyOurs = isTgStatusline(existingCmd);
 
-  if (alreadyOurs) {
-    // Check if existing wrapper has a non-TG statusline we should preserve
-    let userStatusline = null;
-    if (existingCmd.includes('statusline-wrapper')) {
-      try {
-        const wrapperContent = fs.readFileSync(existingCmd, 'utf8');
-        const lines = wrapperContent.split('\n').filter((l) => l.includes('echo "$SESSION_JSON"'));
-        // Find the line that calls a non-tokengolf statusline
-        for (const line of lines) {
-          const match = line.match(/echo "\$SESSION_JSON" \| (.+?)( 2>|$)/);
-          if (match && !isTgStatusline(match[1])) {
-            userStatusline = match[1];
-            break;
-          }
+  // Extract user's non-TG statusline command from a wrapper, following chains recursively
+  function extractUserStatusline(wrapperPath, visited = new Set()) {
+    if (!wrapperPath || visited.has(wrapperPath)) return null;
+    visited.add(wrapperPath);
+    try {
+      const content = fs.readFileSync(wrapperPath, 'utf8');
+      const pipeLines = content.split('\n').filter((l) => l.includes('echo "$SESSION_JSON"'));
+      for (const line of pipeLines) {
+        const match = line.match(/echo "\$SESSION_JSON" \| (.+?)( 2>|$)/);
+        if (!match) continue;
+        const cmd = match[1].replace(/^bash /, '');
+        if (!isTgStatusline(cmd)) return cmd; // found the user's statusline
+        // It's another TG wrapper — follow the chain
+        if (cmd.includes('statusline-wrapper')) {
+          const found = extractUserStatusline(cmd, visited);
+          if (found) return found;
         }
-      } catch {}
-    }
+      }
+    } catch {}
+    return null;
+  }
+
+  if (alreadyOurs) {
+    // Find user's statusline buried in any depth of wrapper chain
+    const userStatusline = existingCmd.includes('statusline-wrapper')
+      ? extractUserStatusline(existingCmd)
+      : null;
 
     if (userStatusline) {
       // Re-wrap: preserve user's statusline + update tokengolf path
