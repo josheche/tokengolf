@@ -72,9 +72,9 @@ else:
     cost_str = f"{tier_emoji} ${cost:.2f}"
     rating_str = ''
 
-# Context bar (line 2, only shown when >= 50%)
+# Context bar (line 2, always shown)
 ctx_line = None
-if ctx_pct is not None and ctx_pct >= 50:
+if ctx_pct is not None:
     ctx_w = 10
     ctx_filled = min(ctx_w, int(ctx_pct / 100 * ctx_w + 0.5))
     ctx_empty = ctx_w - ctx_filled
