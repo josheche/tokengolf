@@ -69,7 +69,7 @@ if budget:
     rating_str = f"  {rc}{rating}{RESET}"
 else:
     accent = Y
-    cost_str = f"{tier_emoji} ${cost:.4f}"
+    cost_str = f"{tier_emoji} ${cost:.2f}"
     rating_str = ''
 
 # Context bar (line 2, only shown when >= 50%)

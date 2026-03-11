@@ -67,7 +67,7 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
     ratingStr = `  ${rc}${rating}${RESET}`;
   } else {
     accent = Y;
-    costStr = `${tierEmoji} $${cost.toFixed(4)}`;
+    costStr = `${tierEmoji} $${cost.toFixed(2)}`;
     ratingStr = '';
   }
 
