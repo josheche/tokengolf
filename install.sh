@@ -13,6 +13,7 @@ RESET='\033[0m'
 
 info()  { printf "${BOLD}${CYAN}▶${RESET} %s\n" "$1"; }
 ok()    { printf "${BOLD}${GREEN}✓${RESET} %s\n" "$1"; }
+warn()  { printf "${BOLD}${YELLOW}!${RESET} %s\n" "$1"; }
 err()   { printf "${BOLD}${RED}✗${RESET} %s\n" "$1" >&2; }
 
 echo ""
@@ -57,7 +58,7 @@ if [ -d "$HOME/.claude" ]; then
   info "Installing Claude Code hooks..."
   tokengolf install
 else
-  info "Claude Code not detected — skipping hook setup."
+  warn "Claude Code not detected — skipping hook setup."
   printf "  Run ${CYAN}tokengolf install${RESET} after installing Claude Code.\n"
 fi
 
