@@ -62,8 +62,7 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
     const barW = 11;
     const barFilled = Math.min(barW, Math.round((pct / 100) * barW));
     const barEmpty = barW - barFilled;
-    const barColor = pct > 75 ? R : Y;
-    const bar = `${barColor}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
+    const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
     costStr = `${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${budget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
     ratingStr = `  ${rc}${rating}${RESET}`;
   } else {

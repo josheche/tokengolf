@@ -64,13 +64,11 @@ if budget:
     bar_w = 11
     bar_filled = min(bar_w, int(pct / 100 * bar_w + 0.5))
     bar_empty = bar_w - bar_filled
-    bar_color = R if pct > 75 else (Y if pct > 50 else Y)
-    bar = f"{bar_color}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
+    bar = f"{accent}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
     cost_str = f"{DIM}${RESET}{cost:.2f}{DIM}/{budget:.2f}{RESET} {bar} {pct:.0f}%"
     rating_str = f"  {rc}{rating}{RESET}"
 else:
     accent = Y
-    pct = 0
     cost_str = f"{tier_emoji} ${cost:.4f}"
     rating_str = ''
 
