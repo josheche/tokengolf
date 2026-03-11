@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <meta
@@ -66,67 +66,69 @@
         padding: 0;
       }
 
+      /* ── Dark: painting at dusk — warm charcoal, not cold blue ── */
       :root {
-        --bg: #0d1117;
-        --card: #161b22;
-        --border: #30363d;
-        --text: #e6edf3;
-        --muted: #8b949e;
-        --green: #3fb950;
-        --green-dim: #238636;
-        --cyan: #79c0ff;
-        --magenta: #d2a8ff;
-        --yellow: #e3b341;
-        --red: #f85149;
-        --orange: #ffa657;
-        --hero-overlay-top: rgba(0,0,0,0.55);
-        --hero-overlay-mid: rgba(0,0,0,0.45);
-        --hero-overlay-bot: rgba(13,17,23,0.95);
-        --hero-text: #ffffff;
-        --hero-eyebrow-color: #6ee87a;
-        --install-bg: rgba(13,17,23,0.45);
-        --install-border: rgba(255,255,255,0.18);
-        --term-bg: #0c1017;
-        --term-header-bg: #13181f;
-        --tab-bar-bg: #0a0e14;
-        --badge-flow-bg: #1f3a2a;
-        --badge-rogue-bg: #2d1b30;
-        --death-border: #3d1f1f;
+        --bg: #1a1812;
+        --card: #23211a;
+        --border: #3d3828;
+        --text: #e8dcc4;
+        --muted: #9a9180;
+        --green: #6bb54a;
+        --green-dim: #4a8a32;
+        --cyan: #7cb8d4;
+        --magenta: #c8a0e0;
+        --yellow: #d4a840;
+        --red: #e05848;
+        --orange: #d4884a;
+        --hero-overlay-top: rgba(26,24,18,0.5);
+        --hero-overlay-mid: rgba(26,24,18,0.4);
+        --hero-overlay-bot: rgba(26,24,18,0.95);
+        --hero-text: #f2ead6;
+        --hero-eyebrow-color: #6bb54a;
+        --install-bg: rgba(26,24,18,0.5);
+        --install-border: rgba(232,220,196,0.18);
+        --term-bg: #161410;
+        --term-header-bg: #1e1c16;
+        --tab-bar-bg: #141210;
+        --badge-flow-bg: #1e2e1a;
+        --badge-rogue-bg: #2c1c30;
+        --death-border: #3d2020;
       }
 
+      /* ── Light: golden hour — warm cream, ochre, sage ── */
       [data-theme="light"] {
-        --bg: #fafaf8;
-        --card: #ffffff;
-        --border: #d4d8dc;
-        --text: #1a1e24;
-        --muted: #636c76;
-        --green: #1a7f37;
-        --green-dim: #2da44e;
-        --cyan: #0969da;
-        --magenta: #8250df;
-        --yellow: #9a6700;
-        --red: #cf222e;
-        --orange: #bc4c00;
-        --hero-overlay-top: rgba(255,255,255,0.25);
-        --hero-overlay-mid: rgba(255,255,255,0.15);
-        --hero-overlay-bot: rgba(250,250,248,0.92);
-        --hero-text: #1a1e24;
-        --hero-eyebrow-color: #1a7f37;
-        --install-bg: rgba(255,255,255,0.75);
-        --install-border: rgba(0,0,0,0.12);
-        --term-bg: #f6f8fa;
-        --term-header-bg: #ebeef1;
-        --tab-bar-bg: #ebeef1;
-        --badge-flow-bg: #dafbe1;
-        --badge-rogue-bg: #eddeff;
-        --death-border: #ffcecb;
+        --bg: #f2ead6;
+        --card: #f8f4e8;
+        --border: #d4c8a8;
+        --text: #2a2618;
+        --muted: #6e6450;
+        --green: #4a7a2a;
+        --green-dim: #5a8a38;
+        --cyan: #2a6e9a;
+        --magenta: #7a4a9a;
+        --yellow: #8a6a10;
+        --red: #b03020;
+        --orange: #9a5a18;
+        --hero-overlay-top: rgba(242,234,214,0.15);
+        --hero-overlay-mid: rgba(242,234,214,0.08);
+        --hero-overlay-bot: rgba(242,234,214,0.93);
+        --hero-text: #2a2618;
+        --hero-eyebrow-color: #4a7a2a;
+        --install-bg: rgba(248,244,232,0.8);
+        --install-border: rgba(42,38,24,0.12);
+        --term-bg: #ece4d0;
+        --term-header-bg: #e2dac4;
+        --tab-bar-bg: #e2dac4;
+        --badge-flow-bg: #d4e8c8;
+        --badge-rogue-bg: #e4d4f0;
+        --death-border: #e8c0b8;
       }
 
       body {
         background: var(--bg);
         color: var(--text);
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+          "Source Sans 3", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
         line-height: 1.6;
       }
 
@@ -233,7 +235,7 @@
       }
 
       .hero h1 {
-        font-family: "Libre Baskerville", Georgia, serif;
+        font-family: "Cormorant Garamond", Georgia, serif;
         font-size: clamp(3rem, 10vw, 6rem);
         font-weight: 700;
         letter-spacing: 0.02em;
@@ -299,7 +301,7 @@
 
       .copy-btn {
         background: var(--green);
-        color: #0d1117;
+        color: var(--bg);
         border: none;
         border-radius: 9999px;
         padding: 0.45rem 1rem;
@@ -313,14 +315,14 @@
       }
 
       .copy-btn:hover {
-        background: #52d765;
+        background: #7cc85a;
       }
       .copy-btn:active {
         transform: scale(0.97);
       }
       .copy-btn.copied {
         background: var(--green-dim);
-        color: #e6edf3;
+        color: var(--hero-text);
       }
 
       .hero-links {
@@ -470,19 +472,19 @@
         font-size: 1.4rem;
       }
 
-      .difficulty-hard {
+      .difficulty-nightmare {
         color: var(--red);
         font-weight: 600;
       }
-      .difficulty-normal {
+      .difficulty-standard {
         color: var(--yellow);
         font-weight: 600;
       }
-      .difficulty-easy {
+      .difficulty-casual {
         color: var(--green);
         font-weight: 600;
       }
-      .difficulty-calculated {
+      .difficulty-tactical {
         color: var(--magenta);
         font-weight: 600;
       }
@@ -556,7 +558,6 @@
       .tier-amount {
         color: var(--muted);
         font-size: 0.82rem;
-        font-family: monospace;
       }
 
       .achievement-card.death {
@@ -565,8 +566,8 @@
 
       .tab-btn[aria-selected="true"].tab-death {
         background: var(--red);
-        color: #fff;
-        box-shadow: 0 2px 16px rgba(248, 81, 73, 0.3);
+        color: #f2ead6;
+        box-shadow: 0 2px 16px rgba(224, 88, 72, 0.3);
       }
 
       .tab-btn.tab-death:not([aria-selected="true"]):hover {
@@ -616,20 +617,20 @@
         border-radius: 7px;
         cursor: pointer;
         transition: color 0.2s, background 0.2s, box-shadow 0.2s;
-        font-family: "SF Mono", "Cascadia Mono", monospace;
         white-space: nowrap;
-        letter-spacing: -0.01em;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
       }
 
       .tab-btn:hover {
         color: var(--text);
-        background: rgba(48, 54, 61, 0.45);
+        background: rgba(61, 56, 40, 0.25);
       }
 
       .tab-btn[aria-selected="true"] {
-        color: #fff;
+        color: #f2ead6;
         background: var(--cyan);
-        box-shadow: 0 2px 16px rgba(121, 192, 255, 0.3);
+        box-shadow: 0 2px 16px rgba(124, 184, 212, 0.3);
       }
 
       .tab-panel {
@@ -711,32 +712,32 @@
 
       /* Glow variants */
       .term[data-glow="cyan"] {
-        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(121,192,255,0.06);
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(124,184,212,0.06);
       }
       .term[data-glow="cyan"]:hover {
-        border-color: rgba(121,192,255,0.35);
-        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(121,192,255,0.12);
+        border-color: rgba(124,184,212,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(124,184,212,0.12);
       }
       .term[data-glow="yellow"] {
-        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(227,179,65,0.06);
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(212,168,64,0.06);
       }
       .term[data-glow="yellow"]:hover {
-        border-color: rgba(227,179,65,0.35);
-        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(227,179,65,0.12);
+        border-color: rgba(212,168,64,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(212,168,64,0.12);
       }
       .term[data-glow="red"] {
-        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(248,81,73,0.06);
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(224,88,72,0.06);
       }
       .term[data-glow="red"]:hover {
-        border-color: rgba(248,81,73,0.35);
-        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(248,81,73,0.12);
+        border-color: rgba(224,88,72,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(224,88,72,0.12);
       }
       .term[data-glow="green"] {
-        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(63,185,80,0.06);
+        box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(107,181,74,0.06);
       }
       .term[data-glow="green"]:hover {
-        border-color: rgba(63,185,80,0.35);
-        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(63,185,80,0.12);
+        border-color: rgba(107,181,74,0.35);
+        box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(107,181,74,0.12);
       }
 
       /* Header bar */
@@ -746,7 +747,7 @@
         font-size: 0.75rem;
         color: var(--muted);
         font-family: "SF Mono", "Cascadia Mono", monospace;
-        border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+        border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
         gap: 0.65rem;
@@ -875,57 +876,57 @@
       }
 
       [data-theme="light"] .term[data-glow="cyan"] {
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(9,105,218,0.06);
+        box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(42,110,154,0.06);
       }
       [data-theme="light"] .term[data-glow="cyan"]:hover {
-        border-color: rgba(9,105,218,0.3);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(9,105,218,0.1);
+        border-color: rgba(42,110,154,0.3);
+        box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(42,110,154,0.1);
       }
       [data-theme="light"] .term[data-glow="yellow"] {
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(154,103,0,0.06);
+        box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(138,106,16,0.08);
       }
       [data-theme="light"] .term[data-glow="yellow"]:hover {
-        border-color: rgba(154,103,0,0.3);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(154,103,0,0.1);
+        border-color: rgba(138,106,16,0.3);
+        box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(138,106,16,0.12);
       }
       [data-theme="light"] .term[data-glow="red"] {
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(207,34,46,0.06);
+        box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(176,48,32,0.06);
       }
       [data-theme="light"] .term[data-glow="red"]:hover {
-        border-color: rgba(207,34,46,0.3);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(207,34,46,0.1);
+        border-color: rgba(176,48,32,0.3);
+        box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(176,48,32,0.1);
       }
       [data-theme="light"] .term[data-glow="green"] {
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(26,127,55,0.06);
+        box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(74,122,42,0.06);
       }
       [data-theme="light"] .term[data-glow="green"]:hover {
-        border-color: rgba(26,127,55,0.3);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(26,127,55,0.1);
+        border-color: rgba(74,122,42,0.3);
+        box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(74,122,42,0.1);
       }
 
       [data-theme="light"] .hero h1 {
         text-shadow:
-          0 2px 16px rgba(255,255,255,0.5),
-          0 1px 3px rgba(255,255,255,0.3);
+          0 2px 16px rgba(242,234,214,0.5),
+          0 1px 3px rgba(242,234,214,0.3);
       }
 
       [data-theme="light"] .hero-eyebrow {
-        text-shadow: 0 1px 8px rgba(255,255,255,0.6);
+        text-shadow: 0 1px 8px rgba(242,234,214,0.6);
       }
 
       [data-theme="light"] .hero-tagline {
-        text-shadow: 0 1px 8px rgba(255,255,255,0.6);
+        text-shadow: 0 1px 8px rgba(242,234,214,0.6);
       }
 
       [data-theme="light"] .hero-sub {
-        text-shadow: 0 1px 6px rgba(255,255,255,0.5);
+        text-shadow: 0 1px 6px rgba(242,234,214,0.5);
       }
 
       [data-theme="light"] .copy-btn {
-        color: #fff;
+        color: #f2ead6;
       }
       [data-theme="light"] .copy-btn:hover {
-        background: #2da44e;
+        background: #5a8a38;
       }
 
       [data-theme="light"] .install-box {
@@ -933,7 +934,7 @@
       }
 
       [data-theme="light"] .tab-btn[aria-selected="true"] {
-        color: #fff;
+        color: #f2ead6;
       }
     </style>
   </head>
@@ -1043,32 +1044,32 @@
         <tbody>
           <tr>
             <td><span class="class-emoji">🏹</span> <strong>Rogue</strong></td>
-            <td class="mono">claude-haiku-4-5</td>
-            <td class="difficulty-hard">Hard</td>
+            <td>Haiku</td>
+            <td class="difficulty-nightmare">Nightmare</td>
             <td>Glass cannon. Must prompt precisely.</td>
           </tr>
           <tr>
             <td>
               <span class="class-emoji">⚔️</span> <strong>Fighter</strong>
             </td>
-            <td class="mono">claude-sonnet-4-6</td>
-            <td class="difficulty-normal">Normal</td>
+            <td>Sonnet</td>
+            <td class="difficulty-standard">Standard</td>
             <td>Balanced. The default run.</td>
           </tr>
           <tr>
             <td>
               <span class="class-emoji">🧙</span> <strong>Warlock</strong>
             </td>
-            <td class="mono">claude-opus-4-6</td>
-            <td class="difficulty-easy">Easy</td>
+            <td>Opus</td>
+            <td class="difficulty-casual">Casual</td>
             <td>Powerful but expensive.</td>
           </tr>
           <tr>
             <td>
               <span class="class-emoji">⚜️</span> <strong>Paladin</strong>
             </td>
-            <td class="mono">claude-opus-4-6 (plan mode)</td>
-            <td class="difficulty-calculated">Calculated</td>
+            <td>Opusplan</td>
+            <td class="difficulty-tactical">Tactical</td>
             <td>Strategic planner. Thinks before acting.</td>
           </tr>
         </tbody>

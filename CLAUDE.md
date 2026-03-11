@@ -38,10 +38,10 @@ A Node.js CLI tool that wraps Claude Code sessions with game mechanics. Users de
 ### Model as Character Class
 | Class | Model | Difficulty | Feel |
 |-------|-------|------------|------|
-| 🏹 Rogue | Haiku | Hard | Glass cannon. Must prompt precisely. |
-| ⚔️ Fighter | Sonnet | Normal | Balanced. The default run. |
-| 🧙 Warlock | Opus | Easy | Powerful but expensive. |
-| ⚜️ Paladin | Opus (plan mode) | Calculated | Strategic planner. Thinks before acting. |
+| 🏹 Rogue | Haiku | Nightmare | Glass cannon. Must prompt precisely. |
+| ⚔️ Fighter | Sonnet | Standard | Balanced. The default run. |
+| 🧙 Warlock | Opus | Casual | Powerful but expensive. |
+| ⚜️ Paladin | Opus (plan mode) | Tactical | Strategic planner. Thinks before acting. |
 
 ### Budget Tiers
 | Tier | Spend | Emoji |

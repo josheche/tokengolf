@@ -5,10 +5,13 @@ import { setCurrentRun } from '../lib/state.js';
 import { getModelClass, getEffortLevel, getModelBudgets, FLOORS } from '../lib/score.js';
 
 const MODEL_OPTIONS = [
-  { label: '⚔️  Sonnet  — Balanced. The default run.  [Normal]', value: 'claude-sonnet-4-6' },
-  { label: '🏹 Haiku   — Glass cannon. Hard mode.     [Hard]', value: 'claude-haiku-4-5-20251001' },
-  { label: '⚜️  Paladin — Opus plans, Sonnet executes. [Calculated]', value: 'opusplan' },
-  { label: '🧙 Opus    — Powerful but expensive.      [Easy]', value: 'claude-opus-4-6' },
+  { label: '⚔️  Sonnet  — Balanced. The default run.  [Standard]', value: 'claude-sonnet-4-6' },
+  {
+    label: '🏹 Haiku   — Glass cannon. Hard mode.     [Nightmare]',
+    value: 'claude-haiku-4-5-20251001',
+  },
+  { label: '⚜️  Paladin — Opus plans, Sonnet executes. [Tactical]', value: 'opusplan' },
+  { label: '🧙 Opus    — Powerful but expensive.      [Casual]', value: 'claude-opus-4-6' },
 ];
 
 const EFFORT_OPTIONS_BASE = [
