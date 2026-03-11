@@ -86,6 +86,7 @@ Pre-commit before you start. Declare a quest, pick a class and effort level, set
 | ⚔️ **Fighter** | Sonnet | Standard | Balanced. The default run. |
 | 🧙 **Warlock** | Opus | Casual | Powerful but expensive. |
 | ⚜️ **Paladin** | Opus (plan mode) | Tactical | Strategic planner. Thinks before acting. |
+| ⚡ **Warlock·Fast** | Opus + fast mode | Danger | 2× cost. Maximum risk, maximum speed. |
 
 Effort levels: Low / **Medium** / High / Max (Opus-only). Fast mode toggled with `/fast` in Claude Code, auto-detected by TokenGolf.
 

@@ -38,8 +38,8 @@
   <!-- Bottom decorative rule -->
   <rect x="100" y="248" width="1000" height="1" fill="url(#rule)"/>
 
-  <!-- Subtle achievement previews -->
-  <text x="600" y="278" text-anchor="middle" font-family="monospace" font-size="14" fill="#3d3828" letter-spacing="4">
-    &#127942; &#128175; &#9889; &#127919; &#128293; &#129529; &#128302; &#129418;
+  <!-- Subtle tagline detail -->
+  <text x="600" y="278" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" fill="#3d3828" letter-spacing="3">
+    4 classes &#183; 60+ achievements &#183; 9 hooks
   </text>
 </svg>

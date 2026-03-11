@@ -11,6 +11,7 @@ import {
   getOpusPct,
   MODEL_CLASSES,
 } from '../lib/score.js';
+import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function ScoreCard({ run }) {
   const { exit } = useApp();
@@ -37,21 +38,12 @@ export function ScoreCard({ run }) {
     <Box flexDirection="column" paddingX={1} paddingY={1} gap={1}>
       {/* Big status header */}
       <Box
-        borderStyle={{
-          topLeft: ' ',
-          top: ' ',
-          topRight: ' ',
-          left: '██',
-          right: ' ',
-          bottomLeft: ' ',
-          bottom: ' ',
-          bottomRight: ' ',
-        }}
+        borderStyle={ACCENT_BORDER}
         borderColor={won ? 'yellow' : 'red'}
         borderRight={false}
         borderTop={false}
         borderBottom={false}
-        paddingLeft={3}
+        paddingLeft={ACCENT_PADDING}
         paddingY={1}
         flexDirection="column"
         gap={1}

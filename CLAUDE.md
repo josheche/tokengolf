@@ -392,7 +392,7 @@ Thinking tokens are estimated from character count ÷ 4 (approximate — display
 
 ---
 
-## Current Status: v0.3
+## Current Status: v0.4
 
 ### Done
 - [x] Full project scaffold with esbuild pipeline

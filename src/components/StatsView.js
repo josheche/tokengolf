@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
 import { getTier, getModelClass, getBudgetPct, formatCost } from '../lib/score.js';
+import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function StatsView({ stats }) {
   const { exit } = useApp();
@@ -34,21 +35,12 @@ export function StatsView({ stats }) {
 
       {/* Top line */}
       <Box
-        borderStyle={{
-          topLeft: ' ',
-          top: ' ',
-          topRight: ' ',
-          left: '██',
-          right: ' ',
-          bottomLeft: ' ',
-          bottom: ' ',
-          bottomRight: ' ',
-        }}
+        borderStyle={ACCENT_BORDER}
         borderColor="gray"
         borderRight={false}
         borderTop={false}
         borderBottom={false}
-        paddingLeft={3}
+        paddingLeft={ACCENT_PADDING}
         paddingY={1}
         gap={4}
       >
@@ -117,7 +109,7 @@ export function StatsView({ stats }) {
                 borderRight={false}
                 borderTop={false}
                 borderBottom={false}
-                paddingLeft={3}
+                paddingLeft={ACCENT_PADDING}
                 paddingY={1}
                 flexDirection="column"
               >

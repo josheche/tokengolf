@@ -23,10 +23,10 @@ function writeTTY(text) {
 }
 
 function termWidth(str) {
-  // Compute display width of a string, handling emoji variation selectors and surrogates.
+  // Compute display width of a string for achievement line wrapping.
+  // Handles emoji variation selectors and surrogates:
   // - Supplementary plane chars (> U+FFFF) → 2 cols
-  // - U+FE0F (emoji variation selector after BMP char) → upgrades prev from 1→2, adds 0 itself
-  // - U+FE0F after supplementary → 0 (already 2)
+  // - U+FE0F (emoji variation selector after BMP char) → upgrades prev from 1→2
   // - U+FE0E, ZWJ, zero-width chars → 0
   // - Everything else → 1
   /* eslint-disable no-control-regex */
