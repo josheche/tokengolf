@@ -65,9 +65,21 @@ export function StartRun() {
       <Box
         flexDirection="column"
         gap={1}
-        borderStyle="single"
+        borderStyle={{
+          topLeft: ' ',
+          top: ' ',
+          topRight: ' ',
+          left: '██',
+          right: ' ',
+          bottomLeft: ' ',
+          bottom: ' ',
+          bottomRight: ' ',
+        }}
         borderColor="gray"
-        paddingX={1}
+        borderRight={false}
+        borderTop={false}
+        borderBottom={false}
+        paddingLeft={3}
         paddingY={1}
       >
         {/* Quest */}
@@ -179,9 +191,21 @@ export function StartRun() {
         {step === 'confirm' && (
           <Box flexDirection="column" gap={1} marginTop={1}>
             <Box
-              borderStyle="round"
+              borderStyle={{
+                topLeft: ' ',
+                top: ' ',
+                topRight: ' ',
+                left: '██',
+                right: ' ',
+                bottomLeft: ' ',
+                bottom: ' ',
+                bottomRight: ' ',
+              }}
               borderColor="yellow"
-              paddingX={1}
+              borderRight={false}
+              borderTop={false}
+              borderBottom={false}
+              paddingLeft={3}
               paddingY={1}
               flexDirection="column"
             >

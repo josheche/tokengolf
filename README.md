@@ -10,7 +10,15 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 
 ---
 
-<!-- SCREENSHOT: tokengolf start wizard — quest/class/effort/budget selection -->
+```
+██  🏆  SESSION COMPLETE
+██  add pagination to /users endpoint
+██  ──────────────────────────────────────────────────
+██  $0.2300  /$1.50  15%  ⚔️ Sonnet  🥇 Gold
+██  🌟 LEGENDARY
+██  ──────────────────────────────────────────────────
+██  🎯 Sniper  🥈 Silver  🔥 No Rest  ✅ Clean Run  🧰 Toolbox  🤫 Silent Run
+```
 
 ---
 
@@ -234,7 +242,27 @@ After `tokengolf install`, a status line appears in every Claude Code session:
 
 Run `tokengolf demo` to see all HUD states rendered in your terminal:
 
-![TokenGolf HUD demo — all game states](assets/demo-hud.png)
+```
+ ───────────────
+ ⛳ Flow | 💎 $0.0034 | ⚔️ Sonnet
+ ───────────────
+
+ ───────────────
+ ⛳ add pagination to /users | 🥈 $0.54/$1.50 36% | EFFICIENT | ⚔️ Sonnet | Floor 2/5
+ ───────────────
+
+ ───────────────
+ ⛳ refactor auth middleware | 🥈 $0.82/$4.00 21% | LEGENDARY | 🪶 52% | 🧙 Opus | Floor 3/5
+ ───────────────
+
+ ───────────────
+ ⛳ fix N+1 query in dashboard | 🥈 $0.46/$0.50 92% | CLOSE CALL | 🎒 78% | 🏹 Haiku | Floor 4/5
+ ───────────────
+
+ ───────────────
+ ⛳ migrate postgres schema | 🥉 $2.41/$2.00 121% | BUSTED | ⚔️ Sonnet | Floor 2/5
+ ───────────────
+```
 
 ---
 
@@ -242,11 +270,41 @@ Run `tokengolf demo` to see all HUD states rendered in your terminal:
 
 When you `/exit` a Claude Code session, the scorecard appears automatically — cost, model breakdown, achievements, ultrathink stats, tool usage.
 
-<p align="center">
-  <img src="assets/scorecard.png" alt="TokenGolf scorecard — session complete" width="620" />
-</p>
+```
+██  🏆  SESSION COMPLETE
+██  add pagination to /users endpoint
+██  ──────────────────────────────────────────────────
+██  SPENT      BUDGET    USED    MODEL        TIER
+██  $0.2300    $1.50     15%     ⚔️ Sonnet     🥇 Gold
+██
+██  🌟 LEGENDARY
+██  ──────────────────────────────────────────────────
+██  Achievements unlocked:
+██   🎯 Sniper — Under 25% budget
+██   🥈 Silver — Completed with Sonnet
+██   🔥 No Rest for the Wicked — One session
+██   ✅ Clean Run — Zero failed tool calls
+██   🧰 Toolbox — 5+ distinct tool types
+██   🤫 Silent Run — No extended thinking
+██  ──────────────────────────────────────────────────
+██  Model usage:  🏹 17% Haiku
+██  Sonnet 83% $0.19   Haiku 17% $0.04
+██  ──────────────────────────────────────────────────
+██  Tool calls:
+██  Read ×8  Edit ×4  Bash ×3  Grep ×2  Glob ×1
+```
 
-*Real scorecard from building TokenGolf itself. $40 flow session, 27 ultrathink invocations, Class Defection for declaring Sonnet but spending 89% on Opus. The game plays you back.*
+```
+██  💀  BUDGET BUSTED
+██  migrate postgres schema to v3
+██  ──────────────────────────────────────────────────
+██  $3.8700  /$1.50  258%  ⚔️ Sonnet  💸 Reckless
+██  ──────────────────────────────────────────────────
+██  🤦 Hubris   💥 Blowout   🤡 Fumble   🔨 Tool Happy
+██  ──────────────────────────────────────────────────
+██  Cause of death: Budget exceeded by $2.37
+██  Tip: Use Read with line ranges instead of full file reads.
+```
 
 ---
 

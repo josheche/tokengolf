@@ -37,9 +37,21 @@ export function ScoreCard({ run }) {
     <Box flexDirection="column" paddingX={1} paddingY={1} gap={1}>
       {/* Big status header */}
       <Box
-        borderStyle="double"
+        borderStyle={{
+          topLeft: ' ',
+          top: ' ',
+          topRight: ' ',
+          left: '██',
+          right: ' ',
+          bottomLeft: ' ',
+          bottom: ' ',
+          bottomRight: ' ',
+        }}
         borderColor={won ? 'yellow' : 'red'}
-        paddingX={2}
+        borderRight={false}
+        borderTop={false}
+        borderBottom={false}
+        paddingLeft={3}
         paddingY={1}
         flexDirection="column"
         gap={1}
@@ -213,13 +225,7 @@ export function ScoreCard({ run }) {
 
         {/* Death tip */}
         {!won && run.budget && (
-          <Box
-            borderStyle="single"
-            borderColor="red"
-            paddingX={1}
-            marginTop={1}
-            flexDirection="column"
-          >
+          <Box marginTop={1} flexDirection="column" paddingLeft={1}>
             <Text color="red" bold>
               Cause of death: Budget exceeded by {formatCost(run.spent - run.budget)}
             </Text>

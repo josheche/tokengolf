@@ -48,9 +48,21 @@ export function ActiveRun({ run: initialRun }) {
       </Box>
 
       <Box
-        borderStyle="round"
+        borderStyle={{
+          topLeft: ' ',
+          top: ' ',
+          topRight: ' ',
+          left: '██',
+          right: ' ',
+          bottomLeft: ' ',
+          bottom: ' ',
+          bottomRight: ' ',
+        }}
         borderColor="yellow"
-        paddingX={1}
+        borderRight={false}
+        borderTop={false}
+        borderBottom={false}
+        paddingLeft={3}
         paddingY={1}
         flexDirection="column"
         gap={1}
@@ -121,7 +133,7 @@ export function ActiveRun({ run: initialRun }) {
         </Box>
 
         {pct >= 80 && pct < 100 && (
-          <Box borderStyle="single" borderColor="red" paddingX={1}>
+          <Box paddingLeft={1}>
             <Text color="red" bold>
               ⚠️ BUDGET WARNING — {formatCost(run.budget - run.spent)} left
             </Text>

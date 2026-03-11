@@ -33,7 +33,25 @@ export function StatsView({ stats }) {
       </Box>
 
       {/* Top line */}
-      <Box borderStyle="single" borderColor="gray" paddingX={1} paddingY={1} gap={4}>
+      <Box
+        borderStyle={{
+          topLeft: ' ',
+          top: ' ',
+          topRight: ' ',
+          left: '██',
+          right: ' ',
+          bottomLeft: ' ',
+          bottom: ' ',
+          bottomRight: ' ',
+        }}
+        borderColor="gray"
+        borderRight={false}
+        borderTop={false}
+        borderBottom={false}
+        paddingLeft={3}
+        paddingY={1}
+        gap={4}
+      >
         <Box flexDirection="column">
           <Text color="gray" dimColor>
             RUNS
@@ -85,9 +103,21 @@ export function StatsView({ stats }) {
             <Box flexDirection="column" gap={0}>
               <Text color="yellow">🏆 Personal Best</Text>
               <Box
-                borderStyle="round"
+                borderStyle={{
+                  topLeft: ' ',
+                  top: ' ',
+                  topRight: ' ',
+                  left: '██',
+                  right: ' ',
+                  bottomLeft: ' ',
+                  bottom: ' ',
+                  bottomRight: ' ',
+                }}
                 borderColor="yellow"
-                paddingX={1}
+                borderRight={false}
+                borderTop={false}
+                borderBottom={false}
+                paddingLeft={3}
                 paddingY={1}
                 flexDirection="column"
               >
@@ -141,16 +171,14 @@ export function StatsView({ stats }) {
           <Text color="gray" dimColor>
             Recent achievements:
           </Text>
-          <Box flexWrap="wrap" gap={1}>
+          <Box flexWrap="wrap" columnGap={2}>
             {stats.achievements.slice(0, 12).map((a, i) => (
-              <Box key={i} borderStyle="single" borderColor="gray" paddingX={1}>
-                <Text>
-                  {a.emoji}{' '}
-                  <Text color="gray" dimColor>
-                    {a.label}
-                  </Text>
+              <Text key={i}>
+                {a.emoji}{' '}
+                <Text color="gray" dimColor>
+                  {a.label}
                 </Text>
-              </Box>
+              </Text>
             ))}
           </Box>
         </Box>
