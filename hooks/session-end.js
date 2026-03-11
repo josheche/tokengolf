@@ -73,9 +73,6 @@ function renderScorecard(run) {
   function bar() {
     return bc + BLK + RESET + '  ' + DIM + '─'.repeat(W) + RESET;
   }
-  function blank() {
-    return bc + BLK + RESET;
-  }
 
   const mc = getModelClass(run.model);
   const tier = getTier(run.spent);
