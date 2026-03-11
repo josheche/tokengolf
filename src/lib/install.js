@@ -149,9 +149,59 @@ export function installHooks() {
 
   const existing = settings.statusLine;
   const existingCmd = typeof existing === 'string' ? existing : (existing?.command ?? null);
-  const alreadyOurs = existingCmd === STATUSLINE_PATH || existingCmd === WRAPPER_PATH;
+  // Detect any tokengolf statusline (from any install path — npm, homebrew, project dir)
+  const isTgStatusline = (cmd) =>
+    cmd &&
+    (cmd.includes('tokengolf/hooks/statusline') || cmd.includes('tokengolf\\hooks\\statusline'));
+  const alreadyOurs = isTgStatusline(existingCmd);
 
-  if (!alreadyOurs && existingCmd) {
+  if (alreadyOurs) {
+    // Check if existing wrapper has a non-TG statusline we should preserve
+    let userStatusline = null;
+    if (existingCmd.includes('statusline-wrapper')) {
+      try {
+        const wrapperContent = fs.readFileSync(existingCmd, 'utf8');
+        const lines = wrapperContent.split('\n').filter((l) => l.includes('echo "$SESSION_JSON"'));
+        // Find the line that calls a non-tokengolf statusline
+        for (const line of lines) {
+          const match = line.match(/echo "\$SESSION_JSON" \| (.+?)( 2>|$)/);
+          if (match && !isTgStatusline(match[1])) {
+            userStatusline = match[1];
+            break;
+          }
+        }
+      } catch {}
+    }
+
+    if (userStatusline) {
+      // Re-wrap: preserve user's statusline + update tokengolf path
+      fs.writeFileSync(
+        WRAPPER_PATH,
+        [
+          '#!/usr/bin/env bash',
+          'SESSION_JSON=$(cat)',
+          `echo "$SESSION_JSON" | ${userStatusline} 2>/dev/null || true`,
+          `echo "$SESSION_JSON" | bash ${STATUSLINE_PATH}`,
+        ].join('\n') + '\n'
+      );
+      fs.chmodSync(WRAPPER_PATH, 0o755);
+      settings.statusLine = {
+        type: 'command',
+        command: WRAPPER_PATH,
+        padding: existing?.padding ?? 1,
+      };
+      console.log('  ✓ statusLine       → updated paths (kept your existing statusline)');
+    } else {
+      // Direct install — no user statusline to preserve
+      settings.statusLine = {
+        type: 'command',
+        command: STATUSLINE_PATH,
+        padding: existing?.padding ?? 1,
+      };
+      console.log('  ✓ statusLine       → updated to current install path');
+    }
+  } else if (existingCmd) {
+    // User has a non-TG statusline — wrap it
     fs.writeFileSync(
       WRAPPER_PATH,
       [
@@ -168,15 +218,14 @@ export function installHooks() {
       padding: 1,
     };
     console.log('  ✓ statusLine       → wrapped your existing statusline + tokengolf HUD');
-  } else if (!alreadyOurs) {
+  } else {
+    // No existing statusline — install directly
     settings.statusLine = {
       type: 'command',
       command: STATUSLINE_PATH,
       padding: 1,
     };
     console.log('  ✓ statusLine       → live HUD in every Claude session');
-  } else {
-    console.log('  ✓ statusLine       → already installed');
   }
 
   fs.writeFileSync(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2));
