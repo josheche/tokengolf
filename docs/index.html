@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      const stored = localStorage.getItem('tg-theme');
+      const theme = stored || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛳</text></svg>">
     <title>TokenGolf: Every token matters.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -74,6 +79,47 @@
         --yellow: #e3b341;
         --red: #f85149;
         --orange: #ffa657;
+        --hero-overlay-top: rgba(0,0,0,0.55);
+        --hero-overlay-mid: rgba(0,0,0,0.45);
+        --hero-overlay-bot: rgba(13,17,23,0.95);
+        --hero-text: #ffffff;
+        --hero-eyebrow-color: #6ee87a;
+        --install-bg: rgba(13,17,23,0.45);
+        --install-border: rgba(255,255,255,0.18);
+        --term-bg: #0c1017;
+        --term-header-bg: #13181f;
+        --tab-bar-bg: #0a0e14;
+        --badge-flow-bg: #1f3a2a;
+        --badge-rogue-bg: #2d1b30;
+        --death-border: #3d1f1f;
+      }
+
+      [data-theme="light"] {
+        --bg: #fafaf8;
+        --card: #ffffff;
+        --border: #d4d8dc;
+        --text: #1a1e24;
+        --muted: #636c76;
+        --green: #1a7f37;
+        --green-dim: #2da44e;
+        --cyan: #0969da;
+        --magenta: #8250df;
+        --yellow: #9a6700;
+        --red: #cf222e;
+        --orange: #bc4c00;
+        --hero-overlay-top: rgba(255,255,255,0.25);
+        --hero-overlay-mid: rgba(255,255,255,0.15);
+        --hero-overlay-bot: rgba(250,250,248,0.92);
+        --hero-text: #1a1e24;
+        --hero-eyebrow-color: #1a7f37;
+        --install-bg: rgba(255,255,255,0.75);
+        --install-border: rgba(0,0,0,0.12);
+        --term-bg: #f6f8fa;
+        --term-header-bg: #ebeef1;
+        --tab-bar-bg: #ebeef1;
+        --badge-flow-bg: #dafbe1;
+        --badge-rogue-bg: #eddeff;
+        --death-border: #ffcecb;
       }
 
       body {
@@ -166,9 +212,9 @@
         inset: 0;
         background: linear-gradient(
           to bottom,
-          rgba(0, 0, 0, 0.55) 0%,
-          rgba(0, 0, 0, 0.45) 40%,
-          rgba(13, 17, 23, 0.95) 100%
+          var(--hero-overlay-top) 0%,
+          var(--hero-overlay-mid) 40%,
+          var(--hero-overlay-bot) 100%
         );
       }
 
@@ -179,7 +225,7 @@
 
       .hero-eyebrow {
         font-family: "SF Mono", "Cascadia Mono", monospace;
-        color: #6ee87a;
+        color: var(--hero-eyebrow-color);
         font-size: 2.5rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -199,13 +245,13 @@
       }
 
       .hero h1 span {
-        color: #ffffff;
-        -webkit-text-fill-color: #ffffff;
+        color: var(--hero-text);
+        -webkit-text-fill-color: var(--hero-text);
       }
 
       .hero-tagline {
         font-size: clamp(1rem, 3vw, 1.4rem);
-        color: rgba(255, 255, 255, 0.92);
+        color: var(--hero-text);
         font-style: italic;
         margin-bottom: 1.25rem;
         text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
@@ -213,7 +259,7 @@
 
       .hero-sub {
         font-size: 1.05rem;
-        color: rgba(255, 255, 255, 0.85);
+        color: var(--hero-text);
         max-width: 540px;
         margin-bottom: 2.5rem;
         text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
@@ -224,10 +270,10 @@
         display: flex;
         align-items: center;
         gap: 0;
-        background: rgba(13, 17, 23, 0.45);
+        background: var(--install-bg);
         backdrop-filter: blur(12px) saturate(1.2);
         -webkit-backdrop-filter: blur(12px) saturate(1.2);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid var(--install-border);
         border-radius: 9999px;
         padding: 0.4rem 0.4rem 0.4rem 1.25rem;
         max-width: 420px;
@@ -286,7 +332,7 @@
       }
 
       .hero-links a {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--hero-text);
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -372,11 +418,11 @@
       }
 
       .badge-flow {
-        background: #1f3a2a;
+        background: var(--badge-flow-bg);
         color: var(--green);
       }
       .badge-rogue {
-        background: #2d1b30;
+        background: var(--badge-rogue-bg);
         color: var(--magenta);
       }
 
@@ -514,15 +560,16 @@
       }
 
       .achievement-card.death {
-        border-color: #3d1f1f;
+        border-color: var(--death-border);
       }
 
       .tab-btn[aria-selected="true"].tab-death {
         background: var(--red);
+        color: #fff;
         box-shadow: 0 2px 16px rgba(248, 81, 73, 0.3);
       }
 
-      .tab-btn.tab-death:hover {
+      .tab-btn.tab-death:not([aria-selected="true"]):hover {
         color: var(--red);
       }
 
@@ -551,7 +598,7 @@
         display: flex;
         gap: 0.25rem;
         margin-bottom: 2rem;
-        background: #0a0e14;
+        background: var(--tab-bar-bg);
         border: 1px solid var(--border);
         border-radius: 10px;
         padding: 0.3rem;
@@ -580,7 +627,7 @@
       }
 
       .tab-btn[aria-selected="true"] {
-        color: #0d1117;
+        color: #fff;
         background: var(--cyan);
         box-shadow: 0 2px 16px rgba(121, 192, 255, 0.3);
       }
@@ -636,7 +683,7 @@
       /* ── Terminal chrome ── */
       .term {
         position: relative;
-        background: #0c1017;
+        background: var(--term-bg);
         border: 1px solid var(--border);
         border-radius: 10px;
         overflow: hidden;
@@ -694,7 +741,7 @@
 
       /* Header bar */
       .term-header {
-        background: #13181f;
+        background: var(--term-header-bg);
         padding: 0.6rem 0.9rem;
         font-size: 0.75rem;
         color: var(--muted);
@@ -775,9 +822,127 @@
         justify-content: center;
         margin-top: 0.75rem;
       }
+
+      /* ── Theme toggle ── */
+      .theme-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 100;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--card);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: background 0.2s, border-color 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        line-height: 1;
+        padding: 0;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--muted);
+      }
+
+      /* Sun visible in dark mode (click to go light) */
+      .theme-icon-moon { display: none; }
+      .theme-icon-sun { display: inline; }
+      [data-theme="light"] .theme-icon-sun { display: none; }
+      [data-theme="light"] .theme-icon-moon { display: inline; }
+
+      /* ── Light mode targeted overrides ── */
+      [data-theme="light"] .card {
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      }
+
+      [data-theme="light"] .term::after {
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 2px,
+          rgba(0,0,0,0.018) 2px,
+          rgba(0,0,0,0.018) 4px
+        );
+      }
+
+      [data-theme="light"] .term {
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      }
+
+      [data-theme="light"] .term[data-glow="cyan"] {
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(9,105,218,0.06);
+      }
+      [data-theme="light"] .term[data-glow="cyan"]:hover {
+        border-color: rgba(9,105,218,0.3);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(9,105,218,0.1);
+      }
+      [data-theme="light"] .term[data-glow="yellow"] {
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(154,103,0,0.06);
+      }
+      [data-theme="light"] .term[data-glow="yellow"]:hover {
+        border-color: rgba(154,103,0,0.3);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(154,103,0,0.1);
+      }
+      [data-theme="light"] .term[data-glow="red"] {
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(207,34,46,0.06);
+      }
+      [data-theme="light"] .term[data-glow="red"]:hover {
+        border-color: rgba(207,34,46,0.3);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(207,34,46,0.1);
+      }
+      [data-theme="light"] .term[data-glow="green"] {
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08), 0 0 24px rgba(26,127,55,0.06);
+      }
+      [data-theme="light"] .term[data-glow="green"]:hover {
+        border-color: rgba(26,127,55,0.3);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08), 0 0 36px rgba(26,127,55,0.1);
+      }
+
+      [data-theme="light"] .hero h1 {
+        text-shadow:
+          0 2px 16px rgba(255,255,255,0.5),
+          0 1px 3px rgba(255,255,255,0.3);
+      }
+
+      [data-theme="light"] .hero-eyebrow {
+        text-shadow: 0 1px 8px rgba(255,255,255,0.6);
+      }
+
+      [data-theme="light"] .hero-tagline {
+        text-shadow: 0 1px 8px rgba(255,255,255,0.6);
+      }
+
+      [data-theme="light"] .hero-sub {
+        text-shadow: 0 1px 6px rgba(255,255,255,0.5);
+      }
+
+      [data-theme="light"] .copy-btn {
+        color: #fff;
+      }
+      [data-theme="light"] .copy-btn:hover {
+        background: #2da44e;
+      }
+
+      [data-theme="light"] .install-box {
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      }
+
+      [data-theme="light"] .tab-btn[aria-selected="true"] {
+        color: #fff;
+      }
     </style>
   </head>
   <body>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+      <span class="theme-icon-sun">☀️</span>
+      <span class="theme-icon-moon">🌙</span>
+    </button>
+
     <!-- ── Hero ── -->
     <div class="hero">
       <div class="hero-eyebrow">⛳</div>
@@ -1602,6 +1767,18 @@
             }
           });
         });
+      });
+
+      /* ── Theme toggle ── */
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('tg-theme', next);
+      });
+      matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+        if (!localStorage.getItem('tg-theme')) {
+          document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+        }
       });
 
       function copyInstall() {
