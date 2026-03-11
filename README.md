@@ -53,7 +53,7 @@ brew install tokengolf
 curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash
 ```
 
-Then set up the hooks:
+Then set up the hooks (npm and brew only — curl does this automatically):
 ```bash
 tokengolf install          # patches ~/.claude/settings.json
 ```
