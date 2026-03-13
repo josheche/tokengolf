@@ -622,6 +622,9 @@
       }
 
       /* Spend-tier card accents */
+      .tier-mythic { border-top-color: var(--loot-epic); }
+      .tier-mythic .tier-name { color: var(--loot-epic); }
+      .tier-mythic:hover { box-shadow: 0 -4px 20px rgba(200,160,224,0.12); }
       .tier-diamond { border-top-color: var(--spend-diamond); }
       .tier-diamond .tier-name { color: var(--spend-diamond); }
       .tier-diamond:hover { box-shadow: 0 -4px 20px rgba(124,184,212,0.12); }
@@ -1217,28 +1220,28 @@
           <div class="term" data-glow="cyan">
             <div class="term-header">tokengolf demo hud</div>
             <pre>
-<span class="border-yellow">██</span> ⛳ <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.00<span class="t-dim">/1.50</span> <span class="t-yellow">░░░░░░░░░░░</span> 0% 🌟 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> ⛳ <span class="t-green">VIBING</span>  ✨ <span class="t-dim">$</span>0.00<span class="t-dim">/1.50</span> <span class="t-yellow">░░░░░░░░░░░</span> 0% 🌟 <span class="t-yellow">LEGENDARY</span>
 <span class="border-yellow">██</span> ⚔️ Sonnet  🧠 <span class="t-green">▓░░░░░░░░░</span> 8% 🪶
 
-<span class="border-yellow">██</span> ⛳ add pagination to /users  🥈 <span class="t-dim">$</span>0.54<span class="t-dim">/1.50</span> <span class="t-yellow">▓▓▓▓░░░░░░░</span> 36% 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">F2/5</span>
+<span class="border-yellow">██</span> ⛳ add pagination to /users  🥇 <span class="t-dim">$</span>0.54<span class="t-dim">/1.50</span> <span class="t-yellow">▓▓▓▓░░░░░░░</span> 36% 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">F2/5</span>
 <span class="border-yellow">██</span> ⚔️ Sonnet  🧠 <span class="t-green">▓▓▓░░░░░░░</span> 34% 📚
 
-<span class="border-yellow">██</span> ⛳ implement SSO with SAML  🥈 <span class="t-dim">$</span>0.41<span class="t-dim">/2.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21% 🔥 <span class="t-magenta">EPIC</span>  <span class="t-dim">F1/5</span>
+<span class="border-yellow">██</span> ⛳ implement SSO with SAML  💎 <span class="t-dim">$</span>0.41<span class="t-dim">/2.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21% 🔥 <span class="t-magenta">EPIC</span>  <span class="t-dim">F1/5</span>
 <span class="border-yellow">██</span> ⚔️ Sonnet·High  🧠 <span class="t-green">▓▓▓░░░░░░░</span> 29% 📚
 
-<span class="border-yellow">██</span> ⛳ refactor auth middleware  🥈 <span class="t-dim">$</span>0.82<span class="t-dim">/4.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21% 🔥 <span class="t-magenta">EPIC</span>  <span class="t-dim">F3/5</span>
+<span class="border-yellow">██</span> ⛳ refactor auth middleware  💎 <span class="t-dim">$</span>0.82<span class="t-dim">/4.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21% 🔥 <span class="t-magenta">EPIC</span>  <span class="t-dim">F3/5</span>
 <span class="border-yellow">██</span> 🧙 Opus  🧠 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 52% 🎒
 
 <span class="border-red">██</span> ⛳ fix N+1 query in dashboard  🥈 <span class="t-dim">$</span>0.46<span class="t-dim">/0.50</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓░</span> 92% ⚠️ <span class="t-white">CLOSE CALL</span>  <span class="t-dim">F4/5</span>
 <span class="border-red">██</span> 🏹 Haiku  🧠 <span class="t-yellow">▓▓▓▓▓▓▓▓░░</span> 78% 🪨
 
-<span class="border-red">██</span> ⛳ migrate postgres schema  🥉 <span class="t-dim">$</span>2.41<span class="t-dim">/2.00</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 121% 💥 <span class="t-red">BUST</span>  <span class="t-dim">F2/5</span>
+<span class="border-red">██</span> ⛳ migrate postgres schema  🥈 <span class="t-dim">$</span>2.41<span class="t-dim">/2.00</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 121% 💥 <span class="t-red">BUST</span>  <span class="t-dim">F2/5</span>
 <span class="border-red">██</span> ⚔️ Sonnet  🧠 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 45% 🎒
 
-<span class="border-yellow">██</span> ⛳ refactor entire API layer  💸 <span class="t-dim">$</span>3.10<span class="t-dim">/10.00</span> <span class="t-yellow">▓▓▓░░░░░░░░</span> 31% 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">F3/5</span>
+<span class="border-yellow">██</span> ⛳ refactor entire API layer  🥇 <span class="t-dim">$</span>3.10<span class="t-dim">/10.00</span> <span class="t-yellow">▓▓▓░░░░░░░░</span> 31% 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">F3/5</span>
 <span class="border-yellow">██</span> 🧙 Opus  🧠 <span class="t-red">▓▓▓▓▓▓▓▓▓░</span> 91% 🗿
 
-<span class="border-yellow">██</span> 💤 write test suite for payments  🥉 <span class="t-dim">$</span>1.22<span class="t-dim">/3.00</span> <span class="t-yellow">▓▓▓▓▓░░░░░░</span> 41% 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">F2/5</span>
+<span class="border-yellow">██</span> 💤 write test suite for payments  🥇 <span class="t-dim">$</span>1.22<span class="t-dim">/3.00</span> <span class="t-yellow">▓▓▓▓▓░░░░░░</span> 41% 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">F2/5</span>
 <span class="border-yellow">██</span> ⚔️ Sonnet  🧠 <span class="t-yellow">▓▓▓▓▓▓▓░░░</span> 67% 🧱</pre>
           </div>
           <div class="demo-label">
@@ -1374,34 +1377,40 @@
       </div>
     </section>
 
-    <!-- ── Budget Tiers ── -->
+    <!-- ── Spend Tiers ── -->
     <section id="budget">
-      <h2><span>💰</span>Budget Tiers</h2>
+      <h2><span>💰</span>Spend Tiers</h2>
+      <p class="section-sub">Model-calibrated — same relative difficulty across classes. Shown here for Sonnet (⚔️ Fighter).</p>
       <div class="tiers-grid">
+        <div class="card tier-card tier-mythic">
+          <span class="tier-emoji">✨</span>
+          <div class="tier-name">Mythic</div>
+          <div class="tier-amount">under $0.10</div>
+        </div>
         <div class="card tier-card tier-diamond">
           <span class="tier-emoji">💎</span>
           <div class="tier-name">Diamond</div>
-          <div class="tier-amount">under $0.10</div>
+          <div class="tier-amount">under $0.50</div>
         </div>
         <div class="card tier-card tier-gold">
           <span class="tier-emoji">🥇</span>
           <div class="tier-name">Gold</div>
-          <div class="tier-amount">under $0.30</div>
+          <div class="tier-amount">under $1.50</div>
         </div>
         <div class="card tier-card tier-silver">
           <span class="tier-emoji">🥈</span>
           <div class="tier-name">Silver</div>
-          <div class="tier-amount">under $1.00</div>
+          <div class="tier-amount">under $4.00</div>
         </div>
         <div class="card tier-card tier-bronze">
           <span class="tier-emoji">🥉</span>
           <div class="tier-name">Bronze</div>
-          <div class="tier-amount">under $3.00</div>
+          <div class="tier-amount">under $10.00</div>
         </div>
         <div class="card tier-card tier-reckless">
           <span class="tier-emoji">💸</span>
           <div class="tier-name">Reckless</div>
-          <div class="tier-amount">over $3.00</div>
+          <div class="tier-amount">over $10.00</div>
         </div>
       </div>
     </section>

@@ -48,13 +48,18 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
     labelParts.push(effort.charAt(0).toUpperCase() + effort.slice(1));
   const modelLabel = labelParts.join('·');
 
-  // Spend tier emoji
-  let tierEmoji;
-  if (cost < 0.1) tierEmoji = '💎';
-  else if (cost < 0.3) tierEmoji = '🥇';
-  else if (cost < 1.0) tierEmoji = '🥈';
-  else if (cost < 3.0) tierEmoji = '🥉';
-  else tierEmoji = '💸';
+  // Model-calibrated spend tier emoji
+  const SPEND_TIERS = {
+    Haiku: [0.03, 0.15, 0.4, 1.0, 2.5],
+    Sonnet: [0.1, 0.5, 1.5, 4.0, 10.0],
+    Opus: [0.5, 2.5, 7.5, 20.0, 50.0],
+    Paladin: [0.3, 1.5, 4.5, 12.0, 30.0],
+    '?': [0.1, 0.5, 1.5, 4.0, 10.0],
+  };
+  const st = SPEND_TIERS[modelName] || SPEND_TIERS.Sonnet;
+  const tierEmojis = ['✨', '💎', '🥇', '🥈', '🥉', '💸'];
+  const tierIdx = [0, 1, 2, 3, 4].find((i) => cost < st[i]);
+  const tierEmoji = tierEmojis[tierIdx !== undefined ? tierIdx : 5];
 
   // Budget bar (always shown — uses implicit budget for flow)
   const effBudget = budget || FLOW_BUDGETS[modelName] || 1.5;

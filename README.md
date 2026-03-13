@@ -119,13 +119,13 @@ Effort levels: Low / **Medium** / High / Max (Opus-only). Fast mode toggled with
 |---|---|---|---|---|---|
 | < 15% | < 30% | < 50% | < 75% | < 100% | > 100% |
 
-**Spend tier** (absolute, shown on every scorecard):
+**Spend tier** (model-calibrated — shown here for Sonnet):
 
-| 💎 Diamond | 🥇 Gold | 🥈 Silver | 🥉 Bronze | 💸 Reckless |
-|---|---|---|---|---|
-| < $0.10 | < $0.30 | < $1.00 | < $3.00 | > $3.00 |
+| ✨ Mythic | 💎 Diamond | 🥇 Gold | 🥈 Silver | 🥉 Bronze | 💸 Reckless |
+|---|---|---|---|---|---|
+| < $0.10 | < $0.50 | < $1.50 | < $4.00 | < $10.00 | > $10.00 |
 
-Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is $2.50. Same relative difficulty, different absolute cost.
+Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Same relative difficulty, different absolute cost.
 
 ---
 

@@ -1,10 +1,14 @@
-export const BUDGET_TIERS = [
-  { label: 'Diamond', emoji: '💎', max: 0.1, color: 'cyan' },
-  { label: 'Gold', emoji: '🥇', max: 0.3, color: 'yellow' },
-  { label: 'Silver', emoji: '🥈', max: 1.0, color: 'white' },
-  { label: 'Bronze', emoji: '🥉', max: 3.0, color: 'yellow' },
-  { label: 'Reckless', emoji: '💸', max: Infinity, color: 'red' },
+export const SPEND_TIER_DEFS = [
+  { label: 'Mythic', emoji: '✨', key: 'mythic', color: 'magenta' },
+  { label: 'Diamond', emoji: '💎', key: 'diamond', color: 'cyan' },
+  { label: 'Gold', emoji: '🥇', key: 'gold', color: 'yellow' },
+  { label: 'Silver', emoji: '🥈', key: 'silver', color: 'white' },
+  { label: 'Bronze', emoji: '🥉', key: 'bronze', color: 'yellow' },
+  { label: 'Reckless', emoji: '💸', key: 'reckless', color: 'red' },
 ];
+
+// Legacy alias for backward compat
+export const BUDGET_TIERS = SPEND_TIER_DEFS;
 
 export const EFFORT_LEVELS = {
   low: { label: 'Low', emoji: '🪶', color: 'green' },
@@ -18,10 +22,10 @@ export function getEffortLevel(effort) {
 }
 
 export const MODEL_BUDGET_TIERS = {
-  haiku: { diamond: 0.15, gold: 0.4, silver: 1.0, bronze: 2.5 },
-  sonnet: { diamond: 0.5, gold: 1.5, silver: 4.0, bronze: 10.0 },
-  opusplan: { diamond: 1.5, gold: 4.5, silver: 12.0, bronze: 30.0 },
-  opus: { diamond: 2.5, gold: 7.5, silver: 20.0, bronze: 50.0 },
+  haiku: { mythic: 0.03, diamond: 0.15, gold: 0.4, silver: 1.0, bronze: 2.5 },
+  sonnet: { mythic: 0.1, diamond: 0.5, gold: 1.5, silver: 4.0, bronze: 10.0 },
+  opusplan: { mythic: 0.3, diamond: 1.5, gold: 4.5, silver: 12.0, bronze: 30.0 },
+  opus: { mythic: 0.5, diamond: 2.5, gold: 7.5, silver: 20.0, bronze: 50.0 },
 };
 
 export function getModelBudgets(model) {
@@ -71,8 +75,13 @@ export const FLOORS = [
   'PR merged — BOSS 🏆',
 ];
 
-export function getTier(spent) {
-  return BUDGET_TIERS.find((t) => spent <= t.max) || BUDGET_TIERS[BUDGET_TIERS.length - 1];
+export function getTier(spent, model) {
+  const budgets = model ? getModelBudgets(model) : MODEL_BUDGET_TIERS.sonnet;
+  for (const def of SPEND_TIER_DEFS) {
+    const max = budgets[def.key];
+    if (max !== undefined && spent <= max) return def;
+  }
+  return SPEND_TIER_DEFS[SPEND_TIER_DEFS.length - 1]; // Reckless
 }
 
 export function getModelClass(model = '') {

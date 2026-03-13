@@ -49,12 +49,27 @@ function diedRun(overrides = {}) {
 
 // ── pure functions ────────────────────────────────────────────────────────────
 
-describe('getTier', () => {
-  it('Diamond under $0.10', () => expect(getTier(0.05).label).toBe('Diamond'));
-  it('Gold under $0.30', () => expect(getTier(0.2).label).toBe('Gold'));
-  it('Silver under $1.00', () => expect(getTier(0.8).label).toBe('Silver'));
-  it('Bronze under $3.00', () => expect(getTier(2.0).label).toBe('Bronze'));
-  it('Reckless above $3.00', () => expect(getTier(5.0).label).toBe('Reckless'));
+describe('getTier (model-calibrated)', () => {
+  // Sonnet defaults (no model = sonnet)
+  it('Mythic under Sonnet $0.10', () => expect(getTier(0.05).label).toBe('Mythic'));
+  it('Diamond under Sonnet $0.50', () => expect(getTier(0.3).label).toBe('Diamond'));
+  it('Gold under Sonnet $1.50', () => expect(getTier(1.0).label).toBe('Gold'));
+  it('Silver under Sonnet $4.00', () => expect(getTier(3.0).label).toBe('Silver'));
+  it('Bronze under Sonnet $10.00', () => expect(getTier(8.0).label).toBe('Bronze'));
+  it('Reckless above Sonnet $10.00', () => expect(getTier(15.0).label).toBe('Reckless'));
+  // Haiku calibration
+  it('Mythic under Haiku $0.03', () =>
+    expect(getTier(0.02, 'claude-haiku-4-5').label).toBe('Mythic'));
+  it('Diamond under Haiku $0.15', () =>
+    expect(getTier(0.1, 'claude-haiku-4-5').label).toBe('Diamond'));
+  it('Reckless above Haiku $2.50', () =>
+    expect(getTier(3.0, 'claude-haiku-4-5').label).toBe('Reckless'));
+  // Opus calibration
+  it('Diamond under Opus $2.50', () =>
+    expect(getTier(2.0, 'claude-opus-4-6').label).toBe('Diamond'));
+  it('Gold under Opus $7.50', () => expect(getTier(5.0, 'claude-opus-4-6').label).toBe('Gold'));
+  it('Reckless above Opus $50.00', () =>
+    expect(getTier(60.0, 'claude-opus-4-6').label).toBe('Reckless'));
 });
 
 describe('getEfficiencyRating', () => {

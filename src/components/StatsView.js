@@ -89,7 +89,7 @@ export function StatsView({ stats }) {
       {/* Personal best */}
       {stats.bestRun &&
         (() => {
-          const bestTier = getTier(stats.bestRun.spent);
+          const bestTier = getTier(stats.bestRun.spent, stats.bestRun.model);
           const bestMc = getModelClass(stats.bestRun.model);
           return (
             <Box flexDirection="column" gap={0}>
@@ -136,7 +136,7 @@ export function StatsView({ stats }) {
         </Text>
         {stats.recentRuns.slice(0, 8).map((run, i) => {
           const won = run.status === 'won';
-          const tier = getTier(run.spent);
+          const tier = getTier(run.spent, run.model);
           const mc = getModelClass(run.model);
           const FLOW_BUDGETS = {
             'claude-haiku-4-5-20251001': 0.4,

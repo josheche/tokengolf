@@ -26,7 +26,7 @@ export function ScoreCard({ run }) {
     return () => clearTimeout(t);
   }, [exit]);
 
-  const tier = getTier(run.spent);
+  const tier = getTier(run.spent, run.model);
   const mc = getModelClass(run.model);
   // Implicit Gold-tier budgets for flow mode
   const FLOW_BUDGETS = {

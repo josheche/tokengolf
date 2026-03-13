@@ -59,7 +59,7 @@ function renderScorecard(run) {
     return bc + BLK + RESET + "  " + DIM + "\u2500".repeat(W) + RESET;
   }
   const mc = getModelClass(run.model);
-  const tier = getTier(run.spent);
+  const tier = getTier(run.spent, run.model);
   const fainted = run.fainted;
   const sessions = run.sessionCount || 1;
   const header = won ? `${BOLD}${Y}\u{1F3C6}  SESSION COMPLETE${RESET}` : fainted ? `${BOLD}${Y}\u{1F4A4}  FAINTED \u2014 Run Continues${RESET}` : `${BOLD}${R}\u{1F480}  BUDGET BUST${RESET}`;

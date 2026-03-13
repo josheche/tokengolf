@@ -87,11 +87,21 @@ def get_emotion(fainted, budget, cost, ctx_pct, failed_tools, prompt_count, mode
     if ctx >= 75: return 'FOCUSED'
     return 'VIBING'
 
-if   cost < 0.10: tier_emoji = '💎'
-elif cost < 0.30: tier_emoji = '🥇'
-elif cost < 1.00: tier_emoji = '🥈'
-elif cost < 3.00: tier_emoji = '🥉'
-else:             tier_emoji = '💸'
+# Model-calibrated spend tiers
+SPEND_TIERS = {
+    'Haiku':   (0.03, 0.15, 0.40, 1.00, 2.50),
+    'Sonnet':  (0.10, 0.50, 1.50, 4.00, 10.00),
+    'Opus':    (0.50, 2.50, 7.50, 20.00, 50.00),
+    'Paladin': (0.30, 1.50, 4.50, 12.00, 30.00),
+    '?':       (0.10, 0.50, 1.50, 4.00, 10.00),
+}
+st = SPEND_TIERS.get(model, SPEND_TIERS['Sonnet'])
+if   cost < st[0]: tier_emoji = '✨'
+elif cost < st[1]: tier_emoji = '💎'
+elif cost < st[2]: tier_emoji = '🥇'
+elif cost < st[3]: tier_emoji = '🥈'
+elif cost < st[4]: tier_emoji = '🥉'
+else:              tier_emoji = '💸'
 
 # Use explicit budget or implicit Gold-tier budget for display
 eff_budget = budget if (budget is not None and budget > 0) else FLOW_BUDGETS.get(model, 1.50)

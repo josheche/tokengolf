@@ -83,7 +83,7 @@ function renderScorecard(run) {
   }
 
   const mc = getModelClass(run.model);
-  const tier = getTier(run.spent);
+  const tier = getTier(run.spent, run.model);
 
   const fainted = run.fainted;
   const sessions = run.sessionCount || 1;
