@@ -55,7 +55,7 @@ BOLD = '\033[1m'
 EMOTIONS = {
     'SLEEPING':     ('💤', '(-ω-)zzZ',    DIM),
     'ZOMBIE':       ('🧟', '[¬º-°]¬',     R),
-    'DEAD':         ('💀', '(X_X)',        R),
+    'DEAD':         ('🪦', '(X_X)',        R),
     'OVERWHELMED':  ('🤯', '(×_×)',        R),
     'FRUSTRATED':   ('😡', '(ノಠ益ಠ)ノ',   R),
     'SWEATING':     ('😰', '(°△°)',        Y),
