@@ -28,8 +28,13 @@ process.stdin.on('end', () => {
     fs.writeFileSync(STATE_FILE, JSON.stringify(updated, null, 2));
 
     // Warn at 80%+ (use implicit Gold-tier budget for flow mode)
-    const FLOW_BUDGETS = { 'claude-haiku-4-5-20251001': 0.40, 'claude-sonnet-4-6': 1.50, 'claude-opus-4-6': 7.50, 'opusplan': 7.50 };
-    const effBudget = updated.budget || FLOW_BUDGETS[updated.model] || 1.50;
+    const FLOW_BUDGETS = {
+      'claude-haiku-4-5-20251001': 0.4,
+      'claude-sonnet-4-6': 1.5,
+      'claude-opus-4-6': 7.5,
+      opusplan: 7.5,
+    };
+    const effBudget = updated.budget || FLOW_BUDGETS[updated.model] || 1.5;
     const pct = updated.spent / effBudget;
     if (pct >= 0.8 && pct < 1.0) {
       const remaining = (effBudget - updated.spent).toFixed(4);

@@ -59,33 +59,39 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
   // Budget bar (always shown — uses implicit budget for flow)
   const effBudget = budget || FLOW_BUDGETS[modelName] || 1.5;
   const pct = (cost / effBudget) * 100;
-  let rating, rc;
+  let rating, rc, effEmoji;
   if (pct <= 15) {
     rating = 'LEGENDARY';
     rc = Y;
+    effEmoji = '🌟';
   } else if (pct <= 30) {
     rating = 'EPIC';
     rc = M;
+    effEmoji = '⚡';
   } else if (pct <= 50) {
     rating = 'PRO';
     rc = C;
+    effEmoji = '💪';
   } else if (pct <= 75) {
     rating = 'SOLID';
     rc = G;
+    effEmoji = '✓';
   } else if (pct <= 100) {
     rating = 'CLOSE CALL';
     rc = W;
+    effEmoji = '😅';
   } else {
     rating = 'BUST';
     rc = R;
+    effEmoji = '💀';
   }
   const accent = pct > 75 ? R : Y;
   const barW = 11;
   const barFilled = Math.min(barW, Math.round((pct / 100) * barW));
   const barEmpty = barW - barFilled;
   const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
-  const costStr = `${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${effBudget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
-  const ratingStr = ` ${tierEmoji} ${rc}${rating}${RESET}`;
+  const costStr = `${tierEmoji} ${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${effBudget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
+  const ratingStr = ` ${effEmoji} ${rc}${rating}${RESET}`;
 
   // Context bar (line 2, always shown — default to 0)
   const ctxPctVal = ctxPct != null ? ctxPct : 0;

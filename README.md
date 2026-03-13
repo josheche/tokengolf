@@ -256,10 +256,10 @@ Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is 
 After `tokengolf install`, a status line appears in every Claude Code session showing quest, cost, efficiency, context load, and model class.
 
 ```
-██ ⛳ add pagination to /users  $0.54/1.50 ▓▓▓▓░░░░░░░ 36% 🥈 PRO  F2/5
+██ ⛳ add pagination to /users  🥈 $0.54/1.50 ▓▓▓▓░░░░░░░ 36% 💪 PRO  F2/5
 ██ ⚔️ Sonnet  🧠 ▓▓▓░░░░░░░ 34% 📚
 
-██ ⛳ refactor auth middleware  $0.82/4.00 ▓▓░░░░░░░░░ 21% 🥈 EPIC  F3/5
+██ ⛳ refactor auth middleware  🥈 $0.82/4.00 ▓▓░░░░░░░░░ 21% ⚡ EPIC  F3/5
 ██ 🧙 Opus  🧠 ▓▓▓▓▓░░░░░ 52% 🪶
 ```
 

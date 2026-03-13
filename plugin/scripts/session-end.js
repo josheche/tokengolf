@@ -41,7 +41,12 @@ function termWidth(str) {
 function renderScorecard(run) {
   const W = Math.min(Math.max((process.stdout.columns || 88) - 8, 40), 80);
   const won = run.status === "won";
-  const FLOW_BUDGETS = { "claude-haiku-4-5-20251001": 0.4, "claude-sonnet-4-6": 1.5, "claude-opus-4-6": 7.5, "opusplan": 7.5 };
+  const FLOW_BUDGETS = {
+    "claude-haiku-4-5-20251001": 0.4,
+    "claude-sonnet-4-6": 1.5,
+    "claude-opus-4-6": 7.5,
+    opusplan: 7.5
+  };
   const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
   const R = "\x1B[31m", G = "\x1B[32m", Y = "\x1B[33m", C = "\x1B[36m";
   const M = "\x1B[35m", WH = "\x1B[37m", DIM = "\x1B[2m", RESET = "\x1B[0m", BOLD = "\x1B[1m";

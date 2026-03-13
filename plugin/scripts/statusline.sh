@@ -96,20 +96,20 @@ else:             tier_emoji = '💸'
 # Use explicit budget or implicit Gold-tier budget for display
 eff_budget = budget if (budget is not None and budget > 0) else FLOW_BUDGETS.get(model, 1.50)
 pct = cost / eff_budget * 100 if eff_budget > 0 else 0
-if   pct <= 15:  rating, rc = 'LEGENDARY',  Y
-elif pct <= 30:  rating, rc = 'EPIC',       M
-elif pct <= 50:  rating, rc = 'PRO',        C
-elif pct <= 75:  rating, rc = 'SOLID',      G
-elif pct <= 100: rating, rc = 'CLOSE CALL', W
-else:            rating, rc = 'BUST',       R
+if   pct <= 15:  rating, rc, eff_emoji = 'LEGENDARY',  Y, '🌟'
+elif pct <= 30:  rating, rc, eff_emoji = 'EPIC',       M, '⚡'
+elif pct <= 50:  rating, rc, eff_emoji = 'PRO',        C, '💪'
+elif pct <= 75:  rating, rc, eff_emoji = 'SOLID',      G, '✓'
+elif pct <= 100: rating, rc, eff_emoji = 'CLOSE CALL', W, '😅'
+else:            rating, rc, eff_emoji = 'BUST',       R, '💀'
 accent = R if pct > 75 else Y
 # Budget progress bar
 bar_w = 11
 bar_filled = min(bar_w, int(pct / 100 * bar_w + 0.5))
 bar_empty = bar_w - bar_filled
 bar = f"{accent}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
-cost_str = f"{DIM}${RESET}{cost:.2f}{DIM}/{eff_budget:.2f}{RESET} {bar} {pct:.0f}%"
-rating_str = f" {tier_emoji} {rc}{rating}{RESET}"
+cost_str = f"{tier_emoji} {DIM}${RESET}{cost:.2f}{DIM}/{eff_budget:.2f}{RESET} {bar} {pct:.0f}%"
+rating_str = f" {eff_emoji} {rc}{rating}{RESET}"
 
 # Context bar (line 2, always shown — default ctx_pct to 0)
 ctx_pct_val = ctx_pct if ctx_pct is not None else 0
