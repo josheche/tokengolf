@@ -54,13 +54,21 @@ function termWidth(str) {
 function renderScorecard(run) {
   const W = Math.min(Math.max((process.stdout.columns || 88) - 8, 40), 80);
   const won = run.status === 'won';
-  const flowMode = !run.budget;
+  // Implicit Gold-tier budgets for flow mode
+  const FLOW_BUDGETS = {
+    'claude-haiku-4-5-20251001': 0.4,
+    'claude-sonnet-4-6': 1.5,
+    'claude-opus-4-6': 7.5,
+    opusplan: 7.5,
+  };
+  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
 
   const R = '\x1b[31m',
     G = '\x1b[32m',
     Y = '\x1b[33m',
     C = '\x1b[36m';
   const M = '\x1b[35m',
+    WH = '\x1b[37m',
     DIM = '\x1b[2m',
     RESET = '\x1b[0m',
     BOLD = '\x1b[1m';
@@ -83,7 +91,7 @@ function renderScorecard(run) {
     ? `${BOLD}${Y}🏆  SESSION COMPLETE${RESET}`
     : fainted
       ? `${BOLD}${Y}💤  FAINTED — Run Continues${RESET}`
-      : `${BOLD}${R}💀  BUDGET BUSTED${RESET}`;
+      : `${BOLD}${R}💀  BUDGET BUST${RESET}`;
 
   const questStr = run.quest
     ? `${BOLD}${run.quest.slice(0, 60)}${RESET}`
@@ -98,20 +106,22 @@ function renderScorecard(run) {
     (multiSession ? `  ${DIM}(+$${spentThisSession.toFixed(4)} this session)${RESET}` : '');
 
   let midRow = spentStr;
-  if (!flowMode) {
-    const pct = getBudgetPct(run.spent, run.budget);
-    const eff = getEfficiencyRating(run.spent, run.budget);
+  {
+    const pct = getBudgetPct(run.spent, effBudget);
+    const eff = getEfficiencyRating(run.spent, effBudget);
     const effC =
-      eff.color === 'magenta'
-        ? M
-        : eff.color === 'cyan'
-          ? C
-          : eff.color === 'green'
-            ? G
-            : eff.color === 'yellow'
-              ? Y
-              : R;
-    midRow += `  ${DIM}/${RESET}$${run.budget.toFixed(2)}  ${pct}%  ${effC}${eff.emoji} ${eff.label}${RESET}`;
+      eff.color === 'yellow'
+        ? Y
+        : eff.color === 'magenta'
+          ? M
+          : eff.color === 'cyan'
+            ? C
+            : eff.color === 'green'
+              ? G
+              : eff.color === 'white'
+                ? WH
+                : R;
+    midRow += `  ${DIM}/${RESET}$${effBudget.toFixed(2)}${!run.budget ? `${DIM}*${RESET}` : ''}  ${pct}%  ${effC}${eff.emoji} ${eff.label}${RESET}`;
   }
 
   const effortInfo = run.effort ? getEffortLevel(run.effort) : null;

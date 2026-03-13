@@ -28,9 +28,17 @@ export function ScoreCard({ run }) {
 
   const tier = getTier(run.spent);
   const mc = getModelClass(run.model);
+  // Implicit Gold-tier budgets for flow mode
+  const FLOW_BUDGETS = {
+    'claude-haiku-4-5-20251001': 0.4,
+    'claude-sonnet-4-6': 1.5,
+    'claude-opus-4-6': 7.5,
+    opusplan: 7.5,
+  };
+  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
   const flowMode = !run.budget;
-  const efficiency = flowMode ? null : getEfficiencyRating(run.spent, run.budget);
-  const pct = flowMode ? null : getBudgetPct(run.spent, run.budget);
+  const efficiency = getEfficiencyRating(run.spent, effBudget);
+  const pct = getBudgetPct(run.spent, effBudget);
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);
   const opusPct = getOpusPct(run.modelBreakdown, run.spent);
 
@@ -66,22 +74,18 @@ export function ScoreCard({ run }) {
               {formatCost(run.spent)}
             </Text>
           </Box>
-          {!flowMode && (
-            <>
-              <Box flexDirection="column">
-                <Text color="gray" dimColor>
-                  BUDGET
-                </Text>
-                <Text color="white">${run.budget.toFixed(2)}</Text>
-              </Box>
-              <Box flexDirection="column">
-                <Text color="gray" dimColor>
-                  USED
-                </Text>
-                <Text color={pct > 100 ? 'red' : pct > 80 ? 'yellow' : 'green'}>{pct}%</Text>
-              </Box>
-            </>
-          )}
+          <Box flexDirection="column">
+            <Text color="gray" dimColor>
+              BUDGET{flowMode ? '*' : ''}
+            </Text>
+            <Text color="white">${effBudget.toFixed(2)}</Text>
+          </Box>
+          <Box flexDirection="column">
+            <Text color="gray" dimColor>
+              USED
+            </Text>
+            <Text color={pct > 100 ? 'red' : pct > 80 ? 'yellow' : 'green'}>{pct}%</Text>
+          </Box>
           <Box flexDirection="column">
             <Text color="gray" dimColor>
               MODEL
@@ -125,7 +129,7 @@ export function ScoreCard({ run }) {
           </Box>
         </Box>
 
-        {/* Efficiency (roguelike mode only) */}
+        {/* Efficiency */}
         {efficiency && (
           <Box gap={2}>
             <Text bold color={efficiency.color}>

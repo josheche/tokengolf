@@ -138,20 +138,25 @@ export function StatsView({ stats }) {
           const won = run.status === 'won';
           const tier = getTier(run.spent);
           const mc = getModelClass(run.model);
-          const pct = run.budget ? getBudgetPct(run.spent, run.budget) : null;
+          const FLOW_BUDGETS = {
+            'claude-haiku-4-5-20251001': 0.4,
+            'claude-sonnet-4-6': 1.5,
+            'claude-opus-4-6': 7.5,
+            opusplan: 7.5,
+          };
+          const eBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
+          const pct = getBudgetPct(run.spent, eBudget);
           return (
             <Box key={i} gap={2}>
               <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
               <Text color="white">{(run.quest || 'Flow').slice(0, 34).padEnd(34)}</Text>
               <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
-              {run.budget ? <Text color="gray">/{formatCost(run.budget)}</Text> : null}
+              <Text color="gray">/{formatCost(eBudget)}</Text>
               <Text>{mc.emoji}</Text>
               <Text color={tier.color}>{tier.emoji}</Text>
-              {pct !== null && (
-                <Text color="gray" dimColor>
-                  {pct}%
-                </Text>
-              )}
+              <Text color="gray" dimColor>
+                {pct}%
+              </Text>
             </Box>
           );
         })}

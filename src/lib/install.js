@@ -240,6 +240,15 @@ export function installHooks() {
 
   fs.writeFileSync(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2));
 
+  // Stamp installed version for auto-sync detection
+  try {
+    const pkgVersion = JSON.parse(
+      fs.readFileSync(path.resolve(path.dirname(realEntry), '../package.json'), 'utf8')
+    ).version;
+    fs.writeFileSync(path.join(os.homedir(), '.tokengolf', 'installed-version'), pkgVersion);
+    console.log(`  ✓ installed-version → ${pkgVersion}`);
+  } catch {}
+
   // Create default config if it doesn't exist
   const TG_DIR = path.join(os.homedir(), '.tokengolf');
   const CONFIG_FILE = path.join(TG_DIR, 'config.json');

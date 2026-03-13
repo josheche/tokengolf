@@ -3,11 +3,30 @@ const G = '\x1b[32m';
 const Y = '\x1b[33m';
 const M = '\x1b[35m';
 const C = '\x1b[36m';
+const W = '\x1b[37m';
 const DIM = '\x1b[2m';
 const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
-function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor }) {
+// Implicit Gold-tier budgets for flow mode (same as FLOW_BUDGETS in statusline.sh)
+const FLOW_BUDGETS = { Haiku: 0.4, Sonnet: 1.5, Opus: 7.5, Paladin: 7.5, '?': 1.5 };
+
+const EMOTION_COLORS = {
+  SLEEPING: DIM,
+  ZOMBIE: R,
+  DEAD: R,
+  OVERWHELMED: R,
+  FRUSTRATED: R,
+  SWEATING: Y,
+  FATIGUED: DIM,
+  TENSE: Y,
+  GRINDING: Y,
+  FOCUSED: C,
+  CRUISING: G,
+  VIBING: G,
+};
+
+function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, emotionKey }) {
   const m = (model || '').toLowerCase();
   let modelName, modelEmoji;
   if (m.includes('haiku')) {
@@ -29,6 +48,7 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
     labelParts.push(effort.charAt(0).toUpperCase() + effort.slice(1));
   const modelLabel = labelParts.join('·');
 
+  // Spend tier emoji
   let tierEmoji;
   if (cost < 0.1) tierEmoji = '💎';
   else if (cost < 0.3) tierEmoji = '🥇';
@@ -36,74 +56,87 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor })
   else if (cost < 3.0) tierEmoji = '🥉';
   else tierEmoji = '💸';
 
-  let costStr, ratingStr, accent;
-
-  if (budget) {
-    const pct = (cost / budget) * 100;
-    let rating, rc;
-    if (pct <= 25) {
-      rating = 'LEGENDARY';
-      rc = M;
-    } else if (pct <= 50) {
-      rating = 'EFFICIENT';
-      rc = C;
-    } else if (pct <= 75) {
-      rating = 'SOLID';
-      rc = G;
-    } else if (pct <= 100) {
-      rating = 'CLOSE CALL';
-      rc = Y;
-    } else {
-      rating = 'BUSTED';
-      rc = R;
-    }
-    accent = pct > 75 ? R : Y;
-    // Budget progress bar
-    const barW = 11;
-    const barFilled = Math.min(barW, Math.round((pct / 100) * barW));
-    const barEmpty = barW - barFilled;
-    const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
-    costStr = `${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${budget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
-    ratingStr = `  ${rc}${rating}${RESET}`;
+  // Budget bar (always shown — uses implicit budget for flow)
+  const effBudget = budget || FLOW_BUDGETS[modelName] || 1.5;
+  const pct = (cost / effBudget) * 100;
+  let rating, rc;
+  if (pct <= 15) {
+    rating = 'LEGENDARY';
+    rc = Y;
+  } else if (pct <= 30) {
+    rating = 'EPIC';
+    rc = M;
+  } else if (pct <= 50) {
+    rating = 'PRO';
+    rc = C;
+  } else if (pct <= 75) {
+    rating = 'SOLID';
+    rc = G;
+  } else if (pct <= 100) {
+    rating = 'CLOSE CALL';
+    rc = W;
   } else {
-    accent = Y;
-    costStr = `${tierEmoji} $${cost.toFixed(2)}`;
-    ratingStr = '';
+    rating = 'BUST';
+    rc = R;
   }
+  const accent = pct > 75 ? R : Y;
+  const barW = 11;
+  const barFilled = Math.min(barW, Math.round((pct / 100) * barW));
+  const barEmpty = barW - barFilled;
+  const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
+  const costStr = `${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${effBudget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
+  const ratingStr = ` ${tierEmoji} ${rc}${rating}${RESET}`;
 
-  // Context bar (line 2, only shown when >= 50%)
-  let ctxLine = null;
-  if (ctxPct != null && ctxPct >= 50) {
-    const ctxW = 10;
-    const ctxFilled = Math.min(ctxW, Math.round((ctxPct / 100) * ctxW));
-    const ctxEmpty = ctxW - ctxFilled;
-    let ctxColor, ctxIcon;
-    if (ctxPct >= 90) {
-      ctxColor = R;
-      ctxIcon = '📦';
-    } else if (ctxPct >= 75) {
-      ctxColor = Y;
-      ctxIcon = '🎒';
-    } else {
-      ctxColor = G;
-      ctxIcon = '🪶';
-    }
-    const ctxBar = `${ctxColor}${'▓'.repeat(ctxFilled)}${'░'.repeat(ctxEmpty)}${RESET}`;
-    ctxLine = ` ${accent}██${RESET} 🧠 ${ctxBar} ${ctxPct}% ${ctxIcon}`;
+  // Context bar (line 2, always shown — default to 0)
+  const ctxPctVal = ctxPct != null ? ctxPct : 0;
+  const ctxW = 10;
+  const ctxFilled = Math.min(ctxW, Math.round((ctxPctVal / 100) * ctxW));
+  const ctxEmpty = ctxW - ctxFilled;
+  let ctxColor, ctxIcon;
+  if (ctxPctVal >= 90) {
+    ctxColor = R;
+    ctxIcon = '🗿';
+  } else if (ctxPctVal >= 75) {
+    ctxColor = Y;
+    ctxIcon = '🪨';
+  } else if (ctxPctVal >= 60) {
+    ctxColor = Y;
+    ctxIcon = '🧱';
+  } else if (ctxPctVal >= 40) {
+    ctxColor = C;
+    ctxIcon = '🎒';
+  } else if (ctxPctVal >= 20) {
+    ctxColor = G;
+    ctxIcon = '📚';
+  } else {
+    ctxColor = G;
+    ctxIcon = '🪶';
   }
+  const ctxBar = `${ctxColor}${'▓'.repeat(ctxFilled)}${'░'.repeat(ctxEmpty)}${RESET}`;
 
-  // Line 1: accent bar + quest + cost bar + rating + model + floor
+  // Line 1: accent + icon + quest/emotion + cost bar + rating + floor
   const icon = fainted ? '💤' : '⛳';
-  let line1 = ` ${accent}██${RESET} ${icon} ${quest}  ${costStr}${ratingStr}  ${modelLabel}`;
+  let questDisplay;
+  if (quest) {
+    questDisplay = quest;
+  } else if (emotionKey) {
+    questDisplay = `${EMOTION_COLORS[emotionKey] || G}${emotionKey}${RESET}`;
+  } else {
+    questDisplay = 'Flow';
+  }
+  let line1 = ` ${accent}██${RESET} ${icon} ${questDisplay}  ${costStr}${ratingStr}`;
   if (budget && floor) line1 += `  ${DIM}F${floor}${RESET}`;
 
-  return ctxLine ? `${line1}\n${ctxLine}` : line1;
+  // Line 2: model + context bar (always shown)
+  const line2 = ` ${accent}██${RESET} ${modelLabel}  🧠 ${ctxBar} ${ctxPctVal}% ${ctxIcon}`;
+
+  return `${line1}\n${line2}`;
 }
 
 const SCENARIOS = [
   {
-    title: 'Flow mode  (passive — no quest, no budget)',
-    hud: { quest: 'Flow', model: 'claude-sonnet-4-6', cost: 0.0034 },
+    title: 'Flow mode  (passive — implicit Gold-tier budget, emotion status)',
+    hud: { model: 'claude-sonnet-4-6', cost: 0.0034, ctxPct: 8, emotionKey: 'VIBING' },
   },
   {
     title: 'Roguelike · Sonnet · EFFICIENT',
@@ -157,6 +190,7 @@ const SCENARIOS = [
       model: 'claude-sonnet-4-6',
       cost: 2.41,
       budget: 2.0,
+      ctxPct: 45,
       floor: '2/5',
     },
   },

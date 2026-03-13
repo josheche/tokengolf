@@ -14,6 +14,20 @@ Same engine, same achievements. Roguelike practice makes Flow sessions better ov
 
 ---
 
+## Installation
+
+**Plugin (recommended)** — one step, auto-updates:
+```
+claude plugin install tokengolf
+```
+
+**npm (alternative)** — requires manual hook setup:
+```
+npm install -g tokengolf && tokengolf install
+```
+
+npm users get auto-sync: hooks update automatically on version change via session-start.js.
+
 ## Commands
 
 `npm run build` after source changes. `npm test` after score.js changes. `npm run lint` / `npm run format` for code quality. Husky pre-commit hook runs automatically.
@@ -23,14 +37,11 @@ Same engine, same achievements. Roguelike practice makes Flow sessions better ov
 | Command | Description |
 |---------|-------------|
 | `tokengolf start` | Declare quest, model, budget — begin a roguelike run |
-| `tokengolf status` | Show current run status |
 | `tokengolf win` | Complete run (auto-detects cost from transcripts) |
 | `tokengolf win --spent 0.18` | Complete with manually specified cost |
-| `tokengolf bust` | Mark run as budget busted (permadeath) |
-| `tokengolf floor` | Advance to next floor |
 | `tokengolf scorecard` | Show last run's score card |
 | `tokengolf stats` | Career stats dashboard |
-| `tokengolf demo [component]` | Show UI demos (all, hud, scorecard, active, stats) |
+| `tokengolf demo [component]` | Show UI demos (all, hud, scorecard, stats) |
 | `tokengolf config` | List all config values |
 | `tokengolf config emotions [mode]` | Get/set emotion mode (`off`, `emoji`, `ascii`) |
 | `tokengolf install` | Patch `~/.claude/settings.json` with hooks |
@@ -44,7 +55,7 @@ All tiers, ratings, model classes, budget presets, and achievements are defined 
 Key concepts:
 - **Model classes**: Rogue (Haiku), Fighter (Sonnet), Warlock (Opus), Paladin (Opus plan mode)
 - **Budget presets are model-calibrated**: `MODEL_BUDGET_TIERS` / `getModelBudgets()` in score.js
-- **Efficiency ratings**: LEGENDARY (<25%) → EFFICIENT → SOLID → CLOSE CALL → BUSTED (>100%)
+- **Efficiency ratings**: LEGENDARY (<15%) → EPIC (<30%) → PRO → SOLID → CLOSE CALL → BUST (>100%)
 - **Death marks fire before the early return** in `calculateAchievements` — they're checked before `if (!won) return []`. `indecisive` and `expensive_taste` also fire on won runs.
 
 ---
@@ -65,11 +76,17 @@ Nine hooks in `hooks/`, installed via `tokengolf install`. All are synchronous J
 | `stop.js` | Yes | Increments `turnCount` |
 | `statusline.sh` | Yes (session JSON) | 2-line HUD with `██` accent bar, budget/context progress bars. Emotion mode adds mood feedback (see below) |
 
-**Hook installation**: `tokengolf install` resolves npm link symlinks via `fs.realpathSync(process.argv[1])`. Entries tagged `_tg: true` for dedup. Non-destructive statusLine install wraps existing config.
+**Plugin distribution**: `plugin/` directory contains the Claude Code plugin scaffold — hooks.json, bundled scripts, slash commands. Build with `npm run build:plugin`. Uses `${CLAUDE_PLUGIN_ROOT}` for paths.
+
+**Hook installation (npm)**: `tokengolf install` resolves npm link symlinks via `fs.realpathSync(process.argv[1])`. Entries tagged `_tg: true` for dedup. Non-destructive statusLine install wraps existing config. Stamps `~/.tokengolf/installed-version` for auto-sync.
+
+**Auto-sync (npm)**: `session-start.js` checks `installed-version` vs `package.json` on every session start. On mismatch, updates all `_tg: true` hook paths and statusLine paths in `~/.claude/settings.json`, then stamps the new version.
 
 **StatusLine gotcha**: Uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict. Config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`.
 
-**Emotion modes** (`tokengolf config emotions <mode>`): `emoji` (default) = mood emoji replaces `⛳` on line 1. `ascii` = adds 3rd line with kaomoji + emotion label. `off` = classic `⛳`/`💤`. Config stored in `~/.tokengolf/config.json`. Emotions are a multi-signal composite: budget%, context%, failedToolCalls, promptCount. Flow mode (no budget) skips budget checks.
+**Emotion modes** (`tokengolf config emotions <mode>`): `emoji` (default) = mood emoji replaces `⛳` on line 1. `ascii` = adds 3rd line with kaomoji + emotion label. `off` = classic `⛳`/`💤`. Config stored in `~/.tokengolf/config.json`. Emotions are a multi-signal composite: budget%, context%, failedToolCalls, promptCount.
+
+**Implicit budgets for flow mode**: Flow mode derives a Gold-tier budget from the model class (`FLOW_BUDGETS`): Haiku $0.40, Sonnet $1.50, Opus $7.50. Used by statusline HUD (progress bar, rating, accent color, emotions), session-start context, post-tool-use 80% warning, and user-prompt-submit 50% nudge. Same budget awareness as roguelike — the difference is commitment (permadeath), not awareness.
 
 ---
 

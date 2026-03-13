@@ -1,0 +1,6 @@
+{
+  "name": "tokengolf",
+  "version": "0.5.4",
+  "description": "Gamify your Claude Code sessions — track token efficiency, earn achievements, level up your prompting.",
+  "homepage": "https://josheche.github.io/tokengolf/"
+}

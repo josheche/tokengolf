@@ -27,7 +27,7 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 ██  🏆  SESSION COMPLETE
 ██  add pagination to /users endpoint
 ██  ──────────────────────────────────────────────────
-██  $0.2300  /$1.50  15%  ⚔️ Sonnet  🥇 Gold
+██  $0.2100  /$1.50  14%  ⚔️ Sonnet  🥇 Gold
 ██  🌟 LEGENDARY
 ██  ──────────────────────────────────────────────────
 ██  🎯 Sniper  🥈 Silver  🔥 No Rest  ✅ Clean Run  🧰 Toolbox  🤫 Silent Run
@@ -37,25 +37,27 @@ Turn Claude Code token efficiency into a game. Declare a quest, commit to a budg
 
 ## Quick Start
 
-**npm** (recommended)
+**Claude Code Plugin** (recommended — one step, auto-updates)
+```bash
+claude plugin install tokengolf
+```
+
+**npm** (alternative — requires hook setup)
 ```bash
 npm install -g tokengolf
+tokengolf install          # patches ~/.claude/settings.json
 ```
 
 **Homebrew**
 ```bash
 brew tap josheche/tokengolf
 brew install tokengolf
+tokengolf install
 ```
 
 **curl**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash
-```
-
-Then set up the hooks (npm and brew only — curl does this automatically):
-```bash
-tokengolf install          # patches ~/.claude/settings.json
 ```
 
 That's it. Open Claude Code, work normally, `/exit` — scorecard appears automatically (Flow mode). Or declare a run first:
@@ -66,17 +68,18 @@ tokengolf start            # pick quest, class, effort, budget
 tokengolf win              # complete run, auto-detect cost
 ```
 
+npm users get auto-sync — hooks update automatically on version change.
+
 <details>
 <summary>All commands</summary>
 
 ```bash
 tokengolf start       # declare quest + class + effort + budget, begin a run
-tokengolf status      # live run status
 tokengolf win         # shipped it ✓ (auto-detects cost from transcripts)
-tokengolf bust        # manual permadeath override
 tokengolf scorecard   # last run scorecard
 tokengolf stats       # career dashboard
-tokengolf install     # patch ~/.claude/settings.json with hooks
+tokengolf config      # view or set config values
+tokengolf install     # patch ~/.claude/settings.json with hooks (npm only)
 tokengolf demo        # show all UI states (for screenshots)
 ```
 
@@ -110,11 +113,11 @@ Effort levels: Low / **Medium** / High / Max (Opus-only). Fast mode toggled with
 
 ## Scoring
 
-**Efficiency** (roguelike — % of budget used):
+**Efficiency** (% of budget used — roguelike uses declared budget, flow uses model's Gold tier):
 
-| 🌟 LEGENDARY | ⚡ EFFICIENT | ✓ SOLID | 😅 CLOSE CALL | 💀 BUSTED |
-|---|---|---|---|---|
-| < 25% | < 50% | < 75% | < 100% | > 100% |
+| 🌟 LEGENDARY | ⚡ EPIC | 💪 PRO | ✓ SOLID | 😅 CLOSE CALL | 💀 BUST |
+|---|---|---|---|---|---|
+| < 15% | < 30% | < 50% | < 75% | < 100% | > 100% |
 
 **Spend tier** (absolute, shown on every scorecard):
 
@@ -152,7 +155,7 @@ Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is 
 - 🥈 Silver — Completed with Sonnet
 - 🥉 Bronze — Completed with Opus
 - ⚜️ Paladin — Completed as Paladin (Opus plan mode)
-- ♟️ Grand Strategist — LEGENDARY efficiency as Paladin
+- ♟️ Grand Strategist — EPIC efficiency as Paladin
 
 **Efficiency**
 - 🎯 Sniper — Under 25% of budget used
@@ -178,12 +181,12 @@ Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is 
 
 **Effort**
 - 🏎️ Speedrunner — Low effort, completed under budget
-- 🏋️ Tryhard — High/max effort, LEGENDARY efficiency
+- 🏋️ Tryhard — High/max effort, EPIC efficiency
 - 👑 Archmagus — Opus at max effort, completed
 
 **Fast mode**
 - ⛈️ Lightning Run — Opus fast mode, completed under budget
-- 🎰 Daredevil — Opus fast mode, LEGENDARY efficiency
+- 🎰 Daredevil — Opus fast mode, EPIC efficiency
 
 **Time**
 - ⏱️ Speedrun — Completed in under 5 minutes
@@ -192,7 +195,7 @@ Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is 
 
 **Ultrathink**
 - 🔮 Spell Cast — Used extended thinking during the run
-- 🧮 Calculated Risk — Ultrathink + LEGENDARY efficiency
+- 🧮 Calculated Risk — Ultrathink + EPIC efficiency
 - 🌀 Deep Thinker — 3+ ultrathink invocations, completed under budget
 - 🤫 Silent Run — No extended thinking, SOLID or better
 - 🤦 Hubris — Used ultrathink, busted anyway *(death mark)*
@@ -253,13 +256,14 @@ Budget presets are model-calibrated — Haiku Diamond is $0.15, Opus Diamond is 
 After `tokengolf install`, a status line appears in every Claude Code session showing quest, cost, efficiency, context load, and model class.
 
 ```
-██ ⛳ add pagination to /users  $0.54/1.50 ▓▓▓▓░░░░░░░ 36%  EFFICIENT  ⚔️ Sonnet  F2/5
+██ ⛳ add pagination to /users  $0.54/1.50 ▓▓▓▓░░░░░░░ 36% 🥈 PRO  F2/5
+██ ⚔️ Sonnet  🧠 ▓▓▓░░░░░░░ 34% 📚
 
-██ ⛳ refactor auth middleware  $0.82/4.00 ▓▓░░░░░░░░░ 21%  LEGENDARY  🧙 Opus  F3/5
-██ 🧠 ▓▓▓▓▓░░░░░ 52% 🪶
+██ ⛳ refactor auth middleware  $0.82/4.00 ▓▓░░░░░░░░░ 21% 🥈 EPIC  F3/5
+██ 🧙 Opus  🧠 ▓▓▓▓▓░░░░░ 52% 🪶
 ```
 
-Budget bar turns red above 75%. Context bar (line 2) appears at 50%+: **🪶** green · **🎒** yellow · **📦** red. Accent `██` turns red in danger. **💤** replaces ⛳ when fainted.
+Budget bar turns red above 75%. Line 2 shows model class and context weight: **🪶** · **📚** · **🎒** · **🧱** · **🪨** · **🗿** — six tiers from feather to stone. Accent `██` turns red in danger. **💤** replaces ⛳ when fainted. Flow mode shows your current emotion instead of a quest name.
 
 ---
 
@@ -272,7 +276,7 @@ When you `/exit`, the scorecard appears automatically — cost, model breakdown,
 ██  add pagination to /users endpoint
 ██  ──────────────────────────────────────────────────
 ██  SPENT      BUDGET    USED    MODEL        TIER
-██  $0.2300    $1.50     15%     ⚔️ Sonnet     🥇 Gold
+██  $0.2100    $1.50     14%     ⚔️ Sonnet     🥇 Gold
 ██
 ██  🌟 LEGENDARY
 ██  ──────────────────────────────────────────────────
@@ -292,7 +296,7 @@ When you `/exit`, the scorecard appears automatically — cost, model breakdown,
 ```
 
 ```
-██  💀  BUDGET BUSTED
+██  💀  BUDGET BUST
 ██  migrate postgres schema to v3
 ██  ──────────────────────────────────────────────────
 ██  $3.8700  /$1.50  258%  ⚔️ Sonnet  💸 Reckless
@@ -365,7 +369,7 @@ Token golf is the same idea applied to AI sessions. Your budget is par. Every un
 <details>
 <summary><strong>Hooks (9 total)</strong></summary>
 
-All installed via `tokengolf install`:
+Installed automatically via plugin, or manually via `tokengolf install` (npm):
 
 | Hook | When | What it does |
 |------|------|-------------|

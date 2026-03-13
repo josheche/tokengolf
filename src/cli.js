@@ -3,12 +3,11 @@ import { program } from 'commander';
 import { render } from 'ink';
 import React from 'react';
 
-import { getCurrentRun, clearCurrentRun, updateCurrentRun } from './lib/state.js';
+import { getCurrentRun, clearCurrentRun } from './lib/state.js';
 import { getConfig, setConfig, VALID_EMOTION_MODES } from './lib/config.js';
 import { saveRun, getLastRun, getStats } from './lib/store.js';
 import { autoDetectCost } from './lib/cost.js';
 import { StartRun } from './components/StartRun.js';
-import { ActiveRun } from './components/ActiveRun.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
@@ -19,18 +18,6 @@ program
   .description('Declare a quest and start a new run')
   .action(() => {
     render(React.createElement(StartRun));
-  });
-
-program
-  .command('status')
-  .description('Show current run status')
-  .action(() => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run. Start one with: tokengolf start');
-      process.exit(0);
-    }
-    render(React.createElement(ActiveRun, { run }));
   });
 
 program
@@ -58,44 +45,6 @@ program
   });
 
 program
-  .command('bust')
-  .description('Mark current run as budget busted (died)')
-  .option('--spent <amount>', 'How much did you spend? (e.g. 0.45)')
-  .action((opts) => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run.');
-      process.exit(1);
-    }
-    const detected = opts.spent ? null : autoDetectCost(run);
-    const spent = opts.spent ? parseFloat(opts.spent) : (detected?.spent ?? run.budget + 0.01);
-    const died = {
-      ...run,
-      spent,
-      status: 'died',
-      modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null,
-      endedAt: new Date().toISOString(),
-    };
-    const saved = saveRun(died);
-    clearCurrentRun();
-    render(React.createElement(ScoreCard, { run: saved }));
-  });
-
-program
-  .command('floor')
-  .description('Advance to the next floor')
-  .action(() => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run.');
-      process.exit(1);
-    }
-    const nextFloor = Math.min((run.floor || 1) + 1, run.totalFloors || 5);
-    updateCurrentRun({ floor: nextFloor });
-    console.log(`Floor ${nextFloor} / ${run.totalFloors}`);
-  });
-
-program
   .command('scorecard')
   .description('Show the last run scorecard')
   .action(() => {
@@ -116,7 +65,7 @@ program
 
 program
   .command('demo [component]')
-  .description('Show UI demos — all, hud, scorecard, active, stats')
+  .description('Show UI demos — all, hud, scorecard, stats')
   .option('-i, --index <n>', 'Show only the Nth variant (0-based)')
   .action(async (component, opts) => {
     const idx = opts.index != null ? parseInt(opts.index) : undefined;
@@ -127,8 +76,6 @@ program
       runDemo();
       const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
       await runScoreCardDemo(idx);
-      const { runActiveDemo } = await import('./lib/demo-active.js');
-      await runActiveDemo(idx);
       const { runStatsDemo } = await import('./lib/demo-stats.js');
       await runStatsDemo(idx);
       process.exit(0);
@@ -146,19 +93,13 @@ program
       process.exit(0);
     }
 
-    if (c === 'active') {
-      const { runActiveDemo } = await import('./lib/demo-active.js');
-      await runActiveDemo(idx);
-      process.exit(0);
-    }
-
     if (c === 'stats') {
       const { runStatsDemo } = await import('./lib/demo-stats.js');
       await runStatsDemo(idx);
       process.exit(0);
     }
 
-    console.log('Unknown demo component. Choose: all, hud, scorecard, active, stats');
+    console.log('Unknown demo component. Choose: all, hud, scorecard, stats');
     process.exit(1);
   });
 

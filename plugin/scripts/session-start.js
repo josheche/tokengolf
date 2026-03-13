@@ -136,13 +136,8 @@ try {
   }
 
   // Implicit Gold-tier budgets for flow mode (same as MODEL_BUDGET_TIERS in score.js)
-  const FLOW_BUDGETS = {
-    'claude-haiku-4-5-20251001': 0.4,
-    'claude-sonnet-4-6': 1.5,
-    'claude-opus-4-6': 7.5,
-    opusplan: 7.5,
-  };
-  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
+  const FLOW_BUDGETS = { 'claude-haiku-4-5-20251001': 0.40, 'claude-sonnet-4-6': 1.50, 'claude-opus-4-6': 7.50, 'opusplan': 7.50 };
+  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.50;
   const pct = run.spent / effBudget;
   const urgency = pct >= 0.8 ? '⚠️  BUDGET CRITICAL — be concise. ' : '';
   const questLine = run.quest ? `Quest: ${run.quest}` : 'Mode: Flow (auto-tracking)';

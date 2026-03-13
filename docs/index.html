@@ -1120,6 +1120,14 @@
             <td class="difficulty-tactical">Tactical</td>
             <td>Strategic planner. Thinks before acting.</td>
           </tr>
+          <tr>
+            <td>
+              <span class="class-emoji">⚡</span> <strong>Warlock·Fast</strong>
+            </td>
+            <td>Opus + fast mode</td>
+            <td class="difficulty-nightmare">Danger</td>
+            <td>2× cost. Maximum risk, maximum speed.</td>
+          </tr>
         </tbody>
       </table>
       </div>
@@ -1135,7 +1143,6 @@
       <div class="tab-bar" role="tablist">
         <button class="tab-btn" role="tab" id="tab-hud" aria-selected="true" aria-controls="panel-hud" data-panel="panel-hud">HUD</button>
         <button class="tab-btn" role="tab" id="tab-scorecard" aria-selected="false" aria-controls="panel-scorecard" data-panel="panel-scorecard">ScoreCard</button>
-        <button class="tab-btn" role="tab" id="tab-status" aria-selected="false" aria-controls="panel-status" data-panel="panel-status">Status</button>
         <button class="tab-btn" role="tab" id="tab-stats" aria-selected="false" aria-controls="panel-stats" data-panel="panel-stats">Stats</button>
       </div>
 
@@ -1145,22 +1152,29 @@
           <div class="term" data-glow="cyan">
             <div class="term-header">tokengolf demo hud</div>
             <pre>
-<span class="border-yellow">██</span> ⛳ Flow  💎 $0.0034  ⚔️ Sonnet
+<span class="border-yellow">██</span> ⛳ <span class="t-green">VIBING</span>  <span class="t-dim">$</span>0.00<span class="t-dim">/1.50</span> <span class="t-yellow">░░░░░░░░░░░</span> 0% 💎 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> ⚔️ Sonnet  🧠 <span class="t-green">▓░░░░░░░░░</span> 8% 🪶
 
-<span class="border-yellow">██</span> ⛳ add pagination to /users  <span class="t-dim">$</span>0.54<span class="t-dim">/1.50</span> <span class="t-yellow">▓▓▓▓░░░░░░░</span> 36%  <span class="t-cyan">EFFICIENT</span>  ⚔️ Sonnet  <span class="t-dim">F2/5</span>
+<span class="border-yellow">██</span> ⛳ add pagination to /users  <span class="t-dim">$</span>0.54<span class="t-dim">/1.50</span> <span class="t-yellow">▓▓▓▓░░░░░░░</span> 36% 🥈 <span class="t-cyan">PRO</span>  <span class="t-dim">F2/5</span>
+<span class="border-yellow">██</span> ⚔️ Sonnet  🧠 <span class="t-green">▓▓▓░░░░░░░</span> 34% 📚
 
-<span class="border-yellow">██</span> ⛳ implement SSO with SAML  <span class="t-dim">$</span>0.41<span class="t-dim">/2.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21%  <span class="t-magenta">LEGENDARY</span>  ⚔️ Sonnet·High  <span class="t-dim">F1/5</span>
+<span class="border-yellow">██</span> ⛳ implement SSO with SAML  <span class="t-dim">$</span>0.41<span class="t-dim">/2.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21% 🥈 <span class="t-magenta">EPIC</span>  <span class="t-dim">F1/5</span>
+<span class="border-yellow">██</span> ⚔️ Sonnet·High  🧠 <span class="t-green">▓▓▓░░░░░░░</span> 29% 📚
 
-<span class="border-yellow">██</span> ⛳ refactor auth middleware  <span class="t-dim">$</span>0.82<span class="t-dim">/4.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21%  <span class="t-magenta">LEGENDARY</span>  🧙 Opus  <span class="t-dim">F3/5</span>
-<span class="border-yellow">██</span> 🧠 <span class="t-green">▓▓▓▓▓░░░░░</span> 52% 🪶
+<span class="border-yellow">██</span> ⛳ refactor auth middleware  <span class="t-dim">$</span>0.82<span class="t-dim">/4.00</span> <span class="t-yellow">▓▓░░░░░░░░░</span> 21% 🥈 <span class="t-magenta">EPIC</span>  <span class="t-dim">F3/5</span>
+<span class="border-yellow">██</span> 🧙 Opus  🧠 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 52% 🎒
 
-<span class="border-red">██</span> ⛳ fix N+1 query in dashboard  <span class="t-dim">$</span>0.46<span class="t-dim">/0.50</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓░</span> 92%  <span class="t-yellow">CLOSE CALL</span>  🏹 Haiku  <span class="t-dim">F4/5</span>
-<span class="border-red">██</span> 🧠 <span class="t-yellow">▓▓▓▓▓▓▓▓░░</span> 78% 🎒
+<span class="border-red">██</span> ⛳ fix N+1 query in dashboard  <span class="t-dim">$</span>0.46<span class="t-dim">/0.50</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓░</span> 92% 🥈 <span class="t-white">CLOSE CALL</span>  <span class="t-dim">F4/5</span>
+<span class="border-red">██</span> 🏹 Haiku  🧠 <span class="t-yellow">▓▓▓▓▓▓▓▓░░</span> 78% 🪨
 
-<span class="border-red">██</span> ⛳ migrate postgres schema  <span class="t-dim">$</span>2.41<span class="t-dim">/2.00</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 121%  <span class="t-red">BUSTED</span>  ⚔️ Sonnet  <span class="t-dim">F2/5</span>
+<span class="border-red">██</span> ⛳ migrate postgres schema  <span class="t-dim">$</span>2.41<span class="t-dim">/2.00</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 121% 🥉 <span class="t-red">BUST</span>  <span class="t-dim">F2/5</span>
+<span class="border-red">██</span> ⚔️ Sonnet  🧠 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 45% 🎒
 
-<span class="border-yellow">██</span> 💤 write test suite for payments  <span class="t-dim">$</span>1.22<span class="t-dim">/3.00</span> <span class="t-yellow">▓▓▓▓▓░░░░░░</span> 41%  <span class="t-cyan">EFFICIENT</span>  ⚔️ Sonnet  <span class="t-dim">F2/5</span>
-<span class="border-yellow">██</span> 🧠 <span class="t-green">▓▓▓▓▓▓▓░░░</span> 67% 🪶</pre>
+<span class="border-yellow">██</span> ⛳ refactor entire API layer  <span class="t-dim">$</span>3.10<span class="t-dim">/10.00</span> <span class="t-yellow">▓▓▓░░░░░░░░</span> 31% 💸 <span class="t-cyan">PRO</span>  <span class="t-dim">F3/5</span>
+<span class="border-yellow">██</span> 🧙 Opus  🧠 <span class="t-red">▓▓▓▓▓▓▓▓▓░</span> 91% 🗿
+
+<span class="border-yellow">██</span> 💤 write test suite for payments  <span class="t-dim">$</span>1.22<span class="t-dim">/3.00</span> <span class="t-yellow">▓▓▓▓▓░░░░░░</span> 41% 🥉 <span class="t-cyan">PRO</span>  <span class="t-dim">F2/5</span>
+<span class="border-yellow">██</span> ⚔️ Sonnet  🧠 <span class="t-yellow">▓▓▓▓▓▓▓░░░</span> 67% 🧱</pre>
           </div>
           <div class="demo-label">
             <strong>Live HUD</strong> appears in every Claude Code session. Shows quest, cost, efficiency rating, context load, and model class at a glance.
@@ -1179,9 +1193,9 @@
 <span class="border-yellow">██</span>  <span class="t-b t-white">add pagination to /users endpoint</span>
 <span class="border-yellow">██</span>  <span class="t-dim">──────────────────────────────────────────────────</span>
 <span class="border-yellow">██</span>  <span class="t-dim">SPENT</span>      <span class="t-dim">BUDGET</span>    <span class="t-dim">USED</span>    <span class="t-dim">MODEL</span>     <span class="t-dim">TIER</span>
-<span class="border-yellow">██</span>  <span class="t-b t-green">$0.2300</span>    $1.50     <span class="t-green">15%</span>     <span class="t-cyan">⚔️ Sonnet</span>  <span class="t-yellow">🥇 Gold</span>
+<span class="border-yellow">██</span>  <span class="t-b t-green">$0.2100</span>    $1.50     <span class="t-green">14%</span>     <span class="t-cyan">⚔️ Sonnet</span>  <span class="t-yellow">🥇 Gold</span>
 <span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  <span class="t-b t-magenta">🌟 LEGENDARY</span>
+<span class="border-yellow">██</span>  <span class="t-b t-yellow">🌟 LEGENDARY</span>
 <span class="border-yellow">██</span>  <span class="t-dim">──────────────────────────────────────────────────</span>
 <span class="border-yellow">██</span>  <span class="t-dim">Achievements unlocked:</span>
 <span class="border-yellow">██</span>   <span class="t-yellow">🎯 Sniper — Under 25% budget</span>
@@ -1206,13 +1220,13 @@
             <div class="term" data-glow="red">
               <div class="term-header">tokengolf scorecard — died</div>
             <pre>
-<span class="border-red">██</span>  <span class="t-b t-red">💀  BUDGET BUSTED</span>
+<span class="border-red">██</span>  <span class="t-b t-red">💀  BUDGET BUST</span>
 <span class="border-red">██</span>  <span class="t-b t-white">migrate postgres schema to v3</span>
 <span class="border-red">██</span>  <span class="t-dim">──────────────────────────────────────────────────</span>
 <span class="border-red">██</span>  <span class="t-dim">SPENT</span>     <span class="t-dim">BUDGET</span>    <span class="t-dim">USED</span>    <span class="t-dim">MODEL</span>     <span class="t-dim">TIER</span>
 <span class="border-red">██</span>  <span class="t-b t-red">$3.8700</span>   $1.50     <span class="t-red">258%</span>    <span class="t-cyan">⚔️ Sonnet</span>  💸 Reckless
 <span class="border-red">██</span>
-<span class="border-red">██</span>  <span class="t-b t-red">💀 BUSTED</span>
+<span class="border-red">██</span>  <span class="t-b t-red">💀 BUST</span>
 <span class="border-red">██</span>  <span class="t-dim">──────────────────────────────────────────────────</span>
 <span class="border-red">██</span>  <span class="t-dim">Achievements unlocked:</span>
 <span class="border-red">██</span>   <span class="t-yellow">🤦 Hubris — Ultrathink, busted anyway</span>
@@ -1229,36 +1243,6 @@
             <div class="demo-label">
               <strong>ScoreCard (Died)</strong> is permadeath. Budget exceeded = death marks. Hubris, Blowout, Fumble. Wear them with shame.
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Status panel ── -->
-      <div class="tab-panel" id="panel-status" role="tabpanel" aria-labelledby="tab-status">
-        <div class="demo-item" style="max-width: 640px">
-          <div class="term" data-glow="yellow">
-            <div class="term-header">tokengolf status</div>
-            <pre>
-<span class="t-b t-yellow">⛳ TokenGolf</span>   <span class="t-muted">Active Run</span>  <span class="t-dim">42m 18s</span>
-
-<span class="border-yellow">██</span>  <span class="t-b t-white">refactor database connection pooling</span>
-<span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  🧙 <span class="t-cyan">Opus</span>   Budget <span class="t-green">$7.50</span>   Spent <span class="t-red">$6.3400</span>   <span class="t-yellow">😅 CLOSE CALL</span>
-<span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  💰 <span class="t-red">████████████████████░░░░</span> <span class="t-red">85%</span>
-<span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  <span class="t-green">✓</span> <span class="t-green">Floor 1: Write the code</span>
-<span class="border-yellow">██</span>  <span class="t-green">✓</span> <span class="t-green">Floor 2: Write the tests</span>
-<span class="border-yellow">██</span>  <span class="t-yellow">▶</span> <span class="t-white">Floor 3: Fix failing tests</span>
-<span class="border-yellow">██</span>  <span class="t-dim">○ Floor 4: Code review pass</span>
-<span class="border-yellow">██</span>  <span class="t-dim">○ Floor 5: PR merged — BOSS 🏆</span>
-<span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  <span class="t-muted">Prompts</span> <span class="t-white">12</span>   <span class="t-muted">Tools</span> <span class="t-white">35</span>
-<span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  <span class="t-b t-red">⚠️ BUDGET WARNING — $1.16 left</span></pre>
-          </div>
-          <div class="demo-label">
-            <strong>Active Run</strong> shows live status with progress bar, floor tracker, and budget warning at 80%+. Auto-refreshes every 2 seconds.
           </div>
         </div>
       </div>
@@ -1319,7 +1303,7 @@
           <p>Opus fast mode is auto-detected from your Claude Code settings. Unlocks unique achievements:</p>
           <ul>
             <li>⛈️ <strong>Lightning Run</strong> · Opus fast mode, under budget</li>
-            <li>🎰 <strong>Daredevil</strong> · Opus fast mode, LEGENDARY efficiency</li>
+            <li>🎰 <strong>Daredevil</strong> · Opus fast mode, EPIC efficiency</li>
           </ul>
         </div>
       </div>
@@ -1433,7 +1417,7 @@
           </div>
           <div class="card achievement-card">
             <div class="achievement-emoji">♟️</div>
-            <div class="achievement-info"><h4>Grand Strategist</h4><p>LEGENDARY efficiency as Paladin</p></div>
+            <div class="achievement-info"><h4>Grand Strategist</h4><p>EPIC efficiency as Paladin</p></div>
           </div>
 
           <div class="ach-sub label-caps">Budget Efficiency</div>
@@ -1467,11 +1451,21 @@
           </div>
           <div class="card achievement-card">
             <div class="achievement-emoji">🏋️</div>
-            <div class="achievement-info"><h4>Tryhard</h4><p>High/Max effort, LEGENDARY efficiency</p></div>
+            <div class="achievement-info"><h4>Tryhard</h4><p>High/Max effort, EPIC efficiency</p></div>
           </div>
           <div class="card achievement-card">
             <div class="achievement-emoji">👑</div>
             <div class="achievement-info"><h4>Archmagus</h4><p>Opus at max effort, completed</p></div>
+          </div>
+
+          <div class="ach-sub label-caps">Fast Mode</div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">⛈️</div>
+            <div class="achievement-info"><h4>Lightning Run</h4><p>Opus fast mode, completed under budget</p></div>
+          </div>
+          <div class="card achievement-card">
+            <div class="achievement-emoji">🎰</div>
+            <div class="achievement-info"><h4>Daredevil</h4><p>Opus fast mode, EPIC efficiency</p></div>
           </div>
         </div>
       </div>
@@ -1610,7 +1604,7 @@
           </div>
           <div class="card achievement-card">
             <div class="achievement-emoji">🧮</div>
-            <div class="achievement-info"><h4>Calculated Risk</h4><p>Extended thinking + LEGENDARY efficiency</p></div>
+            <div class="achievement-info"><h4>Calculated Risk</h4><p>Extended thinking + EPIC efficiency</p></div>
           </div>
           <div class="card achievement-card">
             <div class="achievement-emoji">🌀</div>
@@ -1733,9 +1727,7 @@
 
 <span class="comment"># Roguelike — declare before you start</span>
 <span class="dollar">$</span> <span class="cmd">tokengolf start</span>            <span class="comment"># quest wizard: model + budget</span>
-<span class="dollar">$</span> <span class="cmd">tokengolf status</span>           <span class="comment"># live run state</span>
 <span class="dollar">$</span> <span class="cmd">tokengolf win</span>              <span class="comment"># complete run, show scorecard</span>
-<span class="dollar">$</span> <span class="cmd">tokengolf bust</span>             <span class="comment"># permadeath — budget busted</span>
 
 <span class="comment"># Flow — just /exit Claude Code, scorecard auto-appears</span>
 <span class="dollar">$</span> <span class="cmd">tokengolf scorecard</span>        <span class="comment"># show last run's results</span>

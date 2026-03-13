@@ -58,11 +58,16 @@ describe('getTier', () => {
 });
 
 describe('getEfficiencyRating', () => {
-  it('LEGENDARY at 24%', () => expect(getEfficiencyRating(0.24, 1.0).label).toBe('LEGENDARY'));
-  it('EFFICIENT at 49%', () => expect(getEfficiencyRating(0.49, 1.0).label).toBe('EFFICIENT'));
+  it('LEGENDARY at 14%', () => expect(getEfficiencyRating(0.14, 1.0).label).toBe('LEGENDARY'));
+  it('LEGENDARY at 15% boundary', () =>
+    expect(getEfficiencyRating(0.15, 1.0).label).toBe('LEGENDARY'));
+  it('EPIC at 16%', () => expect(getEfficiencyRating(0.16, 1.0).label).toBe('EPIC'));
+  it('EPIC at 30% boundary', () => expect(getEfficiencyRating(0.3, 1.0).label).toBe('EPIC'));
+  it('PRO at 31%', () => expect(getEfficiencyRating(0.31, 1.0).label).toBe('PRO'));
+  it('PRO at 49%', () => expect(getEfficiencyRating(0.49, 1.0).label).toBe('PRO'));
   it('SOLID at 74%', () => expect(getEfficiencyRating(0.74, 1.0).label).toBe('SOLID'));
   it('CLOSE CALL at 99%', () => expect(getEfficiencyRating(0.99, 1.0).label).toBe('CLOSE CALL'));
-  it('BUSTED over 100%', () => expect(getEfficiencyRating(1.01, 1.0).label).toBe('BUSTED'));
+  it('BUST over 100%', () => expect(getEfficiencyRating(1.01, 1.0).label).toBe('BUST'));
 });
 
 describe('getModelClass', () => {
@@ -113,8 +118,15 @@ describe('budget efficiency', () => {
   it('no penny at $0.12', () => {
     expect(keys(wonRun({ spent: 0.12 }))).not.toContain('penny');
   });
-  it('no sniper/efficient without budget', () => {
-    const a = keys(wonRun({ budget: null, spent: 0.05 }));
+  it('sniper/efficient in flow mode uses implicit Gold-tier budget', () => {
+    // Sonnet Gold = $1.50, $0.05 = 3.3% → sniper + efficient
+    const a = keys(wonRun({ budget: null, spent: 0.05, model: 'claude-sonnet-4-6' }));
+    expect(a).toContain('sniper');
+    expect(a).toContain('efficient');
+  });
+  it('no sniper in flow mode at high spend', () => {
+    // Sonnet Gold = $1.50, $1.00 = 67% → no sniper, no efficient
+    const a = keys(wonRun({ budget: null, spent: 1.0, model: 'claude-sonnet-4-6' }));
     expect(a).not.toContain('sniper');
     expect(a).not.toContain('efficient');
   });

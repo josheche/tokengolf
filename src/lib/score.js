@@ -85,11 +85,12 @@ export function getModelClass(model = '') {
 
 export function getEfficiencyRating(spent, budget) {
   const pct = spent / budget;
-  if (pct <= 0.25) return { label: 'LEGENDARY', emoji: '🌟', color: 'magenta' };
-  if (pct <= 0.5) return { label: 'EFFICIENT', emoji: '⚡', color: 'cyan' };
+  if (pct <= 0.15) return { label: 'LEGENDARY', emoji: '🌟', color: 'yellow' };
+  if (pct <= 0.3) return { label: 'EPIC', emoji: '⚡', color: 'magenta' };
+  if (pct <= 0.5) return { label: 'PRO', emoji: '💪', color: 'cyan' };
   if (pct <= 0.75) return { label: 'SOLID', emoji: '✓', color: 'green' };
-  if (pct <= 1.0) return { label: 'CLOSE CALL', emoji: '😅', color: 'yellow' };
-  return { label: 'BUSTED', emoji: '💀', color: 'red' };
+  if (pct <= 1.0) return { label: 'CLOSE CALL', emoji: '😅', color: 'white' };
+  return { label: 'BUST', emoji: '💀', color: 'red' };
 }
 
 export function getBudgetPct(spent, budget) {
@@ -136,7 +137,9 @@ export function getHaikuPct(modelBreakdown, totalSpent) {
 export function calculateAchievements(run) {
   const achievements = [];
   const won = run.status === 'won';
-  const pct = run.budget ? run.spent / run.budget : null;
+  // Use explicit budget or implicit Gold-tier budget for flow mode
+  const effBudget = run.budget || getModelBudgets(run.model).gold;
+  const pct = run.spent / effBudget;
   const mc = getModelClass(run.model);
 
   const isPaladin = mc === MODEL_CLASSES.opusplan;
@@ -219,10 +222,10 @@ export function calculateAchievements(run) {
       label: 'Paladin — Completed a run as Paladin',
       emoji: '⚜️',
     });
-    if (pct !== null && pct <= 0.25)
+    if (pct <= 0.25)
       achievements.push({
         key: 'grand_strategist',
-        label: 'Grand Strategist — LEGENDARY efficiency as Paladin',
+        label: 'Grand Strategist — EPIC efficiency as Paladin',
         emoji: '♟️',
       });
   } else if (mc === MODEL_CLASSES.opus) {
@@ -233,20 +236,18 @@ export function calculateAchievements(run) {
     });
   }
 
-  if (pct !== null) {
-    if (pct <= 0.25)
-      achievements.push({
-        key: 'sniper',
-        label: 'Sniper — Under 25% of budget',
-        emoji: '🎯',
-      });
-    if (pct <= 0.5)
-      achievements.push({
-        key: 'efficient',
-        label: 'Efficient — Under 50% of budget',
-        emoji: '⚡',
-      });
-  }
+  if (pct <= 0.25)
+    achievements.push({
+      key: 'sniper',
+      label: 'Sniper — Under 25% of budget',
+      emoji: '🎯',
+    });
+  if (pct <= 0.5)
+    achievements.push({
+      key: 'efficient',
+      label: 'Efficient — Under 50% of budget',
+      emoji: '⚡',
+    });
   if (run.spent < 0.1)
     achievements.push({
       key: 'penny',
@@ -256,16 +257,16 @@ export function calculateAchievements(run) {
 
   // Effort-based achievements
   if (run.effort) {
-    if (run.effort === 'low' && pct !== null && pct < 1.0)
+    if (run.effort === 'low' && pct < 1.0)
       achievements.push({
         key: 'speedrunner',
         label: 'Speedrunner — Low effort, completed under budget',
         emoji: '🏎️',
       });
-    if ((run.effort === 'high' || run.effort === 'max') && pct !== null && pct <= 0.25)
+    if ((run.effort === 'high' || run.effort === 'max') && pct <= 0.25)
       achievements.push({
         key: 'tryhard',
-        label: 'Tryhard — High effort, LEGENDARY efficiency',
+        label: 'Tryhard — High effort, EPIC efficiency',
         emoji: '🏋️',
       });
     if (run.effort === 'max' && mc === MODEL_CLASSES.opus)
@@ -278,16 +279,16 @@ export function calculateAchievements(run) {
 
   // Fast mode achievements (Opus-only feature)
   if (run.fastMode && mc === MODEL_CLASSES.opus) {
-    if (pct !== null && pct < 1.0)
+    if (pct < 1.0)
       achievements.push({
         key: 'lightning',
         label: 'Lightning Run — Opus fast mode, completed under budget',
         emoji: '⛈️',
       });
-    if (pct !== null && pct <= 0.25)
+    if (pct <= 0.25)
       achievements.push({
         key: 'daredevil',
-        label: 'Daredevil — Opus fast mode, LEGENDARY efficiency',
+        label: 'Daredevil — Opus fast mode, EPIC efficiency',
         emoji: '🎰',
       });
   }
@@ -355,10 +356,10 @@ export function calculateAchievements(run) {
       label: `Spell Cast — Used extended thinking (${ti}×)`,
       emoji: '🔮',
     });
-    if (pct !== null && pct <= 0.25)
+    if (pct <= 0.25)
       achievements.push({
         key: 'calculated_risk',
-        label: 'Calculated Risk — Ultrathink + LEGENDARY efficiency',
+        label: 'Calculated Risk — Ultrathink + EPIC efficiency',
         emoji: '🧮',
       });
     if (ti >= 3)
@@ -369,7 +370,7 @@ export function calculateAchievements(run) {
       });
   }
   // Silent Run: thinking was tracked (field exists), zero invocations, SOLID or better, completed
-  if (run.thinkingInvocations === 0 && pct !== null && pct <= 0.75)
+  if (run.thinkingInvocations === 0 && pct <= 0.75)
     achievements.push({
       key: 'silent_run',
       label: 'Silent Run — No extended thinking, completed under budget',
@@ -411,13 +412,13 @@ export function calculateAchievements(run) {
         label: 'Purist — Single model family throughout',
         emoji: '🔷',
       });
-    if (distinct >= 2 && pct !== null && pct < 1.0)
+    if (distinct >= 2 && pct < 1.0)
       achievements.push({
         key: 'chameleon',
         label: `Chameleon — ${distinct} model families used, completed under budget`,
         emoji: '🦎',
       });
-    if (switches === 1 && pct !== null && pct < 1.0)
+    if (switches === 1 && pct < 1.0)
       achievements.push({
         key: 'tactical_switch',
         label: 'Tactical Switch — Exactly 1 model switch, completed under budget',
@@ -528,7 +529,7 @@ export function calculateAchievements(run) {
       label: `Scout — ${Math.round((readCount / totalToolCalls) * 100)}% Read calls`,
       emoji: '🔍',
     });
-  if (editCount >= 1 && editCount <= 3 && pct !== null && pct < 1.0)
+  if (editCount >= 1 && editCount <= 3 && pct < 1.0)
     achievements.push({
       key: 'surgeon',
       label: `Surgeon — Only ${editCount} Edit call${editCount > 1 ? 's' : ''}, under budget`,
@@ -606,7 +607,7 @@ export function calculateAchievements(run) {
       label: `Summoner — ${subagentSpawns} subagents spawned`,
       emoji: '📡',
     });
-  if (subagentSpawns >= 10 && pct !== null && pct < 0.5)
+  if (subagentSpawns >= 10 && pct < 0.5)
     achievements.push({
       key: 'army',
       label: `Army of One — ${subagentSpawns} subagents, EFFICIENT cost`,

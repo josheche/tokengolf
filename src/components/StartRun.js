@@ -269,8 +269,7 @@ export function StartRun() {
       )}
       {step === 'confirm' && (
         <Text color="gray" dimColor>
-          After confirming, work normally in Claude Code. Run `tokengolf win` or `tokengolf bust`
-          when done.
+          Run ends automatically on /exit. Use `tokengolf win` to force-complete early.
         </Text>
       )}
     </Box>
