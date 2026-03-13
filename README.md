@@ -115,7 +115,7 @@ Effort levels: Low / **Medium** / High / Max (Opus-only). Fast mode toggled with
 
 **Efficiency** (% of budget used — roguelike uses declared budget, flow uses model's Gold tier):
 
-| 🌟 LEGENDARY | ⚡ EPIC | 💪 PRO | ✓ SOLID | 😅 CLOSE CALL | 💀 BUST |
+| 🌟 LEGENDARY | 🔥 EPIC | 💪 PRO | ✅ SOLID | ⚠️ CLOSE CALL | 💥 BUST |
 |---|---|---|---|---|---|
 | < 15% | < 30% | < 50% | < 75% | < 100% | > 100% |
 

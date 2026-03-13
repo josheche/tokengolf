@@ -67,7 +67,7 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
   } else if (pct <= 30) {
     rating = 'EPIC';
     rc = M;
-    effEmoji = '⚡';
+    effEmoji = '🔥';
   } else if (pct <= 50) {
     rating = 'PRO';
     rc = C;
@@ -75,15 +75,15 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
   } else if (pct <= 75) {
     rating = 'SOLID';
     rc = G;
-    effEmoji = '✓';
+    effEmoji = '✅';
   } else if (pct <= 100) {
     rating = 'CLOSE CALL';
     rc = W;
-    effEmoji = '😅';
+    effEmoji = '⚠️';
   } else {
     rating = 'BUST';
     rc = R;
-    effEmoji = '💀';
+    effEmoji = '💥';
   }
   const accent = pct > 75 ? R : Y;
   const barW = 11;

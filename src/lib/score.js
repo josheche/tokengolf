@@ -86,11 +86,11 @@ export function getModelClass(model = '') {
 export function getEfficiencyRating(spent, budget) {
   const pct = spent / budget;
   if (pct <= 0.15) return { label: 'LEGENDARY', emoji: '🌟', color: 'yellow' };
-  if (pct <= 0.3) return { label: 'EPIC', emoji: '⚡', color: 'magenta' };
+  if (pct <= 0.3) return { label: 'EPIC', emoji: '🔥', color: 'magenta' };
   if (pct <= 0.5) return { label: 'PRO', emoji: '💪', color: 'cyan' };
-  if (pct <= 0.75) return { label: 'SOLID', emoji: '✓', color: 'green' };
-  if (pct <= 1.0) return { label: 'CLOSE CALL', emoji: '😅', color: 'white' };
-  return { label: 'BUST', emoji: '💀', color: 'red' };
+  if (pct <= 0.75) return { label: 'SOLID', emoji: '✅', color: 'green' };
+  if (pct <= 1.0) return { label: 'CLOSE CALL', emoji: '⚠️', color: 'white' };
+  return { label: 'BUST', emoji: '💥', color: 'red' };
 }
 
 export function getBudgetPct(spent, budget) {

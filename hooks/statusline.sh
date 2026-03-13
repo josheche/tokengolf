@@ -97,11 +97,11 @@ else:             tier_emoji = '💸'
 eff_budget = budget if (budget is not None and budget > 0) else FLOW_BUDGETS.get(model, 1.50)
 pct = cost / eff_budget * 100 if eff_budget > 0 else 0
 if   pct <= 15:  rating, rc, eff_emoji = 'LEGENDARY',  Y, '🌟'
-elif pct <= 30:  rating, rc, eff_emoji = 'EPIC',       M, '⚡'
+elif pct <= 30:  rating, rc, eff_emoji = 'EPIC',       M, '🔥'
 elif pct <= 50:  rating, rc, eff_emoji = 'PRO',        C, '💪'
-elif pct <= 75:  rating, rc, eff_emoji = 'SOLID',      G, '✓'
-elif pct <= 100: rating, rc, eff_emoji = 'CLOSE CALL', W, '😅'
-else:            rating, rc, eff_emoji = 'BUST',       R, '💀'
+elif pct <= 75:  rating, rc, eff_emoji = 'SOLID',      G, '✅'
+elif pct <= 100: rating, rc, eff_emoji = 'CLOSE CALL', W, '⚠️'
+else:            rating, rc, eff_emoji = 'BUST',       R, '💥'
 accent = R if pct > 75 else Y
 # Budget progress bar
 bar_w = 11
