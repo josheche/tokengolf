@@ -14,6 +14,12 @@ try:
     with open(sys.argv[1]) as f: run = json.load(f)
 except: sys.exit(0)
 
+# Load config for emotion mode
+try:
+    with open(os.path.join(os.path.expanduser('~'), '.tokengolf', 'config.json')) as _cf: _config = json.load(_cf)
+except: _config = {}
+emotion_mode = _config.get('emotionMode', 'emoji')
+
 cost    = (session.get('cost') or {}).get('total_cost_usd') or run.get('spent', 0)
 # Persist CC's authoritative cost so session-end can read it (SessionEnd doesn't receive cost in stdin)
 try:
@@ -44,6 +50,45 @@ model_label = '·'.join(label_parts)
 
 R, G, Y, M, C, DIM, RESET = '\033[31m','\033[32m','\033[33m','\033[35m','\033[36m','\033[2m','\033[0m'
 BOLD = '\033[1m'
+
+# Emotion mapping
+EMOTIONS = {
+    'SLEEPING':     ('💤', '(-ω-)zzZ',    DIM),
+    'DEAD':         ('💀', '(X_X)',        R),
+    'OVERWHELMED':  ('🤯', '(×_×)',        R),
+    'FRUSTRATED':   ('😡', '(ノಠ益ಠ)ノ',   R),
+    'SWEATING':     ('😰', '(°△°)',        Y),
+    'FATIGUED':     ('🥱', '(-_-)',        DIM),
+    'TENSE':        ('😬', '(•_•)',        Y),
+    'GRINDING':     ('😤', '(ง•̀_•́)ง',     Y),
+    'FOCUSED':      ('🎯', '(•̀ᴗ•́)',       C),
+    'CRUISING':     ('🛹', '(‾◡‾)',        G),
+    'VIBING':       ('😎', '(◕‿◕)',        G),
+}
+
+def get_emotion(fainted, budget, cost, ctx_pct, failed_tools, prompt_count):
+    if fainted: return 'SLEEPING'
+    has_budget = budget is not None and budget > 0
+    budget_pct = (cost / budget * 100) if has_budget else 0
+    ctx = ctx_pct if ctx_pct is not None else 0
+    if has_budget:
+        if budget_pct >= 100: return 'DEAD'
+        if budget_pct >= 75 and ctx >= 90: return 'OVERWHELMED'
+        if failed_tools >= 5: return 'FRUSTRATED'
+        if budget_pct >= 75: return 'SWEATING'
+        if prompt_count >= 15 and budget_pct > 50: return 'FATIGUED'
+        if budget_pct >= 50: return 'TENSE'
+        if budget_pct >= 25: return 'GRINDING'
+        if ctx >= 75: return 'FOCUSED'
+        return 'VIBING'
+    else:
+        # Flow mode: no budget
+        if ctx >= 90: return 'OVERWHELMED'
+        if failed_tools >= 5: return 'FRUSTRATED'
+        if ctx >= 75: return 'FOCUSED'
+        if prompt_count >= 15: return 'GRINDING'
+        if ctx >= 50: return 'CRUISING'
+        return 'VIBING'
 
 if   cost < 0.10: tier_emoji = '💎'
 elif cost < 0.30: tier_emoji = '🥇'
@@ -84,8 +129,17 @@ if ctx_pct is not None:
     ctx_bar = f"{ctx_color}{'▓' * ctx_filled}{'░' * ctx_empty}{RESET}"
     ctx_line = f" {accent}██{RESET} 🧠 {ctx_bar} {ctx_pct:.0f}% {ctx_icon}"
 
-# Line 1: accent bar + quest + cost bar + rating + model + floor
-icon = '💤' if fainted else '⛳'
+# Compute emotion
+failed_tools = run.get('failedToolCalls', 0)
+prompt_count = run.get('promptCount', 0)
+emotion_key = get_emotion(fainted, budget, cost, ctx_pct, failed_tools, prompt_count)
+emotion_emoji, emotion_kaomoji, emotion_color = EMOTIONS[emotion_key]
+
+# Line 1: accent bar + icon + quest + cost bar + rating + model + floor
+if emotion_mode == 'emoji':
+    icon = emotion_emoji
+else:
+    icon = '💤' if fainted else '⛳'
 parts = [f" {accent}██{RESET} {icon} {quest}  {cost_str}{rating_str}  {model_label}"]
 if budget: parts.append(f"  {DIM}{floor}{RESET}")
 line1 = ''.join(parts)
@@ -94,4 +148,6 @@ line1 = ''.join(parts)
 print()
 print(line1)
 if ctx_line: print(ctx_line)
+if emotion_mode == 'ascii':
+    print(f" {accent}██{RESET} {emotion_color}{emotion_kaomoji} {emotion_key}{RESET}")
 PYEOF

@@ -4,6 +4,7 @@ import { render } from 'ink';
 import React from 'react';
 
 import { getCurrentRun, clearCurrentRun, updateCurrentRun } from './lib/state.js';
+import { getConfig, setConfig, VALID_EMOTION_MODES } from './lib/config.js';
 import { saveRun, getLastRun, getStats } from './lib/store.js';
 import { autoDetectCost } from './lib/cost.js';
 import { StartRun } from './components/StartRun.js';
@@ -158,6 +159,33 @@ program
     }
 
     console.log('Unknown demo component. Choose: all, hud, scorecard, active, stats');
+    process.exit(1);
+  });
+
+program
+  .command('config [key] [value]')
+  .description('View or set config values (e.g. tokengolf config emotions emoji)')
+  .action((key, value) => {
+    const config = getConfig();
+    if (!key) {
+      for (const [k, v] of Object.entries(config)) console.log(`${k}: ${v}`);
+      return;
+    }
+    if (key === 'emotions') {
+      if (!value) {
+        console.log(`emotionMode: ${config.emotionMode || 'off'}`);
+        return;
+      }
+      if (!VALID_EMOTION_MODES.includes(value)) {
+        console.log(`Invalid emotion mode: ${value}`);
+        console.log(`Valid modes: ${VALID_EMOTION_MODES.join(', ')}`);
+        process.exit(1);
+      }
+      setConfig('emotionMode', value);
+      console.log(`emotionMode: ${value}`);
+      return;
+    }
+    console.log(`Unknown config key: ${key}`);
     process.exit(1);
   });
 
