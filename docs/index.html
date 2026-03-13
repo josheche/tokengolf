@@ -80,6 +80,19 @@
         --yellow: #d4a840;
         --red: #e05848;
         --orange: #d4884a;
+        /* Loot-tier colors — game standard: gold → purple → blue → green → white → red */
+        --loot-legendary: #d4a840;
+        --loot-epic: #c8a0e0;
+        --loot-pro: #7cb8d4;
+        --loot-solid: #6bb54a;
+        --loot-close: #9a9180;
+        --loot-bust: #e05848;
+        /* Spend-tier colors — medal + danger */
+        --spend-diamond: #7cb8d4;
+        --spend-gold: #d4a840;
+        --spend-silver: #9a9180;
+        --spend-bronze: #d4884a;
+        --spend-reckless: #e05848;
         --hero-overlay-top: rgba(26,24,18,0.5);
         --hero-overlay-mid: rgba(26,24,18,0.4);
         --hero-overlay-bot: rgba(26,24,18,0.95);
@@ -109,6 +122,17 @@
         --yellow: #8a6a10;
         --red: #b03020;
         --orange: #9a5a18;
+        --loot-legendary: #8a6a10;
+        --loot-epic: #7a4a9a;
+        --loot-pro: #2a6e9a;
+        --loot-solid: #4a7a2a;
+        --loot-close: #6e6450;
+        --loot-bust: #b03020;
+        --spend-diamond: #2a6e9a;
+        --spend-gold: #8a6a10;
+        --spend-silver: #6e6450;
+        --spend-bronze: #9a5a18;
+        --spend-reckless: #b03020;
         --hero-overlay-top: rgba(242,234,214,0.15);
         --hero-overlay-mid: rgba(242,234,214,0.08);
         --hero-overlay-bot: rgba(242,234,214,0.93);
@@ -578,6 +602,8 @@
       .tier-card {
         padding: 1.25rem 1rem;
         text-align: center;
+        border-top: 3px solid var(--border);
+        transition: border-color 0.3s, box-shadow 0.3s;
       }
 
       .tier-emoji {
@@ -594,6 +620,45 @@
         color: var(--muted);
         font-size: 0.82rem;
       }
+
+      /* Spend-tier card accents */
+      .tier-diamond { border-top-color: var(--spend-diamond); }
+      .tier-diamond .tier-name { color: var(--spend-diamond); }
+      .tier-diamond:hover { box-shadow: 0 -4px 20px rgba(124,184,212,0.12); }
+      .tier-gold { border-top-color: var(--spend-gold); }
+      .tier-gold .tier-name { color: var(--spend-gold); }
+      .tier-gold:hover { box-shadow: 0 -4px 20px rgba(212,168,64,0.12); }
+      .tier-silver { border-top-color: var(--spend-silver); }
+      .tier-silver .tier-name { color: var(--spend-silver); }
+      .tier-bronze { border-top-color: var(--spend-bronze); }
+      .tier-bronze .tier-name { color: var(--spend-bronze); }
+      .tier-bronze:hover { box-shadow: 0 -4px 20px rgba(212,136,74,0.12); }
+      .tier-reckless { border-top-color: var(--spend-reckless); }
+      .tier-reckless .tier-name { color: var(--spend-reckless); }
+      .tier-reckless:hover { box-shadow: 0 -4px 20px rgba(224,88,72,0.12); }
+
+      /* Efficiency rating cards */
+      .eff-card {
+        border-top: 3px solid var(--border);
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      .eff-legendary { border-top-color: var(--loot-legendary); }
+      .eff-legendary .tier-name { color: var(--loot-legendary); }
+      .eff-legendary:hover { box-shadow: 0 -4px 24px rgba(212,168,64,0.15); }
+      .eff-epic { border-top-color: var(--loot-epic); }
+      .eff-epic .tier-name { color: var(--loot-epic); }
+      .eff-epic:hover { box-shadow: 0 -4px 24px rgba(200,160,224,0.15); }
+      .eff-pro { border-top-color: var(--loot-pro); }
+      .eff-pro .tier-name { color: var(--loot-pro); }
+      .eff-pro:hover { box-shadow: 0 -4px 24px rgba(124,184,212,0.15); }
+      .eff-solid { border-top-color: var(--loot-solid); }
+      .eff-solid .tier-name { color: var(--loot-solid); }
+      .eff-solid:hover { box-shadow: 0 -4px 24px rgba(107,181,74,0.15); }
+      .eff-close { border-top-color: var(--loot-close); }
+      .eff-close .tier-name { color: var(--loot-close); }
+      .eff-bust { border-top-color: var(--loot-bust); }
+      .eff-bust .tier-name { color: var(--loot-bust); }
+      .eff-bust:hover { box-shadow: 0 -4px 24px rgba(224,88,72,0.15); }
 
       .achievement-card.death {
         border-color: var(--death-border);
@@ -1313,30 +1378,68 @@
     <section id="budget">
       <h2><span>💰</span>Budget Tiers</h2>
       <div class="tiers-grid">
-        <div class="card tier-card">
+        <div class="card tier-card tier-diamond">
           <span class="tier-emoji">💎</span>
           <div class="tier-name">Diamond</div>
           <div class="tier-amount">under $0.10</div>
         </div>
-        <div class="card tier-card">
+        <div class="card tier-card tier-gold">
           <span class="tier-emoji">🥇</span>
           <div class="tier-name">Gold</div>
           <div class="tier-amount">under $0.30</div>
         </div>
-        <div class="card tier-card">
+        <div class="card tier-card tier-silver">
           <span class="tier-emoji">🥈</span>
           <div class="tier-name">Silver</div>
           <div class="tier-amount">under $1.00</div>
         </div>
-        <div class="card tier-card">
+        <div class="card tier-card tier-bronze">
           <span class="tier-emoji">🥉</span>
           <div class="tier-name">Bronze</div>
           <div class="tier-amount">under $3.00</div>
         </div>
-        <div class="card tier-card">
+        <div class="card tier-card tier-reckless">
           <span class="tier-emoji">💸</span>
           <div class="tier-name">Reckless</div>
           <div class="tier-amount">over $3.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Efficiency Ratings ── -->
+    <section id="efficiency">
+      <h2><span>🏅</span>Efficiency Ratings</h2>
+      <p class="section-sub">How well you used your budget. Same scale whether you committed $0.50 or $50. Colors follow the classic loot-tier hierarchy.</p>
+      <div class="tiers-grid">
+        <div class="card tier-card eff-card eff-legendary">
+          <span class="tier-emoji">🌟</span>
+          <div class="tier-name">LEGENDARY</div>
+          <div class="tier-amount">under 15%</div>
+        </div>
+        <div class="card tier-card eff-card eff-epic">
+          <span class="tier-emoji">⚡</span>
+          <div class="tier-name">EPIC</div>
+          <div class="tier-amount">under 30%</div>
+        </div>
+        <div class="card tier-card eff-card eff-pro">
+          <span class="tier-emoji">💪</span>
+          <div class="tier-name">PRO</div>
+          <div class="tier-amount">under 50%</div>
+        </div>
+        <div class="card tier-card eff-card eff-solid">
+          <span class="tier-emoji">✓</span>
+          <div class="tier-name">SOLID</div>
+          <div class="tier-amount">under 75%</div>
+        </div>
+        <div class="card tier-card eff-card eff-close">
+          <span class="tier-emoji">😅</span>
+          <div class="tier-name">CLOSE CALL</div>
+          <div class="tier-amount">under 100%</div>
+        </div>
+        <div class="card tier-card eff-card eff-bust">
+          <span class="tier-emoji">💀</span>
+          <div class="tier-name">BUST</div>
+          <div class="tier-amount">over 100%</div>
         </div>
       </div>
     </section>
