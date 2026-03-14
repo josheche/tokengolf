@@ -4,6 +4,7 @@ import {
   getTier,
   getEfficiencyRating,
   getModelClass,
+  getParBudget,
   MODEL_CLASSES,
 } from '../score.js';
 
@@ -13,11 +14,11 @@ function keys(run) {
   return calculateAchievements(run).map((a) => a.key);
 }
 
+// Default wonRun: Sonnet, 5 prompts → par = max(5×2.50, 3.00) = 12.50, spent = 2.50 → pct = 20%
 function wonRun(overrides = {}) {
   return {
     status: 'won',
-    spent: 0.1,
-    budget: 0.5,
+    spent: 2.5,
     model: 'claude-sonnet-4-6',
     promptCount: 5,
     totalToolCalls: 10,
@@ -32,11 +33,11 @@ function wonRun(overrides = {}) {
   };
 }
 
+// Default diedRun: Sonnet, 5 prompts → par = 12.50, spent = 14.0 → pct = 112%
 function diedRun(overrides = {}) {
   return {
     status: 'died',
-    spent: 0.55,
-    budget: 0.5,
+    spent: 14.0,
     model: 'claude-sonnet-4-6',
     promptCount: 5,
     totalToolCalls: 10,
@@ -48,6 +49,42 @@ function diedRun(overrides = {}) {
 }
 
 // ── pure functions ────────────────────────────────────────────────────────────
+
+describe('getParBudget', () => {
+  it('Sonnet: 5 prompts → max(12.50, 3.00) = 12.50', () => {
+    expect(getParBudget('claude-sonnet-4-6', 5)).toBe(12.5);
+  });
+  it('Sonnet: 0 prompts → floor 3.00', () => {
+    expect(getParBudget('claude-sonnet-4-6', 0)).toBe(3.0);
+  });
+  it('Sonnet: 1 prompt → max(2.50, 3.00) = 3.00 (floor)', () => {
+    expect(getParBudget('claude-sonnet-4-6', 1)).toBe(3.0);
+  });
+  it('Haiku: 5 prompts → max(1.00, 0.50) = 1.00', () => {
+    expect(getParBudget('claude-haiku-4-5', 5)).toBe(1.0);
+  });
+  it('Haiku: 0 prompts → floor 0.50', () => {
+    expect(getParBudget('claude-haiku-4-5', 0)).toBe(0.5);
+  });
+  it('Opus: 5 prompts → max(62.50, 15.00) = 62.50', () => {
+    expect(getParBudget('claude-opus-4-6', 5)).toBe(62.5);
+  });
+  it('Opus: 0 prompts → floor 15.00', () => {
+    expect(getParBudget('claude-opus-4-6', 0)).toBe(15.0);
+  });
+  it('Paladin (opusplan): 5 prompts → max(30.00, 8.00) = 30.00', () => {
+    expect(getParBudget('opusplan', 5)).toBe(30.0);
+  });
+  it('Paladin: 1 prompt → max(6.00, 8.00) = 8.00 (floor)', () => {
+    expect(getParBudget('opusplan', 1)).toBe(8.0);
+  });
+  it('unknown model defaults to sonnet', () => {
+    expect(getParBudget('unknown', 5)).toBe(12.5);
+  });
+  it('null model defaults to sonnet', () => {
+    expect(getParBudget(null, 5)).toBe(12.5);
+  });
+});
 
 describe('getTier (model-calibrated)', () => {
   // Sonnet defaults (no model = sonnet)
@@ -115,17 +152,21 @@ describe('model class achievements', () => {
   });
 });
 
-// ── budget efficiency achievements ───────────────────────────────────────────
+// ── par-based efficiency achievements ─────────────────────────────────────────
 
-describe('budget efficiency', () => {
-  it('sniper at 20% budget', () => {
-    expect(keys(wonRun({ spent: 0.1, budget: 0.5 }))).toContain('sniper');
+describe('par-based efficiency', () => {
+  // Sonnet: par = max(5 × 2.50, 3.00) = 12.50
+  it('sniper at 20% of par', () => {
+    // spent 2.50 / par 12.50 = 20% → ≤ 25% → sniper
+    expect(keys(wonRun({ spent: 2.5 }))).toContain('sniper');
   });
-  it('efficient at 40% budget', () => {
-    expect(keys(wonRun({ spent: 0.2, budget: 0.5 }))).toContain('efficient');
+  it('efficient at 40% of par', () => {
+    // spent 5.0 / par 12.50 = 40%
+    expect(keys(wonRun({ spent: 5.0 }))).toContain('efficient');
   });
-  it('no sniper at 30% budget', () => {
-    expect(keys(wonRun({ spent: 0.15, budget: 0.5 }))).not.toContain('sniper');
+  it('no sniper at 30% of par', () => {
+    // spent 3.75 / par 12.50 = 30%
+    expect(keys(wonRun({ spent: 3.75 }))).not.toContain('sniper');
   });
   it('penny pincher under $0.10', () => {
     expect(keys(wonRun({ spent: 0.08 }))).toContain('penny');
@@ -133,17 +174,19 @@ describe('budget efficiency', () => {
   it('no penny at $0.12', () => {
     expect(keys(wonRun({ spent: 0.12 }))).not.toContain('penny');
   });
-  it('sniper/efficient in flow mode uses implicit Gold-tier budget', () => {
-    // Sonnet Gold = $1.50, $0.05 = 3.3% → sniper + efficient
-    const a = keys(wonRun({ budget: null, spent: 0.05, model: 'claude-sonnet-4-6' }));
-    expect(a).toContain('sniper');
-    expect(a).toContain('efficient');
-  });
-  it('no sniper in flow mode at high spend', () => {
-    // Sonnet Gold = $1.50, $1.00 = 67% → no sniper, no efficient
-    const a = keys(wonRun({ budget: null, spent: 1.0, model: 'claude-sonnet-4-6' }));
+  it('par scales with prompt count', () => {
+    // 10 prompts → par = 25.00, spent 5.0 = 20% → sniper
+    expect(keys(wonRun({ spent: 5.0, promptCount: 10 }))).toContain('sniper');
+    // 10 prompts → par = 25.00, spent 20.0 = 80% → no sniper, no efficient
+    const a = keys(wonRun({ spent: 20.0, promptCount: 10 }));
     expect(a).not.toContain('sniper');
     expect(a).not.toContain('efficient');
+  });
+  it('floor prevents tiny par on 1-prompt sessions', () => {
+    // 1 prompt → par = max(2.50, 3.00) = 3.00 (floor), spent 2.0 = 67% → no sniper
+    expect(keys(wonRun({ spent: 2.0, promptCount: 1 }))).not.toContain('sniper');
+    // But spent 0.5 = 17% → sniper
+    expect(keys(wonRun({ spent: 0.5, promptCount: 1 }))).toContain('sniper');
   });
 });
 
@@ -209,15 +252,16 @@ describe('tool mastery achievements', () => {
       'scout'
     );
   });
-  it('surgeon: 1-3 Edits, under budget', () => {
+  it('surgeon: 1-3 Edits, under par', () => {
     expect(
-      keys(wonRun({ toolCalls: { Read: 5, Edit: 2 }, totalToolCalls: 7, spent: 0.1, budget: 0.5 }))
+      keys(wonRun({ toolCalls: { Read: 5, Edit: 2 }, totalToolCalls: 7, spent: 2.5 }))
     ).toContain('surgeon');
   });
-  it('no surgeon if over budget', () => {
-    expect(
-      keys(wonRun({ toolCalls: { Edit: 2 }, totalToolCalls: 2, spent: 0.6, budget: 0.5 }))
-    ).not.toContain('surgeon');
+  it('no surgeon if over par', () => {
+    // par = 12.50, spent = 15.0 → 120% → pct > 1.0
+    expect(keys(wonRun({ toolCalls: { Edit: 2 }, totalToolCalls: 2, spent: 15.0 }))).not.toContain(
+      'surgeon'
+    );
   });
   it('toolbox: 5+ distinct tools', () => {
     expect(
@@ -235,7 +279,7 @@ describe('cost per prompt', () => {
     expect(keys(wonRun({ spent: 0.02, promptCount: 3 }))).toContain('cheap_shots');
   });
   it('expensive_taste on won run: ≥$0.50 per prompt, ≥3 prompts', () => {
-    expect(keys(wonRun({ spent: 1.6, promptCount: 3, budget: 2.0 }))).toContain('expensive_taste');
+    expect(keys(wonRun({ spent: 1.6, promptCount: 3 }))).toContain('expensive_taste');
   });
 });
 
@@ -277,17 +321,22 @@ describe('time-based achievements', () => {
 // ── death marks ───────────────────────────────────────────────────────────────
 
 describe('death marks', () => {
-  it('blowout at 2× budget', () => {
-    expect(keys(diedRun({ spent: 1.0, budget: 0.5 }))).toContain('blowout');
+  // Sonnet par = max(5 × 2.50, 3.00) = 12.50
+  it('blowout at 2× par', () => {
+    // spent 25.0 / par 12.50 = 200%
+    expect(keys(diedRun({ spent: 25.0 }))).toContain('blowout');
   });
-  it('no blowout at 1.5×', () => {
-    expect(keys(diedRun({ spent: 0.75, budget: 0.5 }))).not.toContain('blowout');
+  it('no blowout at 1.5× par', () => {
+    // spent 18.75 / par 12.50 = 150%
+    expect(keys(diedRun({ spent: 18.75 }))).not.toContain('blowout');
   });
-  it('so_close between 100-110% budget', () => {
-    expect(keys(diedRun({ spent: 0.52, budget: 0.5 }))).toContain('so_close');
+  it('so_close between 100-110% of par', () => {
+    // spent 13.0 / par 12.50 = 104%
+    expect(keys(diedRun({ spent: 13.0 }))).toContain('so_close');
   });
-  it('no so_close at 115%', () => {
-    expect(keys(diedRun({ spent: 0.575, budget: 0.5 }))).not.toContain('so_close');
+  it('no so_close at 115% of par', () => {
+    // spent 14.375 / par 12.50 = 115%
+    expect(keys(diedRun({ spent: 14.375 }))).not.toContain('so_close');
   });
   it('tool_happy at 30+ tool calls', () => {
     expect(keys(diedRun({ totalToolCalls: 30 }))).toContain('tool_happy');
@@ -304,13 +353,18 @@ describe('death marks', () => {
   it('fumble at 5+ failed tool calls on death', () => {
     expect(keys(diedRun({ failedToolCalls: 5 }))).toContain('fumble');
   });
+  it('blowout and so_close fire without explicit budget', () => {
+    // Par-based: no run.budget needed — these always fire based on par
+    expect(keys(diedRun({ spent: 25.0 }))).toContain('blowout');
+    expect(keys(diedRun({ spent: 13.0 }))).toContain('so_close');
+  });
 });
 
 // ── death marks don't fire on won runs ───────────────────────────────────────
 
 describe("death marks don't fire on won runs", () => {
   it('no blowout on won', () => {
-    expect(keys(wonRun({ spent: 2.0, budget: 0.5 }))).not.toContain('blowout');
+    expect(keys(wonRun({ spent: 30.0 }))).not.toContain('blowout');
   });
   it('no tool_happy on won', () => {
     expect(keys(wonRun({ totalToolCalls: 35 }))).not.toContain('tool_happy');
@@ -336,9 +390,8 @@ describe('hubris + ultrathink', () => {
     expect(keys(wonRun({ thinkingInvocations: 3 }))).toContain('deep_thinker');
   });
   it('silent_run on won with 0 thinking and SOLID budget', () => {
-    expect(keys(wonRun({ thinkingInvocations: 0, spent: 0.3, budget: 0.5 }))).toContain(
-      'silent_run'
-    );
+    // par = 12.50, spent 8.0 = 64% → ≤ 75% → silent_run
+    expect(keys(wonRun({ thinkingInvocations: 0, spent: 8.0 }))).toContain('silent_run');
   });
   it('no silent_run when thinking undefined', () => {
     const run = wonRun();
@@ -379,11 +432,13 @@ describe('subagent achievements', () => {
   it('summoner: 5+ subagents', () => {
     expect(keys(wonRun({ subagentSpawns: 5 }))).toContain('summoner');
   });
-  it('army: 10+ subagents, <50% budget', () => {
-    expect(keys(wonRun({ subagentSpawns: 10, spent: 0.1, budget: 0.5 }))).toContain('army');
+  it('army: 10+ subagents, <50% par', () => {
+    // par = 12.50, spent 2.5 = 20%
+    expect(keys(wonRun({ subagentSpawns: 10, spent: 2.5 }))).toContain('army');
   });
-  it('no army if ≥50% budget', () => {
-    expect(keys(wonRun({ subagentSpawns: 10, spent: 0.3, budget: 0.5 }))).not.toContain('army');
+  it('no army if ≥50% par', () => {
+    // par = 12.50, spent 6.25 = 50%
+    expect(keys(wonRun({ subagentSpawns: 10, spent: 6.25 }))).not.toContain('army');
   });
 });
 
@@ -430,18 +485,17 @@ describe('getModelClass opusplan', () => {
 // ── Paladin achievements ──────────────────────────────────────────────────────
 
 describe('Paladin achievements', () => {
+  // opusplan par = max(5 × 6.00, 8.00) = 30.00
   it('paladin: opusplan win', () => {
     expect(keys(wonRun({ model: 'opusplan' }))).toContain('paladin');
   });
-  it('grand_strategist: opusplan win at ≤25% budget', () => {
-    expect(keys(wonRun({ model: 'opusplan', spent: 0.1, budget: 0.5 }))).toContain(
-      'grand_strategist'
-    );
+  it('grand_strategist: opusplan win at ≤25% par', () => {
+    // spent 2.5 / par 30.0 = 8.3%
+    expect(keys(wonRun({ model: 'opusplan', spent: 2.5 }))).toContain('grand_strategist');
   });
-  it('no grand_strategist at 30% budget', () => {
-    expect(keys(wonRun({ model: 'opusplan', spent: 0.15, budget: 0.5 }))).not.toContain(
-      'grand_strategist'
-    );
+  it('no grand_strategist at 30% par', () => {
+    // spent 9.0 / par 30.0 = 30%
+    expect(keys(wonRun({ model: 'opusplan', spent: 9.0 }))).not.toContain('grand_strategist');
   });
   it('architect: opus pct > 60%', () => {
     const mb = { 'claude-opus-4-6': 0.07, 'claude-sonnet-4-6': 0.03 };
@@ -460,7 +514,7 @@ describe('Paladin achievements', () => {
     );
   });
   it('Paladin does not fire purist/committed/chameleon', () => {
-    const a = keys(wonRun({ model: 'opusplan', spent: 0.1, budget: 0.5 }));
+    const a = keys(wonRun({ model: 'opusplan', spent: 2.5 }));
     expect(a).not.toContain('purist');
     expect(a).not.toContain('committed');
     expect(a).not.toContain('chameleon');
@@ -470,17 +524,21 @@ describe('Paladin achievements', () => {
 // ── effort-based achievements ─────────────────────────────────────────────────
 
 describe('effort-based achievements', () => {
-  it('speedrunner: low effort, completed under budget', () => {
-    expect(keys(wonRun({ effort: 'low', spent: 0.1, budget: 0.5 }))).toContain('speedrunner');
+  it('speedrunner: low effort, completed under par', () => {
+    // par = 12.50, spent 2.5 = 20% → under 100%
+    expect(keys(wonRun({ effort: 'low', spent: 2.5 }))).toContain('speedrunner');
   });
-  it('no speedrunner if over budget', () => {
-    expect(keys(wonRun({ effort: 'low', spent: 0.6, budget: 0.5 }))).not.toContain('speedrunner');
+  it('no speedrunner if over par', () => {
+    // par = 12.50, spent 15.0 = 120%
+    expect(keys(wonRun({ effort: 'low', spent: 15.0 }))).not.toContain('speedrunner');
   });
-  it('tryhard: high effort, ≤25% budget', () => {
-    expect(keys(wonRun({ effort: 'high', spent: 0.1, budget: 0.5 }))).toContain('tryhard');
+  it('tryhard: high effort, ≤25% par', () => {
+    // par = 12.50, spent 2.5 = 20%
+    expect(keys(wonRun({ effort: 'high', spent: 2.5 }))).toContain('tryhard');
   });
   it('no tryhard at 30%', () => {
-    expect(keys(wonRun({ effort: 'high', spent: 0.15, budget: 0.5 }))).not.toContain('tryhard');
+    // par = 12.50, spent 3.75 = 30%
+    expect(keys(wonRun({ effort: 'high', spent: 3.75 }))).not.toContain('tryhard');
   });
   it('archmagus: max effort, opus model', () => {
     expect(keys(wonRun({ effort: 'max', model: 'claude-opus-4-6' }))).toContain('archmagus');
@@ -493,20 +551,21 @@ describe('effort-based achievements', () => {
 // ── fast mode achievements ────────────────────────────────────────────────────
 
 describe('fast mode achievements', () => {
-  it('lightning: opus fastMode, under budget', () => {
-    expect(
-      keys(wonRun({ fastMode: true, model: 'claude-opus-4-6', spent: 0.1, budget: 0.5 }))
-    ).toContain('lightning');
+  it('lightning: opus fastMode, under par', () => {
+    // Opus par = max(5 × 12.50, 15.00) = 62.50, spent 2.5 → 4%
+    expect(keys(wonRun({ fastMode: true, model: 'claude-opus-4-6', spent: 2.5 }))).toContain(
+      'lightning'
+    );
   });
-  it('daredevil: opus fastMode, ≤25% budget', () => {
-    expect(
-      keys(wonRun({ fastMode: true, model: 'claude-opus-4-6', spent: 0.1, budget: 0.5 }))
-    ).toContain('daredevil');
+  it('daredevil: opus fastMode, ≤25% par', () => {
+    expect(keys(wonRun({ fastMode: true, model: 'claude-opus-4-6', spent: 2.5 }))).toContain(
+      'daredevil'
+    );
   });
   it('no lightning for non-opus fastMode', () => {
-    expect(
-      keys(wonRun({ fastMode: true, model: 'claude-sonnet-4-6', spent: 0.1, budget: 0.5 }))
-    ).not.toContain('lightning');
+    expect(keys(wonRun({ fastMode: true, model: 'claude-sonnet-4-6', spent: 2.5 }))).not.toContain(
+      'lightning'
+    );
   });
 });
 
@@ -545,15 +604,13 @@ describe('compaction achievements', () => {
 // ── calculated_risk ───────────────────────────────────────────────────────────
 
 describe('calculated_risk', () => {
-  it('fires with thinking + ≤25% budget', () => {
-    expect(keys(wonRun({ thinkingInvocations: 1, spent: 0.1, budget: 0.5 }))).toContain(
-      'calculated_risk'
-    );
+  it('fires with thinking + ≤25% par', () => {
+    // par = 12.50, spent 2.5 = 20%
+    expect(keys(wonRun({ thinkingInvocations: 1, spent: 2.5 }))).toContain('calculated_risk');
   });
-  it('no calculated_risk at 30% budget', () => {
-    expect(keys(wonRun({ thinkingInvocations: 1, spent: 0.15, budget: 0.5 }))).not.toContain(
-      'calculated_risk'
-    );
+  it('no calculated_risk at 30% par', () => {
+    // par = 12.50, spent 3.75 = 30%
+    expect(keys(wonRun({ thinkingInvocations: 1, spent: 3.75 }))).not.toContain('calculated_risk');
   });
 });
 
@@ -587,20 +644,22 @@ describe('model switching achievements', () => {
   it('committed: 0 switches, ≤1 distinct', () => {
     expect(keys(wonRun({ modelSwitches: 0, distinctModels: 1 }))).toContain('committed');
   });
-  it('chameleon: 2+ distinct models, under budget', () => {
-    expect(
-      keys(wonRun({ modelSwitches: 2, distinctModels: 2, spent: 0.1, budget: 0.5 }))
-    ).toContain('chameleon');
+  it('chameleon: 2+ distinct models, under par', () => {
+    // par = 12.50, spent 2.5 = 20%
+    expect(keys(wonRun({ modelSwitches: 2, distinctModels: 2, spent: 2.5 }))).toContain(
+      'chameleon'
+    );
   });
-  it('no chameleon if over budget', () => {
-    expect(
-      keys(wonRun({ modelSwitches: 2, distinctModels: 2, spent: 0.6, budget: 0.5 }))
-    ).not.toContain('chameleon');
+  it('no chameleon if over par', () => {
+    // par = 12.50, spent 15.0 = 120%
+    expect(keys(wonRun({ modelSwitches: 2, distinctModels: 2, spent: 15.0 }))).not.toContain(
+      'chameleon'
+    );
   });
-  it('tactical_switch: exactly 1 switch, under budget', () => {
-    expect(
-      keys(wonRun({ modelSwitches: 1, distinctModels: 2, spent: 0.1, budget: 0.5 }))
-    ).toContain('tactical_switch');
+  it('tactical_switch: exactly 1 switch, under par', () => {
+    expect(keys(wonRun({ modelSwitches: 1, distinctModels: 2, spent: 2.5 }))).toContain(
+      'tactical_switch'
+    );
   });
   it('class_defection: declared haiku but >50% on heavier models', () => {
     const mb = { 'claude-haiku-4-5-20251001': 0.04, 'claude-sonnet-4-6': 0.06 };

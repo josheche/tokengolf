@@ -32,7 +32,7 @@
 
   <!-- Tagline -->
   <text x="600" y="215" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" fill="#9a9180" letter-spacing="1">
-    Every token matters.
+    Every token matters
   </text>
 
   <!-- Bottom decorative rule -->

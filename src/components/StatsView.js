@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
-import { getTier, getModelClass, getBudgetPct, formatCost } from '../lib/score.js';
+import { getTier, getModelClass, getBudgetPct, getParBudget, formatCost } from '../lib/score.js';
 import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function StatsView({ stats }) {
@@ -17,9 +17,7 @@ export function StatsView({ stats }) {
           ⛳ TokenGolf Stats
         </Text>
         <Text color="gray">No completed runs yet.</Text>
-        <Text color="gray">
-          Start one: <Text color="cyan">tokengolf start</Text>
-        </Text>
+        <Text color="gray">Open Claude Code — sessions are tracked automatically.</Text>
       </Box>
     );
   }
@@ -113,12 +111,9 @@ export function StatsView({ stats }) {
                 paddingY={1}
                 flexDirection="column"
               >
-                <Text color="white">{stats.bestRun.quest}</Text>
+                <Text color="white">{stats.bestRun.promptCount || 0} prompts</Text>
                 <Box gap={3} marginTop={1}>
                   <Text color="green">{formatCost(stats.bestRun.spent)}</Text>
-                  {stats.bestRun.budget ? (
-                    <Text color="gray">of ${stats.bestRun.budget.toFixed(2)}</Text>
-                  ) : null}
                   <Text>{bestMc.emoji}</Text>
                   <Text color={bestTier.color}>
                     {bestTier.emoji} {bestTier.label}
@@ -138,20 +133,14 @@ export function StatsView({ stats }) {
           const won = run.status === 'won';
           const tier = getTier(run.spent, run.model);
           const mc = getModelClass(run.model);
-          const FLOW_BUDGETS = {
-            'claude-haiku-4-5-20251001': 0.4,
-            'claude-sonnet-4-6': 1.5,
-            'claude-opus-4-6': 7.5,
-            opusplan: 7.5,
-          };
-          const eBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
-          const pct = getBudgetPct(run.spent, eBudget);
+          const par = getParBudget(run.model, run.promptCount);
+          const pct = getBudgetPct(run.spent, par);
           return (
             <Box key={i} gap={2}>
               <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
-              <Text color="white">{(run.quest || 'Flow').slice(0, 34).padEnd(34)}</Text>
+              <Text color="white">{`${run.promptCount || 0}p`.padEnd(4)}</Text>
               <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
-              <Text color="gray">/{formatCost(eBudget)}</Text>
+              <Text color="gray">/{formatCost(par)}</Text>
               <Text>{mc.emoji}</Text>
               <Text color={tier.color}>{tier.emoji}</Text>
               <Text color="gray" dimColor>

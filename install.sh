@@ -18,7 +18,7 @@ err()   { printf "${BOLD}${RED}✗${RESET} %s\n" "$1" >&2; }
 
 echo ""
 printf "${YELLOW}██${RESET}  ${BOLD}TokenGolf Installer${RESET}\n"
-printf "${YELLOW}██${RESET}  ${DIM}Every token matters.${RESET}\n"
+printf "${YELLOW}██${RESET}  ${DIM}Every token matters${RESET}\n"
 echo ""
 
 # Check Node.js

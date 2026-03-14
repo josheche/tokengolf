@@ -6,6 +6,7 @@ import {
   getEffortLevel,
   getEfficiencyRating,
   getBudgetPct,
+  getParBudget,
   formatCost,
   getHaikuPct,
   getOpusPct,
@@ -28,17 +29,9 @@ export function ScoreCard({ run }) {
 
   const tier = getTier(run.spent, run.model);
   const mc = getModelClass(run.model);
-  // Implicit Gold-tier budgets for flow mode
-  const FLOW_BUDGETS = {
-    'claude-haiku-4-5-20251001': 0.4,
-    'claude-sonnet-4-6': 1.5,
-    'claude-opus-4-6': 7.5,
-    opusplan: 7.5,
-  };
-  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
-  const flowMode = !run.budget;
-  const efficiency = getEfficiencyRating(run.spent, effBudget);
-  const pct = getBudgetPct(run.spent, effBudget);
+  const par = getParBudget(run.model, run.promptCount);
+  const efficiency = getEfficiencyRating(run.spent, par);
+  const pct = getBudgetPct(run.spent, par);
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);
   const opusPct = getOpusPct(run.modelBreakdown, run.spent);
 
@@ -57,11 +50,11 @@ export function ScoreCard({ run }) {
         gap={1}
       >
         <Text bold color={won ? 'yellow' : 'red'}>
-          {won ? '🏆  SESSION COMPLETE' : '💀  BUDGET BUSTED'}
+          {won ? '🏆  SESSION COMPLETE' : '💀  PAR BUST'}
         </Text>
 
-        <Text color="white" bold>
-          {run.quest ?? <Text color="gray">Flow Mode</Text>}
+        <Text color="gray" dimColor>
+          {run.promptCount || 0} prompts · par ${par.toFixed(2)}
         </Text>
 
         {/* Score row */}
@@ -76,9 +69,9 @@ export function ScoreCard({ run }) {
           </Box>
           <Box flexDirection="column">
             <Text color="gray" dimColor>
-              BUDGET{flowMode ? '*' : ''}
+              PAR
             </Text>
-            <Text color="white">${effBudget.toFixed(2)}</Text>
+            <Text color="white">${par.toFixed(2)}</Text>
           </Box>
           <Box flexDirection="column">
             <Text color="gray" dimColor>
@@ -218,23 +211,11 @@ export function ScoreCard({ run }) {
             </Box>
           </Box>
         )}
-
-        {/* Death tip */}
-        {!won && run.budget && (
-          <Box marginTop={1} flexDirection="column" paddingLeft={1}>
-            <Text color="red" bold>
-              Cause of death: Budget exceeded by {formatCost(run.spent - run.budget)}
-            </Text>
-            <Text color="gray" dimColor>
-              Tip: Use Read with line ranges instead of full file reads.
-            </Text>
-          </Box>
-        )}
       </Box>
 
       <Box gap={2}>
         <Text color="gray" dimColor>
-          tokengolf start — run again
+          tokengolf scorecard — view again
         </Text>
         <Text color="gray" dimColor>
           ·

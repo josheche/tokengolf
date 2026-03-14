@@ -67,13 +67,28 @@ export const MODEL_CLASSES = {
   },
 };
 
-export const FLOORS = [
-  'Write the code',
-  'Write the tests',
-  'Fix failing tests',
-  'Code review pass',
-  'PR merged — BOSS 🏆',
-];
+export const MODEL_PAR_RATES = {
+  haiku: 0.2,
+  sonnet: 2.5,
+  opusplan: 6.0,
+  opus: 12.5,
+};
+
+export const MODEL_PAR_FLOORS = {
+  haiku: 0.5,
+  sonnet: 3.0,
+  opusplan: 8.0,
+  opus: 15.0,
+};
+
+export function getParBudget(model, promptCount) {
+  const m = (model || '').toLowerCase();
+  let key = 'sonnet';
+  if (m.includes('opusplan')) key = 'opusplan';
+  else if (m.includes('haiku')) key = 'haiku';
+  else if (m.includes('opus')) key = 'opus';
+  return Math.max((promptCount || 0) * MODEL_PAR_RATES[key], MODEL_PAR_FLOORS[key]);
+}
 
 export function getTier(spent, model) {
   const budgets = model ? getModelBudgets(model) : MODEL_BUDGET_TIERS.sonnet;
@@ -109,7 +124,7 @@ export function getBudgetPct(spent, budget) {
 export function formatCost(amount = 0) {
   if (amount === 0) return '$0.00';
   if (amount < 0.01) return `$${amount.toFixed(5)}`;
-  return `$${amount.toFixed(4)}`;
+  return `$${amount.toFixed(2)}`;
 }
 
 export function formatElapsed(startedAt) {
@@ -146,8 +161,7 @@ export function getHaikuPct(modelBreakdown, totalSpent) {
 export function calculateAchievements(run) {
   const achievements = [];
   const won = run.status === 'won';
-  // Use explicit budget or implicit Gold-tier budget for flow mode
-  const effBudget = run.budget || getModelBudgets(run.model).gold;
+  const effBudget = getParBudget(run.model, run.promptCount);
   const pct = run.spent / effBudget;
   const mc = getModelClass(run.model);
 
@@ -171,12 +185,12 @@ export function calculateAchievements(run) {
 
   // Death marks
   if (!won) {
-    if (run.budget && run.spent / run.budget >= 2.0)
-      achievements.push({ key: 'blowout', label: 'Blowout — Spent 2× budget', emoji: '💥' });
-    else if (run.budget && run.spent / run.budget > 1.0 && run.spent / run.budget <= 1.1)
+    if (pct >= 2.0)
+      achievements.push({ key: 'blowout', label: 'Blowout — Spent 2× par', emoji: '💥' });
+    else if (pct > 1.0 && pct <= 1.1)
       achievements.push({
         key: 'so_close',
-        label: 'So Close — Died within 10% of budget',
+        label: 'So Close — Died within 10% of par',
         emoji: '😭',
       });
     if ((run.totalToolCalls || 0) >= 30)
@@ -197,7 +211,7 @@ export function calculateAchievements(run) {
         label: `Fumble — Died with ${run.failedToolCalls} failed tool calls`,
         emoji: '🤡',
       });
-    if (run.budget && run.spent / run.budget >= 0.5)
+    if (pct >= 0.5)
       if ((run.promptCount || 0) >= 3 && run.spent / (run.promptCount || 1) >= 0.5)
         achievements.push({
           key: 'expensive_taste',
@@ -248,13 +262,13 @@ export function calculateAchievements(run) {
   if (pct <= 0.25)
     achievements.push({
       key: 'sniper',
-      label: 'Sniper — Under 25% of budget',
+      label: 'Sniper — Under 25% of par',
       emoji: '🎯',
     });
   if (pct <= 0.5)
     achievements.push({
       key: 'efficient',
-      label: 'Efficient — Under 50% of budget',
+      label: 'Efficient — Under 50% of par',
       emoji: '⚡',
     });
   if (run.spent < 0.1)
@@ -269,7 +283,7 @@ export function calculateAchievements(run) {
     if (run.effort === 'low' && pct < 1.0)
       achievements.push({
         key: 'speedrunner',
-        label: 'Speedrunner — Low effort, completed under budget',
+        label: 'Speedrunner — Low effort, completed under par',
         emoji: '🏎️',
       });
     if ((run.effort === 'high' || run.effort === 'max') && pct <= 0.25)
@@ -291,7 +305,7 @@ export function calculateAchievements(run) {
     if (pct < 1.0)
       achievements.push({
         key: 'lightning',
-        label: 'Lightning Run — Opus fast mode, completed under budget',
+        label: 'Lightning Run — Opus fast mode, completed under par',
         emoji: '⛈️',
       });
     if (pct <= 0.25)
@@ -382,7 +396,7 @@ export function calculateAchievements(run) {
   if (run.thinkingInvocations === 0 && pct <= 0.75)
     achievements.push({
       key: 'silent_run',
-      label: 'Silent Run — No extended thinking, completed under budget',
+      label: 'Silent Run — No extended thinking, completed under par',
       emoji: '🤫',
     });
 
@@ -424,13 +438,13 @@ export function calculateAchievements(run) {
     if (distinct >= 2 && pct < 1.0)
       achievements.push({
         key: 'chameleon',
-        label: `Chameleon — ${distinct} model families used, completed under budget`,
+        label: `Chameleon — ${distinct} model families used, completed under par`,
         emoji: '🦎',
       });
     if (switches === 1 && pct < 1.0)
       achievements.push({
         key: 'tactical_switch',
-        label: 'Tactical Switch — Exactly 1 model switch, completed under budget',
+        label: 'Tactical Switch — Exactly 1 model switch, completed under par',
         emoji: '🔀',
       });
     if (switches === 0 && distinct <= 1)
@@ -541,7 +555,7 @@ export function calculateAchievements(run) {
   if (editCount >= 1 && editCount <= 3 && pct < 1.0)
     achievements.push({
       key: 'surgeon',
-      label: `Surgeon — Only ${editCount} Edit call${editCount > 1 ? 's' : ''}, under budget`,
+      label: `Surgeon — Only ${editCount} Edit call${editCount > 1 ? 's' : ''}, under par`,
       emoji: '🔪',
     });
   if (distinctTools >= 5)

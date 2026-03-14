@@ -8,8 +8,13 @@ const DIM = '\x1b[2m';
 const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
-// Implicit Gold-tier budgets for flow mode (same as FLOW_BUDGETS in statusline.sh)
-const FLOW_BUDGETS = { Haiku: 0.4, Sonnet: 1.5, Opus: 7.5, Paladin: 7.5, '?': 1.5 };
+// Par rates (prompt-scaled budget) — same as MODEL_PAR_RATES in score.js
+const PAR_RATES = { Haiku: 0.2, Sonnet: 2.5, Opus: 12.5, Paladin: 6.0, '?': 2.5 };
+const PAR_FLOORS = { Haiku: 0.5, Sonnet: 3.0, Opus: 15.0, Paladin: 8.0, '?': 3.0 };
+
+function getPar(modelName, promptCount) {
+  return Math.max(promptCount * (PAR_RATES[modelName] || 2.5), PAR_FLOORS[modelName] || 3.0);
+}
 
 const EMOTION_COLORS = {
   SLEEPING: DIM,
@@ -26,7 +31,7 @@ const EMOTION_COLORS = {
   VIBING: G,
 };
 
-function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, emotionKey }) {
+function hudLine({ model, cost, prompts, ctxPct, effort, fainted, emotionKey }) {
   const m = (model || '').toLowerCase();
   let modelName, modelEmoji;
   if (m.includes('haiku')) {
@@ -61,9 +66,9 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
   const tierIdx = [0, 1, 2, 3, 4].find((i) => cost < st[i]);
   const tierEmoji = tierEmojis[tierIdx !== undefined ? tierIdx : 5];
 
-  // Budget bar (always shown — uses implicit budget for flow)
-  const effBudget = budget || FLOW_BUDGETS[modelName] || 1.5;
-  const pct = (cost / effBudget) * 100;
+  // Par-based budget
+  const par = getPar(modelName, prompts || 0);
+  const pct = (cost / par) * 100;
   let rating, rc, effEmoji;
   if (pct <= 15) {
     rating = 'LEGENDARY';
@@ -90,12 +95,12 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
     rc = R;
     effEmoji = '💥';
   }
-  const accent = pct > 75 ? R : Y;
+  const accent = rc;
   const barW = 11;
   const barFilled = Math.min(barW, Math.round((pct / 100) * barW));
   const barEmpty = barW - barFilled;
   const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
-  const costStr = `${tierEmoji} ${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${effBudget.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
+  const costStr = `${tierEmoji} ${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${par.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
   const ratingStr = ` ${effEmoji} ${rc}${rating}${RESET}`;
 
   // Context bar (line 2, always shown — default to 0)
@@ -125,107 +130,98 @@ function hudLine({ quest, model, cost, budget, ctxPct, effort, fainted, floor, e
   }
   const ctxBar = `${ctxColor}${'▓'.repeat(ctxFilled)}${'░'.repeat(ctxEmpty)}${RESET}`;
 
-  // Line 1: accent + icon + quest/emotion + cost bar + rating + floor
+  // Line 1: accent + icon + emotion + cost bar + rating
   const icon = fainted ? '💤' : '⛳';
-  let questDisplay;
-  if (quest) {
-    questDisplay = quest;
-  } else if (emotionKey) {
-    questDisplay = `${EMOTION_COLORS[emotionKey] || G}${emotionKey}${RESET}`;
+  let emotionDisplay;
+  if (emotionKey) {
+    emotionDisplay = `${EMOTION_COLORS[emotionKey] || G}${emotionKey}${RESET}`;
   } else {
-    questDisplay = 'Flow';
+    emotionDisplay = `${G}VIBING${RESET}`;
   }
-  let line1 = ` ${accent}██${RESET} ${icon} ${questDisplay}  ${costStr}${ratingStr}`;
-  if (budget && floor) line1 += `  ${DIM}F${floor}${RESET}`;
+  const line1 = ` ${accent}██${RESET} ${icon} ${emotionDisplay}  ${costStr}${ratingStr}`;
 
   // Line 2: model + context bar (always shown)
-  const line2 = ` ${accent}██${RESET} ${modelLabel}  🧠 ${ctxBar} ${ctxPctVal}% ${ctxIcon}`;
+  const promptStr = (prompts || 0) > 0 ? `  💬 ${prompts}p` : '';
+  const line2 = ` ${accent}██${RESET} ${modelLabel}  ${ctxIcon} ${ctxBar} ${ctxPctVal}%${promptStr}`;
 
   return `${line1}\n${line2}`;
 }
 
 const SCENARIOS = [
   {
-    title: 'Flow mode  (passive — implicit Gold-tier budget, emotion status)',
-    hud: { model: 'claude-sonnet-4-6', cost: 0.0034, ctxPct: 8, emotionKey: 'VIBING' },
+    title: 'Fresh session · Sonnet · 2 prompts · VIBING',
+    hud: { model: 'claude-sonnet-4-6', cost: 0.42, prompts: 2, ctxPct: 8, emotionKey: 'VIBING' },
   },
   {
-    title: 'Roguelike · Sonnet · EFFICIENT',
+    title: 'Sonnet · 8 prompts · efficient · GRINDING',
     hud: {
-      quest: 'add pagination to /users',
       model: 'claude-sonnet-4-6',
-      cost: 0.54,
-      budget: 1.5,
+      cost: 6.8,
+      prompts: 8,
       ctxPct: 34,
-      floor: '2/5',
+      emotionKey: 'GRINDING',
     },
   },
   {
-    title: 'Roguelike · Sonnet·High · LEGENDARY',
+    title: 'Sonnet·High · 5 prompts · LEGENDARY',
     hud: {
-      quest: 'implement SSO with SAML',
       model: 'claude-sonnet-4-6',
       cost: 0.41,
-      budget: 2.0,
+      prompts: 5,
       ctxPct: 29,
       effort: 'high',
-      floor: '1/5',
+      emotionKey: 'VIBING',
     },
   },
   {
-    title: 'Roguelike · Opus · LEGENDARY · 🪶 context',
+    title: 'Opus · 4 prompts · EPIC',
     hud: {
-      quest: 'refactor auth middleware',
       model: 'claude-opus-4-6',
-      cost: 0.82,
-      budget: 4.0,
+      cost: 8.2,
+      prompts: 4,
       ctxPct: 52,
-      floor: '3/5',
+      emotionKey: 'CRUISING',
     },
   },
   {
-    title: 'Roguelike · Haiku · CLOSE CALL · 🎒 context',
+    title: 'Haiku · 12 prompts · CLOSE CALL',
     hud: {
-      quest: 'fix N+1 query in dashboard',
       model: 'claude-haiku-4-5-20251001',
-      cost: 0.46,
-      budget: 0.5,
+      cost: 2.1,
+      prompts: 12,
       ctxPct: 78,
-      floor: '4/5',
+      emotionKey: 'SWEATING',
     },
   },
   {
-    title: 'Roguelike · BUSTED — over budget',
+    title: 'Sonnet · 10 prompts · BUSTED',
     hud: {
-      quest: 'migrate postgres schema',
       model: 'claude-sonnet-4-6',
-      cost: 2.41,
-      budget: 2.0,
+      cost: 34.24,
+      prompts: 10,
       ctxPct: 45,
-      floor: '2/5',
+      emotionKey: 'ZOMBIE',
     },
   },
   {
-    title: 'Roguelike · Opus · EFFICIENT · 📦 overencumbered',
+    title: 'Opus · 3 prompts · overencumbered context',
     hud: {
-      quest: 'refactor entire API layer',
       model: 'claude-opus-4-6',
-      cost: 3.1,
-      budget: 10.0,
+      cost: 12.0,
+      prompts: 3,
       ctxPct: 91,
-      floor: '3/5',
+      emotionKey: 'OVERWHELMED',
     },
   },
   {
     title: 'Fainted 💤 — usage limit hit, run resumes next session',
     hud: {
-      quest: 'write test suite for payments',
       model: 'claude-sonnet-4-6',
-      cost: 1.22,
-      budget: 3.0,
+      cost: 4.22,
+      prompts: 6,
       ctxPct: 67,
       fainted: true,
-      floor: '2/5',
+      emotionKey: 'SLEEPING',
     },
   },
 ];
@@ -234,6 +230,7 @@ export function runDemo() {
   console.log('');
   console.log(`${BOLD}${C}⛳ TokenGolf — HUD Demo${RESET}`);
   console.log(`${DIM}Live statusline shown in every Claude Code session${RESET}`);
+  console.log(`${DIM}Par scales with prompts: par = max(prompts × rate, floor)${RESET}`);
   console.log('');
 
   for (const { title, hud } of SCENARIOS) {
@@ -243,7 +240,7 @@ export function runDemo() {
   }
 
   console.log(
-    `${DIM}Run ${RESET}tokengolf start${DIM} to begin a roguelike run, or just open Claude Code — flow mode tracks automatically.${RESET}`
+    `${DIM}Every session is tracked automatically — just open Claude Code and go.${RESET}`
   );
   console.log('');
 }

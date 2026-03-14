@@ -26,10 +26,19 @@ try:
     with open(os.path.join(os.path.expanduser('~'), '.tokengolf', 'session-cost'), 'w') as _cf: _cf.write(str(cost))
 except: pass
 ctx_pct = (session.get('context_window') or {}).get('used_percentage') or None
-quest   = (run.get('quest') or '')[:32]
-budget  = run.get('budget')
-floor   = f"F{run.get('floor',1)}/{run.get('totalFloors',5)}"
 sm = session.get('model') or {}; m = (sm.get('id','') or run.get('model','') if isinstance(sm,dict) else sm or run.get('model','')).lower()
+
+# Model detection fix: update run.model if session has the real model
+detected_model_id = ''
+if isinstance(sm, dict): detected_model_id = sm.get('id', '')
+elif isinstance(sm, str): detected_model_id = sm
+if detected_model_id and detected_model_id != run.get('model', ''):
+    run['model'] = detected_model_id
+    try:
+        with open(sys.argv[1], 'w') as f: json.dump(run, f, indent=2)
+    except: pass
+    m = detected_model_id.lower()
+
 # opusplan must be checked before opus (opusplan contains 'opus' as substring)
 if   'opusplan' in m: model, model_emoji = 'Paladin', '⚜️'
 elif 'haiku'    in m: model, model_emoji = 'Haiku',   '🏹'
@@ -67,14 +76,16 @@ EMOTIONS = {
     'VIBING':       ('😎', '(◕‿◕)',        G),
 }
 
-# Implicit Gold-tier budgets for flow mode (same as MODEL_BUDGET_TIERS in score.js)
-FLOW_BUDGETS = {'Haiku': 0.40, 'Sonnet': 1.50, 'Opus': 7.50, 'Paladin': 7.50, '?': 1.50}
+# Par rates (prompt-scaled budget)
+PAR_RATES = {'Haiku': 0.20, 'Sonnet': 2.50, 'Opus': 12.50, 'Paladin': 6.00, '?': 2.50}
+PAR_FLOORS = {'Haiku': 0.50, 'Sonnet': 3.00, 'Opus': 15.00, 'Paladin': 8.00, '?': 3.00}
 
-def get_emotion(fainted, budget, cost, ctx_pct, failed_tools, prompt_count, model_name):
+def get_par(model_name, prompt_count):
+    return max(prompt_count * PAR_RATES.get(model_name, 2.50), PAR_FLOORS.get(model_name, 3.00))
+
+def get_emotion(fainted, par, cost, ctx_pct, failed_tools, prompt_count, model_name):
     if fainted: return 'SLEEPING'
-    # Use explicit budget if set, otherwise derive from model's Gold tier
-    effective_budget = budget if (budget is not None and budget > 0) else FLOW_BUDGETS.get(model_name, 1.50)
-    budget_pct = (cost / effective_budget * 100) if effective_budget > 0 else 0
+    budget_pct = (cost / par * 100) if par > 0 else 0
     ctx = ctx_pct if ctx_pct is not None else 0
     if budget_pct >= 115: return 'ZOMBIE'
     if budget_pct >= 100: return 'DEAD'
@@ -84,6 +95,7 @@ def get_emotion(fainted, budget, cost, ctx_pct, failed_tools, prompt_count, mode
     if prompt_count >= 15 and budget_pct > 50: return 'FATIGUED'
     if budget_pct >= 50: return 'TENSE'
     if budget_pct >= 25: return 'GRINDING'
+    if prompt_count >= 5 and budget_pct >= 10: return 'CRUISING'
     if ctx >= 75: return 'FOCUSED'
     return 'VIBING'
 
@@ -103,22 +115,23 @@ elif cost < st[3]: tier_emoji = '🥈'
 elif cost < st[4]: tier_emoji = '🥉'
 else:              tier_emoji = '💸'
 
-# Use explicit budget or implicit Gold-tier budget for display
-eff_budget = budget if (budget is not None and budget > 0) else FLOW_BUDGETS.get(model, 1.50)
-pct = cost / eff_budget * 100 if eff_budget > 0 else 0
+# Prompt-scaled par budget
+prompt_count = run.get('promptCount', 0)
+par = get_par(model, prompt_count)
+pct = cost / par * 100 if par > 0 else 0
 if   pct <= 15:  rating, rc, eff_emoji = 'LEGENDARY',  Y, '🌟'
 elif pct <= 30:  rating, rc, eff_emoji = 'EPIC',       M, '🔥'
 elif pct <= 50:  rating, rc, eff_emoji = 'PRO',        C, '💪'
 elif pct <= 75:  rating, rc, eff_emoji = 'SOLID',      G, '✅'
 elif pct <= 100: rating, rc, eff_emoji = 'CLOSE CALL', W, '⚠️'
 else:            rating, rc, eff_emoji = 'BUST',       R, '💥'
-accent = R if pct > 75 else Y
+accent = rc
 # Budget progress bar
 bar_w = 11
 bar_filled = min(bar_w, int(pct / 100 * bar_w + 0.5))
 bar_empty = bar_w - bar_filled
 bar = f"{accent}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
-cost_str = f"{tier_emoji} {DIM}${RESET}{cost:.2f}{DIM}/{eff_budget:.2f}{RESET} {bar} {pct:.0f}%"
+cost_str = f"{tier_emoji} {DIM}${RESET}{cost:.2f}{DIM}/{par:.2f}{RESET} {bar} {pct:.0f}%"
 rating_str = f" {eff_emoji} {rc}{rating}{RESET}"
 
 # Context bar (line 2, always shown — default ctx_pct to 0)
@@ -136,22 +149,20 @@ ctx_bar = f"{ctx_color}{'▓' * ctx_filled}{'░' * ctx_empty}{RESET}"
 
 # Compute emotion
 failed_tools = run.get('failedToolCalls', 0)
-prompt_count = run.get('promptCount', 0)
-emotion_key = get_emotion(fainted, budget, cost, ctx_pct, failed_tools, prompt_count, model)
+emotion_key = get_emotion(fainted, par, cost, ctx_pct, failed_tools, prompt_count, model)
 emotion_emoji, emotion_kaomoji, emotion_color = EMOTIONS[emotion_key]
 
-# Line 1: accent bar + icon + quest/emotion + cost bar + rating + floor
+# Line 1: accent bar + icon + emotion + cost bar + rating
 if emotion_mode == 'emoji':
     icon = emotion_emoji
 else:
     icon = '💤' if fainted else '⛳'
-quest_display = quest if quest else f"{emotion_color}{emotion_key}{RESET}"
-parts = [f" {accent}██{RESET} {icon} {quest_display}  {cost_str}{rating_str}"]
-if budget: parts.append(f"  {DIM}{floor}{RESET}")
-line1 = ''.join(parts)
+emotion_display = f"{emotion_color}{emotion_key}{RESET}"
+line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}{rating_str}"
 
 # Line 2: model + context bar (always shown)
-line2 = f" {accent}██{RESET} {model_label}  🧠 {ctx_bar} {ctx_pct_val:.0f}% {ctx_icon}"
+prompt_str = f"  💬 {prompt_count}p" if prompt_count > 0 else ''
+line2 = f" {accent}██{RESET} {model_label}  {ctx_icon} {ctx_bar} {ctx_pct_val:.0f}%{prompt_str}"
 
 # Output (leading blank line separates from any existing statusline above)
 print()

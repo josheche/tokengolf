@@ -3,46 +3,12 @@ import { program } from 'commander';
 import { render } from 'ink';
 import React from 'react';
 
-import { getCurrentRun, clearCurrentRun } from './lib/state.js';
+import { getLastRun, getStats } from './lib/store.js';
 import { getConfig, setConfig, VALID_EMOTION_MODES } from './lib/config.js';
-import { saveRun, getLastRun, getStats } from './lib/store.js';
-import { autoDetectCost } from './lib/cost.js';
-import { StartRun } from './components/StartRun.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
 program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.1.0');
-
-program
-  .command('start')
-  .description('Declare a quest and start a new run')
-  .action(() => {
-    render(React.createElement(StartRun));
-  });
-
-program
-  .command('win')
-  .description('Mark current run as complete (won)')
-  .option('--spent <amount>', 'How much did you spend? (e.g. 0.18)')
-  .action((opts) => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run.');
-      process.exit(1);
-    }
-    const detected = opts.spent ? null : autoDetectCost(run);
-    const spent = opts.spent ? parseFloat(opts.spent) : (detected?.spent ?? run.spent);
-    const completed = {
-      ...run,
-      spent,
-      status: 'won',
-      modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null,
-      endedAt: new Date().toISOString(),
-    };
-    const saved = saveRun(completed);
-    clearCurrentRun();
-    render(React.createElement(ScoreCard, { run: saved }));
-  });
 
 program
   .command('scorecard')
@@ -50,7 +16,7 @@ program
   .action(() => {
     const run = getLastRun();
     if (!run) {
-      console.log('No runs yet. Start one with: tokengolf start');
+      console.log('No runs yet. Open Claude Code — sessions are tracked automatically.');
       process.exit(0);
     }
     render(React.createElement(ScoreCard, { run }));
@@ -74,6 +40,8 @@ program
     if (c === 'all') {
       const { runDemo } = await import('./lib/demo.js');
       runDemo();
+      const { runAnsiScoreCardDemo } = await import('./lib/demo-ansi-scorecard.js');
+      runAnsiScoreCardDemo(idx);
       const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
       await runScoreCardDemo(idx);
       const { runStatsDemo } = await import('./lib/demo-stats.js');
@@ -88,6 +56,8 @@ program
     }
 
     if (c === 'scorecard') {
+      const { runAnsiScoreCardDemo } = await import('./lib/demo-ansi-scorecard.js');
+      runAnsiScoreCardDemo(idx);
       const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
       await runScoreCardDemo(idx);
       process.exit(0);

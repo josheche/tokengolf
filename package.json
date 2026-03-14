@@ -17,7 +17,7 @@
     "lint:fix": "eslint src/ hooks/ --fix",
     "format": "prettier --write src/ hooks/",
     "format:check": "prettier --check src/ hooks/",
-    "version": "git add CHANGELOG.md",
+    "version": "./scripts/sync-plugin-version.sh && git add CHANGELOG.md plugin/",
     "postversion": "git push && git push --tags",
     "postpublish": "./scripts/update-homebrew.sh"
   },

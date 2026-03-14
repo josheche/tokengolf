@@ -12,22 +12,18 @@ try {
   const updated = { ...run, promptCount: (run.promptCount || 0) + 1 };
   fs.writeFileSync(STATE_FILE, JSON.stringify(updated, null, 2));
 
-  // Nudge at 50% — once (between 50-60%). Use implicit Gold-tier budget for flow mode.
-  const FLOW_BUDGETS = {
-    'claude-haiku-4-5-20251001': 0.4,
-    'claude-sonnet-4-6': 1.5,
-    'claude-opus-4-6': 7.5,
-    opusplan: 7.5,
-  };
-  const effBudget = updated.budget || FLOW_BUDGETS[updated.model] || 1.5;
-  const pct = updated.spent / effBudget;
+  // Par-based nudge at 50% — once (between 50-60%).
+  const PAR_RATES = { haiku: 0.2, sonnet: 2.5, opusplan: 6.0, opus: 12.5 };
+  const PAR_FLOORS = { haiku: 0.5, sonnet: 3.0, opusplan: 8.0, opus: 15.0 };
+  const mk = (updated.model || '').includes('opusplan') ? 'opusplan' : (updated.model || '').includes('haiku') ? 'haiku' : (updated.model || '').includes('opus') ? 'opus' : 'sonnet';
+  const par = Math.max((updated.promptCount || 0) * PAR_RATES[mk], PAR_FLOORS[mk]);
+  const pct = updated.spent / par;
   if (pct >= 0.5 && pct < 0.6) {
-    const questStr = updated.quest ? `Quest: "${updated.quest}" — ` : '';
     process.stdout.write(
       JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'UserPromptSubmit',
-          additionalContext: `[TokenGolf] Halfway point. $${updated.spent.toFixed(4)} of $${effBudget.toFixed(2)} spent. ${questStr}stay focused.`,
+          additionalContext: `[TokenGolf] Halfway point. $${updated.spent.toFixed(4)} of $${par.toFixed(2)} par spent. Stay focused.`,
         },
       })
     );

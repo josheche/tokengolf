@@ -4,13 +4,11 @@ A CLI game that gamifies Claude Code sessions by turning token/dollar efficiency
 
 ---
 
-## Two Modes
+## One Mode — Every Session Is a Roguelike Run
 
-**Flow Mode** — Passive. SessionStart hook auto-creates a run. Just `/exit` and see your scorecard. No pre-configuration.
+Every Claude Code session is automatically tracked. No wizard, no upfront budget commitment. The budget (par) scales dynamically with session activity.
 
-**Roguelike Mode** — Intentional. Declare quest + budget + model class before starting. Budget bust = permadeath.
-
-Same engine, same achievements. Roguelike practice makes Flow sessions better over time.
+**Par budget** = `max(prompts × model_par_rate, model_floor)`. Each prompt adds to your expected cost. Efficient prompts beat par; wasteful prompts fall behind. BUST (>100% of par) = `status: 'died'`, red accent, death achievements.
 
 ---
 
@@ -36,9 +34,6 @@ npm users get auto-sync: hooks update automatically on version change via sessio
 
 | Command | Description |
 |---------|-------------|
-| `tokengolf start` | Declare quest, model, budget — begin a roguelike run |
-| `tokengolf win` | Complete run (auto-detects cost from transcripts) |
-| `tokengolf win --spent 0.18` | Complete with manually specified cost |
 | `tokengolf scorecard` | Show last run's score card |
 | `tokengolf stats` | Career stats dashboard |
 | `tokengolf demo [component]` | Show UI demos (all, hud, scorecard, stats) |
@@ -48,14 +43,38 @@ npm users get auto-sync: hooks update automatically on version change via sessio
 
 ---
 
+## Par Budget System
+
+Par = the expected cost for a session, scaled by prompts and model.
+
+```
+par = max(prompts × model_par_rate, model_floor)
+efficiency = actual_cost / par
+```
+
+### Model Par Rates
+
+| Model | Par Rate | Floor | Rationale |
+|-------|----------|-------|-----------|
+| Haiku | $0.20/prompt | $0.50 | ~12× cheaper than Sonnet |
+| Sonnet | $2.50/prompt | $3.00 | Calibrated from 62 real sessions |
+| Paladin | $6.00/prompt | $8.00 | Opus planning + Sonnet execution blend |
+| Opus | $12.50/prompt | $15.00 | ~5× more expensive than Sonnet |
+
+Constants: `MODEL_PAR_RATES`, `MODEL_PAR_FLOORS`, `getParBudget()` in `src/lib/score.js`.
+
+The floor prevents 1-prompt agentic sessions from being instant BUST.
+
+---
+
 ## Scoring & Achievements
 
-All tiers, ratings, model classes, budget presets, and achievements are defined in `src/lib/score.js`. Read that file for the full catalog — don't duplicate it here.
+All tiers, ratings, model classes, par rates, and achievements are defined in `src/lib/score.js`. Read that file for the full catalog — don't duplicate it here.
 
 Key concepts:
 - **Model classes**: Rogue (Haiku), Fighter (Sonnet), Warlock (Opus), Paladin (Opus plan mode)
-- **Budget presets are model-calibrated**: `MODEL_BUDGET_TIERS` / `getModelBudgets()` in score.js
-- **Efficiency ratings**: LEGENDARY (<15%) → EPIC (<30%) → PRO → SOLID → CLOSE CALL → BUST (>100%)
+- **Spend tiers**: absolute $ thresholds, model-calibrated (`MODEL_BUDGET_TIERS` / `getModelBudgets()`)
+- **Efficiency ratings**: LEGENDARY (<15%) → EPIC (<30%) → PRO → SOLID → CLOSE CALL → BUST (>100%), computed against dynamic par
 - **Death marks fire before the early return** in `calculateAchievements` — they're checked before `if (!won) return []`. `indecisive` and `expensive_taste` also fire on won runs.
 
 ---
@@ -66,15 +85,15 @@ Nine hooks in `hooks/`, installed via `tokengolf install`. All are synchronous J
 
 | Hook | Stdin? | What it does |
 |------|--------|-------------|
-| `session-start.js` | No | Auto-creates flow run if none active; detects effort/fastMode; injects `additionalContext` |
-| `session-end.js` | Yes (`reason`) | Authoritative for cost/scorecard. Scans transcripts, saves run, renders ANSI scorecard |
-| `post-tool-use.js` | Yes (`tool_name`) | Tracks `toolCalls`; fires budget warning at 80%+ |
+| `session-start.js` | No | Auto-creates run if none active; detects effort/fastMode; injects `additionalContext` with par budget |
+| `session-end.js` | Yes (`reason`) | Authoritative for cost/scorecard. Scans transcripts, saves run, renders ANSI scorecard. Death = spent > par |
+| `post-tool-use.js` | Yes (`tool_name`) | Tracks `toolCalls`; fires par warning at 80%+ |
 | `post-tool-use-failure.js` | Yes (`tool_name`) | Increments `failedToolCalls` |
-| `user-prompt-submit.js` | No | Increments `promptCount`; fires halfway nudge at 50% |
+| `user-prompt-submit.js` | No | Increments `promptCount`; fires halfway nudge at 50% of par |
 | `pre-compact.js` | Yes (`trigger`, `context_window`) | Tracks compaction events for gear achievements |
 | `subagent-start.js` | Yes | Increments `subagentSpawns` |
 | `stop.js` | Yes | Increments `turnCount` |
-| `statusline.sh` | Yes (session JSON) | 2-line HUD with `██` accent bar, budget/context progress bars. Emotion mode adds mood feedback (see below) |
+| `statusline.sh` | Yes (session JSON) | 2-line HUD with `██` accent bar, par-based progress bar. Also fixes model detection (writes real model back to current-run.json) |
 
 **Plugin distribution**: `plugin/` directory contains the Claude Code plugin scaffold — hooks.json, bundled scripts, slash commands. Build with `npm run build:plugin`. Uses `${CLAUDE_PLUGIN_ROOT}` for paths.
 
@@ -84,9 +103,9 @@ Nine hooks in `hooks/`, installed via `tokengolf install`. All are synchronous J
 
 **StatusLine gotcha**: Uses `TG_SESSION_JSON=... python3 - "$STATE_FILE" <<'PYEOF'` pattern to avoid heredoc/stdin conflict. Config must be an object: `{type:"command", command:"...statusline.sh", padding:1}`.
 
-**Emotion modes** (`tokengolf config emotions <mode>`): `emoji` (default) = mood emoji replaces `⛳` on line 1. `ascii` = adds 3rd line with kaomoji + emotion label. `off` = classic `⛳`/`💤`. Config stored in `~/.tokengolf/config.json`. Emotions are a multi-signal composite: budget%, context%, failedToolCalls, promptCount.
+**Model detection fix**: `session-start.js` defaults model to `claude-sonnet-4-6`. `statusline.sh` gets the real model from session JSON and writes it back to `current-run.json` if different. This ensures par rates use the correct model.
 
-**Implicit budgets for flow mode**: Flow mode derives a Gold-tier budget from the model class (`FLOW_BUDGETS`): Haiku $0.40, Sonnet $1.50, Opus $7.50. Used by statusline HUD (progress bar, rating, accent color, emotions), session-start context, post-tool-use 80% warning, and user-prompt-submit 50% nudge. Same budget awareness as roguelike — the difference is commitment (permadeath), not awareness.
+**Emotion modes** (`tokengolf config emotions <mode>`): `emoji` (default) = mood emoji replaces `⛳` on line 1. `ascii` = adds 3rd line with kaomoji + emotion label. `off` = classic `⛳`/`💤`. Config stored in `~/.tokengolf/config.json`. Emotions are a multi-signal composite: par%, context%, failedToolCalls, promptCount.
 
 ---
 
@@ -94,21 +113,23 @@ Nine hooks in `hooks/`, installed via `tokengolf install`. All are synchronous J
 
 `autoDetectCost(run)` parses `~/.claude/projects/<cwd>/` transcript files modified since `run.startedAt`. Scans ALL `.jsonl` files (not just main session) to capture subagent sidechain files where Haiku usage lives. Same pass detects thinking blocks for ultrathink tracking.
 
-**Gotcha**: Uses `process.cwd()` not `run.cwd` — user always runs `tokengolf win` from their project directory.
+**Gotcha**: Uses `process.cwd()` not `run.cwd` — user always runs `tokengolf` from their project directory.
 
 ---
 
 ## Key Design Decisions
 
-1. **SessionEnd is authoritative for cost** — fires on `/exit`, scans transcripts, saves run, renders scorecard. `tokengolf win` is a manual override. Stop hook only tracks `turnCount`.
+1. **SessionEnd is authoritative for cost** — fires on `/exit`, scans transcripts, saves run, renders scorecard. Stop hook only tracks `turnCount`.
 
-2. **Flow mode is automatic** — SessionStart creates a run if none exists. Any Claude Code session is tracked.
+2. **Every session is a run** — SessionStart creates a run if none exists. Any Claude Code session is tracked automatically. No wizard, no upfront commitment.
 
-3. **Floors are cosmetic** — exist in data model but not enforced. Per-floor budgets are a future feature.
+3. **Par budget scales with prompts** — `max(prompts × par_rate, floor)`. The denominator grows as you work. Efficient sessions beat par; wasteful ones bust.
 
-4. **Ultrathink is natural language** — writing "ultrathink" in a prompt triggers extended thinking. Tracked via transcript parsing, not hooks.
+4. **Death is cosmetic** — BUST (>100% of par) = `status: 'died'`, red accent, death achievements. It's a scoring signal, not a hard stop.
 
-5. **Design D: `██` block accent, no right borders** — eliminates emoji/unicode width misalignment across terminals. Yellow = won, red = died, gray = neutral. Ink: custom `borderStyle` with `borderRight/Top/Bottom={false}`, `paddingLeft={3}`. ANSI scorecard: `██` prefix + `─` separators.
+5. **Ultrathink is natural language** — writing "ultrathink" in a prompt triggers extended thinking. Tracked via transcript parsing, not hooks.
+
+6. **Design D: `██` block accent, no right borders** — eliminates emoji/unicode width misalignment across terminals. Yellow = won, red = died, gray = neutral. Ink: custom `borderStyle` with `borderRight/Top/Bottom={false}`, `paddingLeft={3}`. ANSI scorecard: `██` prefix + `─` separators.
 
 ---
 

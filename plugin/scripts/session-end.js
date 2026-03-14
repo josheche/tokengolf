@@ -9,7 +9,7 @@ var __dir = path.dirname(fileURLToPath(import.meta.url));
 var { autoDetectCost } = await import(path.join(__dir, "../src/lib/cost.js"));
 var { getCurrentRun, clearCurrentRun } = await import(path.join(__dir, "../src/lib/state.js"));
 var { saveRun } = await import(path.join(__dir, "../src/lib/store.js"));
-var { getTier, getModelClass, getEffortLevel, getEfficiencyRating, getBudgetPct } = await import(path.join(__dir, "../src/lib/score.js"));
+var { renderScorecard } = await import(path.join(__dir, "../src/lib/ansi-scorecard.js"));
 function writeTTY(text) {
   try {
     const ttyFd = fs.openSync("/dev/tty", "w");
@@ -18,107 +18,6 @@ function writeTTY(text) {
   } catch {
     process.stdout.write(text);
   }
-}
-function termWidth(str) {
-  const plain = str.replace(/\x1b\[[0-9;]*m/g, "");
-  const cps = [...plain].map((c) => c.codePointAt(0));
-  let width = 0;
-  for (let i = 0; i < cps.length; i++) {
-    const cp = cps[i];
-    if (cp === 65039) {
-      if (i > 0 && cps[i - 1] <= 65535 && cps[i - 1] !== 8205) width += 1;
-      continue;
-    }
-    if (cp === 65038 || cp === 8205 || cp >= 8203 && cp <= 8207) continue;
-    if (cp > 65535) {
-      width += 2;
-      continue;
-    }
-    width += 1;
-  }
-  return width;
-}
-function renderScorecard(run) {
-  const W = Math.min(Math.max((process.stdout.columns || 88) - 8, 40), 80);
-  const won = run.status === "won";
-  const FLOW_BUDGETS = {
-    "claude-haiku-4-5-20251001": 0.4,
-    "claude-sonnet-4-6": 1.5,
-    "claude-opus-4-6": 7.5,
-    opusplan: 7.5
-  };
-  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
-  const R = "\x1B[31m", G = "\x1B[32m", Y = "\x1B[33m", C = "\x1B[36m";
-  const M = "\x1B[35m", WH = "\x1B[37m", DIM = "\x1B[2m", RESET = "\x1B[0m", BOLD = "\x1B[1m";
-  const bc = won ? Y : R;
-  const BLK = "\u2588\u2588";
-  function row(content) {
-    return bc + BLK + RESET + "  " + content;
-  }
-  function bar() {
-    return bc + BLK + RESET + "  " + DIM + "\u2500".repeat(W) + RESET;
-  }
-  const mc = getModelClass(run.model);
-  const tier = getTier(run.spent, run.model);
-  const fainted = run.fainted;
-  const sessions = run.sessionCount || 1;
-  const header = won ? `${BOLD}${Y}\u{1F3C6}  SESSION COMPLETE${RESET}` : fainted ? `${BOLD}${Y}\u{1F4A4}  FAINTED \u2014 Run Continues${RESET}` : `${BOLD}${R}\u{1F480}  BUDGET BUST${RESET}`;
-  const questStr = run.quest ? `${BOLD}${run.quest.slice(0, 60)}${RESET}` : `${DIM}Flow Mode${RESET}`;
-  const spentBefore = run.spentBeforeThisSession || 0;
-  const spentThisSession = run.spent - spentBefore;
-  const multiSession = sessions > 1 && spentBefore > 0;
-  const spentStr = `${won ? G : R}$${run.spent.toFixed(4)}${RESET}` + (multiSession ? `  ${DIM}(+$${spentThisSession.toFixed(4)} this session)${RESET}` : "");
-  let midRow = spentStr;
-  {
-    const pct = getBudgetPct(run.spent, effBudget);
-    const eff = getEfficiencyRating(run.spent, effBudget);
-    const effC = eff.color === "yellow" ? Y : eff.color === "magenta" ? M : eff.color === "cyan" ? C : eff.color === "green" ? G : eff.color === "white" ? WH : R;
-    midRow += `  ${DIM}/${RESET}$${effBudget.toFixed(2)}${!run.budget ? `${DIM}*${RESET}` : ""}  ${pct}%  ${effC}${eff.emoji} ${eff.label}${RESET}`;
-  }
-  const effortInfo = run.effort ? getEffortLevel(run.effort) : null;
-  const modelSuffix = [
-    run.effort && effortInfo ? effortInfo.label : null,
-    run.fastMode ? "\u26A1Fast" : null
-  ].filter(Boolean).join("\xB7");
-  midRow += `  ${C}${mc.emoji} ${mc.name}${modelSuffix ? "\xB7" + modelSuffix : ""}${RESET}`;
-  midRow += `  ${tier.emoji} ${tier.label}`;
-  if (multiSession) midRow += `  ${DIM}${sessions} sessions${RESET}`;
-  const achievements = run.achievements || [];
-  const achTokens = achievements.map((a) => `${a.emoji} ${a.key}`);
-  const achLines = [];
-  let currentLine = "";
-  for (const token of achTokens) {
-    const sep = currentLine ? "  " : "";
-    const testLen = termWidth(currentLine + sep + token);
-    if (currentLine && testLen > W) {
-      achLines.push(currentLine);
-      currentLine = token;
-    } else {
-      currentLine += sep + token;
-    }
-  }
-  if (currentLine) achLines.push(currentLine);
-  const ti = run.thinkingInvocations || 0;
-  const thinkRow = ti > 0 ? `${M}\u{1F52E} ${ti} ultrathink${ti > 1 ? " invocations" : " invocation"}${RESET}` : null;
-  const lines = ["", row(header), row(questStr), bar(), row(midRow)];
-  if (thinkRow) {
-    lines.push(bar());
-    lines.push(row(thinkRow));
-  }
-  if (achLines.length > 0) {
-    lines.push(bar());
-    for (const line of achLines) {
-      lines.push(row(line));
-    }
-  }
-  lines.push(bar());
-  lines.push(
-    row(
-      `${DIM}tokengolf scorecard${RESET}  \xB7  ${DIM}tokengolf start${RESET}  \xB7  ${DIM}tokengolf stats${RESET}`
-    )
-  );
-  lines.push("");
-  return lines.join("\n");
 }
 try {
   let stdin = "";
@@ -169,8 +68,10 @@ try {
   }
   const cleanExits = ["clear", "logout", "prompt_input_exit", "bypass_permissions_disabled"];
   const fainted = !cleanExits.includes(reason) && reason !== "other" ? false : reason === "other";
+  const { getParBudget: gp } = await import(path.join(__dir, "../src/lib/score.js"));
+  const par = gp(run.model, run.promptCount);
   let status;
-  if (run.budget && result.spent > run.budget) status = "died";
+  if (result.spent > par) status = "died";
   else if (fainted)
     status = "resting";
   else status = "won";

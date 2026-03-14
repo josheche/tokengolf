@@ -97,16 +97,11 @@ try {
     if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
     run = {
       id: `run_${Date.now()}`,
-      quest: null,
       model: 'claude-sonnet-4-6',
-      budget: null,
       effort: detectEffort(),
       fastMode: detectFastMode(),
       spent: 0,
       status: 'active',
-      mode: 'flow',
-      floor: 1,
-      totalFloors: 5,
       promptCount: 0,
       totalToolCalls: 0,
       toolCalls: {},
@@ -135,26 +130,21 @@ try {
     fs.writeFileSync(STATE_FILE, JSON.stringify(run, null, 2));
   }
 
-  // Implicit Gold-tier budgets for flow mode (same as MODEL_BUDGET_TIERS in score.js)
-  const FLOW_BUDGETS = {
-    'claude-haiku-4-5-20251001': 0.4,
-    'claude-sonnet-4-6': 1.5,
-    'claude-opus-4-6': 7.5,
-    opusplan: 7.5,
-  };
-  const effBudget = run.budget || FLOW_BUDGETS[run.model] || 1.5;
-  const pct = run.spent / effBudget;
+  // Par rates for prompt-scaled budget
+  const PAR_RATES = { haiku: 0.2, sonnet: 2.5, opusplan: 6.0, opus: 12.5 };
+  const PAR_FLOORS = { haiku: 0.5, sonnet: 3.0, opusplan: 8.0, opus: 15.0 };
+  const mk = run.model.includes('opusplan') ? 'opusplan' : run.model.includes('haiku') ? 'haiku' : run.model.includes('opus') ? 'opus' : 'sonnet';
+  const par = Math.max((run.promptCount || 0) * PAR_RATES[mk], PAR_FLOORS[mk]);
+  const pct = run.spent / par;
   const urgency = pct >= 0.8 ? '⚠️  BUDGET CRITICAL — be concise. ' : '';
-  const questLine = run.quest ? `Quest: ${run.quest}` : 'Mode: Flow (auto-tracking)';
-  const budgetLine = `Budget: $${effBudget.toFixed(2)}${!run.budget ? ' (implicit)' : ''} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(effBudget - run.spent).toFixed(4)}`;
+  const budgetLine = `Budget: $${par.toFixed(2)} (par) | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`;
 
   const effortStr = run.effort ? run.effort : 'default';
   const fastStr = run.fastMode ? ' ⚡ Fast' : '';
   const context = `## ⛳ TokenGolf Active
 ${urgency}Every token counts.
 
-${questLine}
-Model: ${run.model} | Effort: ${effortStr}${fastStr} | Floor: ${run.floor}/${run.totalFloors}
+Model: ${run.model} | Effort: ${effortStr}${fastStr}
 ${budgetLine}
 
 Efficiency tips:
