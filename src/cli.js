@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { program } from 'commander';
 import { render } from 'ink';
+import { Readable } from 'stream';
 import React from 'react';
 
 import { getLastRun, getStats } from './lib/store.js';
@@ -17,6 +18,19 @@ import { MODEL_PAR_RATES, MODEL_PAR_FLOORS } from './lib/score.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
+// Use a fake stdin when raw mode is not supported (e.g., running inside Claude Code)
+function safeRender(element) {
+  if (process.stdin.isTTY && process.stdin.setRawMode) {
+    return render(element);
+  }
+  const s = new Readable({ read() {} });
+  s.setRawMode = () => s;
+  s.ref = () => s;
+  s.unref = () => s;
+  s.isTTY = true;
+  return render(element, { stdin: s });
+}
+
 program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.5.4');
 
 program
@@ -28,14 +42,14 @@ program
       console.log('No runs yet. Open Claude Code — sessions are tracked automatically.');
       process.exit(0);
     }
-    render(React.createElement(ScoreCard, { run }));
+    safeRender(React.createElement(ScoreCard, { run }));
   });
 
 program
   .command('stats')
   .description('Show career stats dashboard')
   .action(() => {
-    render(React.createElement(StatsView, { stats: getStats() }));
+    safeRender(React.createElement(StatsView, { stats: getStats() }));
   });
 
 program

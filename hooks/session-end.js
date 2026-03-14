@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-
-const __dir = path.dirname(fileURLToPath(import.meta.url));
-const { autoDetectCost } = await import(path.join(__dir, '../src/lib/cost.js'));
-const { getCurrentRun, clearCurrentRun } = await import(path.join(__dir, '../src/lib/state.js'));
-const { saveRun } = await import(path.join(__dir, '../src/lib/store.js'));
-const { renderScorecard } = await import(path.join(__dir, '../src/lib/ansi-scorecard.js'));
+import { autoDetectCost } from '../src/lib/cost.js';
+import { getCurrentRun, clearCurrentRun, setCurrentRun } from '../src/lib/state.js';
+import { saveRun } from '../src/lib/store.js';
+import { renderScorecard } from '../src/lib/ansi-scorecard.js';
+import { getParBudget as gp } from '../src/lib/score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from '../src/lib/config.js';
 
 function writeTTY(text) {
   try {
@@ -84,10 +83,6 @@ try {
   const fainted = !cleanExits.includes(reason) && reason !== 'other' ? false : reason === 'other';
 
   // Par-based death: spent > par = BUST (with user overrides from config.json)
-  const { getParBudget: gp } = await import(path.join(__dir, '../src/lib/score.js'));
-  const { getEffectiveParRates, getEffectiveParFloors } = await import(
-    path.join(__dir, '../src/lib/config.js')
-  );
   const par = gp(run.model, run.promptCount, getEffectiveParRates(), getEffectiveParFloors());
   let status;
   if (result.spent > par) status = 'died';
@@ -102,7 +97,6 @@ try {
 
   // For resting runs: update state but don't clear — run continues next session
   if (status === 'resting') {
-    const { setCurrentRun } = await import(path.join(__dir, '../src/lib/state.js'));
     setCurrentRun({ ...run, spent: result.spent, fainted: true, ...thinkingFields });
     const saved = {
       ...run,
