@@ -6,11 +6,13 @@ import {
   getEffortLevel,
   getEfficiencyRating,
   getBudgetPct,
+  getParBudget,
   formatCost,
   getHaikuPct,
   getOpusPct,
   MODEL_CLASSES,
 } from '../lib/score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from '../lib/config.js';
 import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function ScoreCard({ run }) {
@@ -26,11 +28,16 @@ export function ScoreCard({ run }) {
     return () => clearTimeout(t);
   }, [exit]);
 
-  const tier = getTier(run.spent);
+  const tier = getTier(run.spent, run.model);
   const mc = getModelClass(run.model);
-  const flowMode = !run.budget;
-  const efficiency = flowMode ? null : getEfficiencyRating(run.spent, run.budget);
-  const pct = flowMode ? null : getBudgetPct(run.spent, run.budget);
+  const par = getParBudget(
+    run.model,
+    run.promptCount,
+    getEffectiveParRates(),
+    getEffectiveParFloors()
+  );
+  const efficiency = getEfficiencyRating(run.spent, par);
+  const pct = getBudgetPct(run.spent, par);
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);
   const opusPct = getOpusPct(run.modelBreakdown, run.spent);
 
@@ -49,11 +56,11 @@ export function ScoreCard({ run }) {
         gap={1}
       >
         <Text bold color={won ? 'yellow' : 'red'}>
-          {won ? '🏆  SESSION COMPLETE' : '💀  BUDGET BUSTED'}
+          {won ? '🏆  SESSION COMPLETE' : '💀  PAR BUST'}
         </Text>
 
-        <Text color="white" bold>
-          {run.quest ?? <Text color="gray">Flow Mode</Text>}
+        <Text color="gray" dimColor>
+          {run.promptCount || 0} prompts · par ${par.toFixed(2)}
         </Text>
 
         {/* Score row */}
@@ -66,22 +73,18 @@ export function ScoreCard({ run }) {
               {formatCost(run.spent)}
             </Text>
           </Box>
-          {!flowMode && (
-            <>
-              <Box flexDirection="column">
-                <Text color="gray" dimColor>
-                  BUDGET
-                </Text>
-                <Text color="white">${run.budget.toFixed(2)}</Text>
-              </Box>
-              <Box flexDirection="column">
-                <Text color="gray" dimColor>
-                  USED
-                </Text>
-                <Text color={pct > 100 ? 'red' : pct > 80 ? 'yellow' : 'green'}>{pct}%</Text>
-              </Box>
-            </>
-          )}
+          <Box flexDirection="column">
+            <Text color="gray" dimColor>
+              PAR
+            </Text>
+            <Text color="white">${par.toFixed(2)}</Text>
+          </Box>
+          <Box flexDirection="column">
+            <Text color="gray" dimColor>
+              USED
+            </Text>
+            <Text color={pct > 100 ? 'red' : pct > 80 ? 'yellow' : 'green'}>{pct}%</Text>
+          </Box>
           <Box flexDirection="column">
             <Text color="gray" dimColor>
               MODEL
@@ -125,7 +128,7 @@ export function ScoreCard({ run }) {
           </Box>
         </Box>
 
-        {/* Efficiency (roguelike mode only) */}
+        {/* Efficiency */}
         {efficiency && (
           <Box gap={2}>
             <Text bold color={efficiency.color}>
@@ -214,23 +217,11 @@ export function ScoreCard({ run }) {
             </Box>
           </Box>
         )}
-
-        {/* Death tip */}
-        {!won && run.budget && (
-          <Box marginTop={1} flexDirection="column" paddingLeft={1}>
-            <Text color="red" bold>
-              Cause of death: Budget exceeded by {formatCost(run.spent - run.budget)}
-            </Text>
-            <Text color="gray" dimColor>
-              Tip: Use Read with line ranges instead of full file reads.
-            </Text>
-          </Box>
-        )}
       </Box>
 
       <Box gap={2}>
         <Text color="gray" dimColor>
-          tokengolf start — run again
+          tokengolf scorecard — view again
         </Text>
         <Text color="gray" dimColor>
           ·

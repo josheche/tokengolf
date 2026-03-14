@@ -1,10 +1,14 @@
-export const BUDGET_TIERS = [
-  { label: 'Diamond', emoji: '💎', max: 0.1, color: 'cyan' },
-  { label: 'Gold', emoji: '🥇', max: 0.3, color: 'yellow' },
-  { label: 'Silver', emoji: '🥈', max: 1.0, color: 'white' },
-  { label: 'Bronze', emoji: '🥉', max: 3.0, color: 'yellow' },
-  { label: 'Reckless', emoji: '💸', max: Infinity, color: 'red' },
+export const SPEND_TIER_DEFS = [
+  { label: 'Mythic', emoji: '✨', key: 'mythic', color: 'magenta' },
+  { label: 'Diamond', emoji: '💎', key: 'diamond', color: 'cyan' },
+  { label: 'Gold', emoji: '🥇', key: 'gold', color: 'yellow' },
+  { label: 'Silver', emoji: '🥈', key: 'silver', color: 'white' },
+  { label: 'Bronze', emoji: '🥉', key: 'bronze', color: 'yellow' },
+  { label: 'Reckless', emoji: '💸', key: 'reckless', color: 'red' },
 ];
+
+// Legacy alias for backward compat
+export const BUDGET_TIERS = SPEND_TIER_DEFS;
 
 export const EFFORT_LEVELS = {
   low: { label: 'Low', emoji: '🪶', color: 'green' },
@@ -18,16 +22,16 @@ export function getEffortLevel(effort) {
 }
 
 export const MODEL_BUDGET_TIERS = {
-  haiku: { diamond: 0.15, gold: 0.4, silver: 1.0, bronze: 2.5 },
-  sonnet: { diamond: 0.5, gold: 1.5, silver: 4.0, bronze: 10.0 },
-  opusplan: { diamond: 1.5, gold: 4.5, silver: 12.0, bronze: 30.0 },
-  opus: { diamond: 2.5, gold: 7.5, silver: 20.0, bronze: 50.0 },
+  haiku: { mythic: 0.03, diamond: 0.15, gold: 0.4, silver: 1.0, bronze: 2.5 },
+  sonnet: { mythic: 0.1, diamond: 0.5, gold: 1.5, silver: 4.0, bronze: 10.0 },
+  opusplan: { mythic: 0.3, diamond: 1.5, gold: 4.5, silver: 12.0, bronze: 30.0 },
+  opus: { mythic: 0.5, diamond: 2.5, gold: 7.5, silver: 20.0, bronze: 50.0 },
 };
 
 export function getModelBudgets(model) {
   const m = (model || '').toLowerCase();
-  if (m.includes('haiku')) return MODEL_BUDGET_TIERS.haiku;
   if (m.includes('opusplan')) return MODEL_BUDGET_TIERS.opusplan;
+  if (m.includes('haiku')) return MODEL_BUDGET_TIERS.haiku;
   if (m.includes('opus')) return MODEL_BUDGET_TIERS.opus;
   return MODEL_BUDGET_TIERS.sonnet;
 }
@@ -63,16 +67,38 @@ export const MODEL_CLASSES = {
   },
 };
 
-export const FLOORS = [
-  'Write the code',
-  'Write the tests',
-  'Fix failing tests',
-  'Code review pass',
-  'PR merged — BOSS 🏆',
-];
+export const MODEL_PAR_RATES = {
+  haiku: 0.55,
+  sonnet: 7.0,
+  opusplan: 22.0,
+  opus: 45.0,
+};
 
-export function getTier(spent) {
-  return BUDGET_TIERS.find((t) => spent <= t.max) || BUDGET_TIERS[BUDGET_TIERS.length - 1];
+export const MODEL_PAR_FLOORS = {
+  haiku: 0.5,
+  sonnet: 3.0,
+  opusplan: 8.0,
+  opus: 15.0,
+};
+
+export function getParBudget(model, promptCount, rateOverrides, floorOverrides) {
+  const m = (model || '').toLowerCase();
+  let key = 'sonnet';
+  if (m.includes('opusplan')) key = 'opusplan';
+  else if (m.includes('haiku')) key = 'haiku';
+  else if (m.includes('opus')) key = 'opus';
+  const rates = rateOverrides ? { ...MODEL_PAR_RATES, ...rateOverrides } : MODEL_PAR_RATES;
+  const floors = floorOverrides ? { ...MODEL_PAR_FLOORS, ...floorOverrides } : MODEL_PAR_FLOORS;
+  return Math.max((promptCount || 0) > 0 ? rates[key] * Math.sqrt(promptCount) : 0, floors[key]);
+}
+
+export function getTier(spent, model) {
+  const budgets = model ? getModelBudgets(model) : MODEL_BUDGET_TIERS.sonnet;
+  for (const def of SPEND_TIER_DEFS) {
+    const max = budgets[def.key];
+    if (max !== undefined && spent <= max) return def;
+  }
+  return SPEND_TIER_DEFS[SPEND_TIER_DEFS.length - 1]; // Reckless
 }
 
 export function getModelClass(model = '') {
@@ -85,11 +111,12 @@ export function getModelClass(model = '') {
 
 export function getEfficiencyRating(spent, budget) {
   const pct = spent / budget;
-  if (pct <= 0.25) return { label: 'LEGENDARY', emoji: '🌟', color: 'magenta' };
-  if (pct <= 0.5) return { label: 'EFFICIENT', emoji: '⚡', color: 'cyan' };
-  if (pct <= 0.75) return { label: 'SOLID', emoji: '✓', color: 'green' };
-  if (pct <= 1.0) return { label: 'CLOSE CALL', emoji: '😅', color: 'yellow' };
-  return { label: 'BUSTED', emoji: '💀', color: 'red' };
+  if (pct <= 0.15) return { label: 'LEGENDARY', emoji: '🌟', color: 'yellow' };
+  if (pct <= 0.3) return { label: 'EPIC', emoji: '🔥', color: 'magenta' };
+  if (pct <= 0.5) return { label: 'PRO', emoji: '💪', color: 'cyan' };
+  if (pct <= 0.75) return { label: 'SOLID', emoji: '✅', color: 'green' };
+  if (pct <= 1.0) return { label: 'CLOSE CALL', emoji: '⚠️', color: 'white' };
+  return { label: 'BUST', emoji: '💥', color: 'red' };
 }
 
 export function getBudgetPct(spent, budget) {
@@ -99,7 +126,7 @@ export function getBudgetPct(spent, budget) {
 export function formatCost(amount = 0) {
   if (amount === 0) return '$0.00';
   if (amount < 0.01) return `$${amount.toFixed(5)}`;
-  return `$${amount.toFixed(4)}`;
+  return `$${amount.toFixed(2)}`;
 }
 
 export function formatElapsed(startedAt) {
@@ -133,10 +160,11 @@ export function getHaikuPct(modelBreakdown, totalSpent) {
   return Math.round((haikuCost / totalSpent) * 100);
 }
 
-export function calculateAchievements(run) {
+export function calculateAchievements(run, rateOverrides, floorOverrides) {
   const achievements = [];
   const won = run.status === 'won';
-  const pct = run.budget ? run.spent / run.budget : null;
+  const effBudget = getParBudget(run.model, run.promptCount, rateOverrides, floorOverrides);
+  const pct = run.spent / effBudget;
   const mc = getModelClass(run.model);
 
   const isPaladin = mc === MODEL_CLASSES.opusplan;
@@ -159,12 +187,12 @@ export function calculateAchievements(run) {
 
   // Death marks
   if (!won) {
-    if (run.budget && run.spent / run.budget >= 2.0)
-      achievements.push({ key: 'blowout', label: 'Blowout — Spent 2× budget', emoji: '💥' });
-    else if (run.budget && run.spent / run.budget > 1.0 && run.spent / run.budget <= 1.1)
+    if (pct >= 2.0)
+      achievements.push({ key: 'blowout', label: 'Blowout — Spent 2× par', emoji: '💥' });
+    else if (pct > 1.0 && pct <= 1.1)
       achievements.push({
         key: 'so_close',
-        label: 'So Close — Died within 10% of budget',
+        label: 'So Close — Died within 10% of par',
         emoji: '😭',
       });
     if ((run.totalToolCalls || 0) >= 30)
@@ -185,7 +213,7 @@ export function calculateAchievements(run) {
         label: `Fumble — Died with ${run.failedToolCalls} failed tool calls`,
         emoji: '🤡',
       });
-    if (run.budget && run.spent / run.budget >= 0.5)
+    if (pct >= 0.5)
       if ((run.promptCount || 0) >= 3 && run.spent / (run.promptCount || 1) >= 0.5)
         achievements.push({
           key: 'expensive_taste',
@@ -219,10 +247,10 @@ export function calculateAchievements(run) {
       label: 'Paladin — Completed a run as Paladin',
       emoji: '⚜️',
     });
-    if (pct !== null && pct <= 0.25)
+    if (pct <= 0.25)
       achievements.push({
         key: 'grand_strategist',
-        label: 'Grand Strategist — LEGENDARY efficiency as Paladin',
+        label: 'Grand Strategist — EPIC efficiency as Paladin',
         emoji: '♟️',
       });
   } else if (mc === MODEL_CLASSES.opus) {
@@ -233,20 +261,18 @@ export function calculateAchievements(run) {
     });
   }
 
-  if (pct !== null) {
-    if (pct <= 0.25)
-      achievements.push({
-        key: 'sniper',
-        label: 'Sniper — Under 25% of budget',
-        emoji: '🎯',
-      });
-    if (pct <= 0.5)
-      achievements.push({
-        key: 'efficient',
-        label: 'Efficient — Under 50% of budget',
-        emoji: '⚡',
-      });
-  }
+  if (pct <= 0.25)
+    achievements.push({
+      key: 'sniper',
+      label: 'Sniper — Under 25% of par',
+      emoji: '🎯',
+    });
+  if (pct <= 0.5)
+    achievements.push({
+      key: 'efficient',
+      label: 'Efficient — Under 50% of par',
+      emoji: '⚡',
+    });
   if (run.spent < 0.1)
     achievements.push({
       key: 'penny',
@@ -256,16 +282,16 @@ export function calculateAchievements(run) {
 
   // Effort-based achievements
   if (run.effort) {
-    if (run.effort === 'low' && pct !== null && pct < 1.0)
+    if (run.effort === 'low' && pct < 1.0)
       achievements.push({
         key: 'speedrunner',
-        label: 'Speedrunner — Low effort, completed under budget',
+        label: 'Speedrunner — Low effort, completed under par',
         emoji: '🏎️',
       });
-    if ((run.effort === 'high' || run.effort === 'max') && pct !== null && pct <= 0.25)
+    if ((run.effort === 'high' || run.effort === 'max') && pct <= 0.25)
       achievements.push({
         key: 'tryhard',
-        label: 'Tryhard — High effort, LEGENDARY efficiency',
+        label: 'Tryhard — High effort, EPIC efficiency',
         emoji: '🏋️',
       });
     if (run.effort === 'max' && mc === MODEL_CLASSES.opus)
@@ -278,16 +304,16 @@ export function calculateAchievements(run) {
 
   // Fast mode achievements (Opus-only feature)
   if (run.fastMode && mc === MODEL_CLASSES.opus) {
-    if (pct !== null && pct < 1.0)
+    if (pct < 1.0)
       achievements.push({
         key: 'lightning',
-        label: 'Lightning Run — Opus fast mode, completed under budget',
+        label: 'Lightning Run — Opus fast mode, completed under par',
         emoji: '⛈️',
       });
-    if (pct !== null && pct <= 0.25)
+    if (pct <= 0.25)
       achievements.push({
         key: 'daredevil',
-        label: 'Daredevil — Opus fast mode, LEGENDARY efficiency',
+        label: 'Daredevil — Opus fast mode, EPIC efficiency',
         emoji: '🎰',
       });
   }
@@ -355,10 +381,10 @@ export function calculateAchievements(run) {
       label: `Spell Cast — Used extended thinking (${ti}×)`,
       emoji: '🔮',
     });
-    if (pct !== null && pct <= 0.25)
+    if (pct <= 0.25)
       achievements.push({
         key: 'calculated_risk',
-        label: 'Calculated Risk — Ultrathink + LEGENDARY efficiency',
+        label: 'Calculated Risk — Ultrathink + EPIC efficiency',
         emoji: '🧮',
       });
     if (ti >= 3)
@@ -369,10 +395,10 @@ export function calculateAchievements(run) {
       });
   }
   // Silent Run: thinking was tracked (field exists), zero invocations, SOLID or better, completed
-  if (run.thinkingInvocations === 0 && pct !== null && pct <= 0.75)
+  if (run.thinkingInvocations === 0 && pct <= 0.75)
     achievements.push({
       key: 'silent_run',
-      label: 'Silent Run — No extended thinking, completed under budget',
+      label: 'Silent Run — No extended thinking, completed under par',
       emoji: '🤫',
     });
 
@@ -411,16 +437,16 @@ export function calculateAchievements(run) {
         label: 'Purist — Single model family throughout',
         emoji: '🔷',
       });
-    if (distinct >= 2 && pct !== null && pct < 1.0)
+    if (distinct >= 2 && pct < 1.0)
       achievements.push({
         key: 'chameleon',
-        label: `Chameleon — ${distinct} model families used, completed under budget`,
+        label: `Chameleon — ${distinct} model families used, completed under par`,
         emoji: '🦎',
       });
-    if (switches === 1 && pct !== null && pct < 1.0)
+    if (switches === 1 && pct < 1.0)
       achievements.push({
         key: 'tactical_switch',
-        label: 'Tactical Switch — Exactly 1 model switch, completed under budget',
+        label: 'Tactical Switch — Exactly 1 model switch, completed under par',
         emoji: '🔀',
       });
     if (switches === 0 && distinct <= 1)
@@ -528,10 +554,10 @@ export function calculateAchievements(run) {
       label: `Scout — ${Math.round((readCount / totalToolCalls) * 100)}% Read calls`,
       emoji: '🔍',
     });
-  if (editCount >= 1 && editCount <= 3 && pct !== null && pct < 1.0)
+  if (editCount >= 1 && editCount <= 3 && pct < 1.0)
     achievements.push({
       key: 'surgeon',
-      label: `Surgeon — Only ${editCount} Edit call${editCount > 1 ? 's' : ''}, under budget`,
+      label: `Surgeon — Only ${editCount} Edit call${editCount > 1 ? 's' : ''}, under par`,
       emoji: '🔪',
     });
   if (distinctTools >= 5)
@@ -606,10 +632,10 @@ export function calculateAchievements(run) {
       label: `Summoner — ${subagentSpawns} subagents spawned`,
       emoji: '📡',
     });
-  if (subagentSpawns >= 10 && pct !== null && pct < 0.5)
+  if (subagentSpawns >= 10 && pct < 0.5)
     achievements.push({
       key: 'army',
-      label: `Army of One — ${subagentSpawns} subagents, EFFICIENT cost`,
+      label: `Army of One — ${subagentSpawns} subagents, under 50% par`,
       emoji: '🪖',
     });
 

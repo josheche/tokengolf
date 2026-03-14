@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
-import { getTier, getModelClass, getBudgetPct, formatCost } from '../lib/score.js';
+import { getTier, getModelClass, getBudgetPct, getParBudget, formatCost } from '../lib/score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from '../lib/config.js';
 import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function StatsView({ stats }) {
@@ -17,9 +18,7 @@ export function StatsView({ stats }) {
           ⛳ TokenGolf Stats
         </Text>
         <Text color="gray">No completed runs yet.</Text>
-        <Text color="gray">
-          Start one: <Text color="cyan">tokengolf start</Text>
-        </Text>
+        <Text color="gray">Open Claude Code — sessions are tracked automatically.</Text>
       </Box>
     );
   }
@@ -89,7 +88,7 @@ export function StatsView({ stats }) {
       {/* Personal best */}
       {stats.bestRun &&
         (() => {
-          const bestTier = getTier(stats.bestRun.spent);
+          const bestTier = getTier(stats.bestRun.spent, stats.bestRun.model);
           const bestMc = getModelClass(stats.bestRun.model);
           return (
             <Box flexDirection="column" gap={0}>
@@ -113,12 +112,9 @@ export function StatsView({ stats }) {
                 paddingY={1}
                 flexDirection="column"
               >
-                <Text color="white">{stats.bestRun.quest}</Text>
+                <Text color="white">{stats.bestRun.promptCount || 0} prompts</Text>
                 <Box gap={3} marginTop={1}>
                   <Text color="green">{formatCost(stats.bestRun.spent)}</Text>
-                  {stats.bestRun.budget ? (
-                    <Text color="gray">of ${stats.bestRun.budget.toFixed(2)}</Text>
-                  ) : null}
                   <Text>{bestMc.emoji}</Text>
                   <Text color={bestTier.color}>
                     {bestTier.emoji} {bestTier.label}
@@ -134,27 +130,30 @@ export function StatsView({ stats }) {
         <Text color="gray" dimColor>
           Recent runs:
         </Text>
-        {stats.recentRuns.slice(0, 8).map((run, i) => {
-          const won = run.status === 'won';
-          const tier = getTier(run.spent);
-          const mc = getModelClass(run.model);
-          const pct = run.budget ? getBudgetPct(run.spent, run.budget) : null;
-          return (
-            <Box key={i} gap={2}>
-              <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
-              <Text color="white">{(run.quest || 'Flow').slice(0, 34).padEnd(34)}</Text>
-              <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
-              {run.budget ? <Text color="gray">/{formatCost(run.budget)}</Text> : null}
-              <Text>{mc.emoji}</Text>
-              <Text color={tier.color}>{tier.emoji}</Text>
-              {pct !== null && (
+        {(() => {
+          const effRates = getEffectiveParRates();
+          const effFloors = getEffectiveParFloors();
+          return stats.recentRuns.slice(0, 8).map((run, i) => {
+            const won = run.status === 'won';
+            const tier = getTier(run.spent, run.model);
+            const mc = getModelClass(run.model);
+            const par = getParBudget(run.model, run.promptCount, effRates, effFloors);
+            const pct = getBudgetPct(run.spent, par);
+            return (
+              <Box key={i} gap={2}>
+                <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
+                <Text color="white">{`${run.promptCount || 0}p`.padEnd(4)}</Text>
+                <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
+                <Text color="gray">/{formatCost(par)}</Text>
+                <Text>{mc.emoji}</Text>
+                <Text color={tier.color}>{tier.emoji}</Text>
                 <Text color="gray" dimColor>
                   {pct}%
                 </Text>
-              )}
-            </Box>
-          );
-        })}
+              </Box>
+            );
+          });
+        })()}
       </Box>
 
       {/* Achievements */}

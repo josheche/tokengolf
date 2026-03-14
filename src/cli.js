@@ -3,96 +3,21 @@ import { program } from 'commander';
 import { render } from 'ink';
 import React from 'react';
 
-import { getCurrentRun, clearCurrentRun, updateCurrentRun } from './lib/state.js';
-import { saveRun, getLastRun, getStats } from './lib/store.js';
-import { autoDetectCost } from './lib/cost.js';
-import { StartRun } from './components/StartRun.js';
-import { ActiveRun } from './components/ActiveRun.js';
+import { getLastRun, getStats } from './lib/store.js';
+import {
+  getConfig,
+  setConfig,
+  deleteConfig,
+  VALID_EMOTION_MODES,
+  VALID_MODEL_KEYS,
+  getEffectiveParRates,
+  getEffectiveParFloors,
+} from './lib/config.js';
+import { MODEL_PAR_RATES, MODEL_PAR_FLOORS } from './lib/score.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
-program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.1.0');
-
-program
-  .command('start')
-  .description('Declare a quest and start a new run')
-  .action(() => {
-    render(React.createElement(StartRun));
-  });
-
-program
-  .command('status')
-  .description('Show current run status')
-  .action(() => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run. Start one with: tokengolf start');
-      process.exit(0);
-    }
-    render(React.createElement(ActiveRun, { run }));
-  });
-
-program
-  .command('win')
-  .description('Mark current run as complete (won)')
-  .option('--spent <amount>', 'How much did you spend? (e.g. 0.18)')
-  .action((opts) => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run.');
-      process.exit(1);
-    }
-    const detected = opts.spent ? null : autoDetectCost(run);
-    const spent = opts.spent ? parseFloat(opts.spent) : (detected?.spent ?? run.spent);
-    const completed = {
-      ...run,
-      spent,
-      status: 'won',
-      modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null,
-      endedAt: new Date().toISOString(),
-    };
-    const saved = saveRun(completed);
-    clearCurrentRun();
-    render(React.createElement(ScoreCard, { run: saved }));
-  });
-
-program
-  .command('bust')
-  .description('Mark current run as budget busted (died)')
-  .option('--spent <amount>', 'How much did you spend? (e.g. 0.45)')
-  .action((opts) => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run.');
-      process.exit(1);
-    }
-    const detected = opts.spent ? null : autoDetectCost(run);
-    const spent = opts.spent ? parseFloat(opts.spent) : (detected?.spent ?? run.budget + 0.01);
-    const died = {
-      ...run,
-      spent,
-      status: 'died',
-      modelBreakdown: detected?.modelBreakdown ?? run.modelBreakdown ?? null,
-      endedAt: new Date().toISOString(),
-    };
-    const saved = saveRun(died);
-    clearCurrentRun();
-    render(React.createElement(ScoreCard, { run: saved }));
-  });
-
-program
-  .command('floor')
-  .description('Advance to the next floor')
-  .action(() => {
-    const run = getCurrentRun();
-    if (!run) {
-      console.log('No active run.');
-      process.exit(1);
-    }
-    const nextFloor = Math.min((run.floor || 1) + 1, run.totalFloors || 5);
-    updateCurrentRun({ floor: nextFloor });
-    console.log(`Floor ${nextFloor} / ${run.totalFloors}`);
-  });
+program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.5.4');
 
 program
   .command('scorecard')
@@ -100,7 +25,7 @@ program
   .action(() => {
     const run = getLastRun();
     if (!run) {
-      console.log('No runs yet. Start one with: tokengolf start');
+      console.log('No runs yet. Open Claude Code — sessions are tracked automatically.');
       process.exit(0);
     }
     render(React.createElement(ScoreCard, { run }));
@@ -115,7 +40,7 @@ program
 
 program
   .command('demo [component]')
-  .description('Show UI demos — all, hud, scorecard, active, stats')
+  .description('Show UI demos — all, hud, scorecard, stats')
   .option('-i, --index <n>', 'Show only the Nth variant (0-based)')
   .action(async (component, opts) => {
     const idx = opts.index != null ? parseInt(opts.index) : undefined;
@@ -124,10 +49,10 @@ program
     if (c === 'all') {
       const { runDemo } = await import('./lib/demo.js');
       runDemo();
+      const { runAnsiScoreCardDemo } = await import('./lib/demo-ansi-scorecard.js');
+      runAnsiScoreCardDemo(idx);
       const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
       await runScoreCardDemo(idx);
-      const { runActiveDemo } = await import('./lib/demo-active.js');
-      await runActiveDemo(idx);
       const { runStatsDemo } = await import('./lib/demo-stats.js');
       await runStatsDemo(idx);
       process.exit(0);
@@ -140,14 +65,10 @@ program
     }
 
     if (c === 'scorecard') {
+      const { runAnsiScoreCardDemo } = await import('./lib/demo-ansi-scorecard.js');
+      runAnsiScoreCardDemo(idx);
       const { runScoreCardDemo } = await import('./lib/demo-scorecard.js');
       await runScoreCardDemo(idx);
-      process.exit(0);
-    }
-
-    if (c === 'active') {
-      const { runActiveDemo } = await import('./lib/demo-active.js');
-      await runActiveDemo(idx);
       process.exit(0);
     }
 
@@ -157,7 +78,81 @@ program
       process.exit(0);
     }
 
-    console.log('Unknown demo component. Choose: all, hud, scorecard, active, stats');
+    console.log('Unknown demo component. Choose: all, hud, scorecard, stats');
+    process.exit(1);
+  });
+
+program
+  .command('config [key] [args...]')
+  .description('View or set config values (e.g. tokengolf config emotions emoji)')
+  .action((key, args) => {
+    const config = getConfig();
+    if (!key) {
+      for (const [k, v] of Object.entries(config))
+        console.log(`${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`);
+      return;
+    }
+    if (key === 'emotions') {
+      const value = args[0];
+      if (!value) {
+        console.log(`emotionMode: ${config.emotionMode || 'emoji'}`);
+        return;
+      }
+      if (!VALID_EMOTION_MODES.includes(value)) {
+        console.log(`Invalid emotion mode: ${value}`);
+        console.log(`Valid modes: ${VALID_EMOTION_MODES.join(', ')}`);
+        process.exit(1);
+      }
+      setConfig('emotionMode', value);
+      console.log(`emotionMode: ${value}`);
+      return;
+    }
+    if (key === 'par' || key === 'floor') {
+      const configKey = key === 'par' ? 'parRates' : 'parFloors';
+      const defaults = key === 'par' ? MODEL_PAR_RATES : MODEL_PAR_FLOORS;
+      const effective = key === 'par' ? getEffectiveParRates() : getEffectiveParFloors();
+      const label = key === 'par' ? 'Par rates' : 'Par floors';
+      const modelArg = args[0];
+      const valueArg = args[1];
+
+      if (!modelArg) {
+        const units = key === 'par' ? '$/√prompt' : '$';
+        console.log(`${label} (${units}):`);
+        const overrides = config[configKey] || {};
+        for (const mk of VALID_MODEL_KEYS) {
+          const tag = mk in overrides ? ' (custom)' : ' (default)';
+          console.log(`  ${mk}: $${effective[mk].toFixed(2)}${tag}`);
+        }
+        return;
+      }
+      if (modelArg === 'reset') {
+        deleteConfig(configKey);
+        console.log(`${label} reset to defaults.`);
+        for (const mk of VALID_MODEL_KEYS) console.log(`  ${mk}: $${defaults[mk].toFixed(2)}`);
+        return;
+      }
+      if (!VALID_MODEL_KEYS.includes(modelArg)) {
+        console.log(`Unknown model: ${modelArg}`);
+        console.log(`Valid models: ${VALID_MODEL_KEYS.join(', ')}`);
+        process.exit(1);
+      }
+      if (!valueArg) {
+        console.log(`${modelArg}: $${effective[modelArg].toFixed(2)}`);
+        return;
+      }
+      const num = parseFloat(valueArg);
+      if (isNaN(num) || num <= 0) {
+        console.log(`Invalid value: ${valueArg} (must be a positive number)`);
+        process.exit(1);
+      }
+      const existing = config[configKey] || {};
+      setConfig(configKey, { ...existing, [modelArg]: num });
+      console.log(
+        `${key === 'par' ? 'Par rate' : 'Par floor'} for ${modelArg}: $${num.toFixed(2)}`
+      );
+      return;
+    }
+    console.log(`Unknown config key: ${key}`);
     process.exit(1);
   });
 

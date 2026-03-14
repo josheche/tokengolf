@@ -7,6 +7,7 @@ TokenGolf patch notes — what changed, what it measures, and why the mechanic e
 ## [Unreleased]
 
 ### Changed
+- **Sublinear par scaling (sqrt)** — Par formula changed from `prompts × rate` to `rate × sqrt(prompts)`. Early prompts have headroom for exploration; pressure builds as the session goes on. Long wasteful sessions bust. Rates recalibrated: Haiku $0.55, Sonnet $7.00, Paladin $22.00, Opus $45.00. Floors unchanged. All models bust around 20 prompts at typical per-prompt spend.
 - **Design D HUD** — StatusLine HUD redesigned with `██` accent bar, inline `▓░` progress bars for budget and context, no separator lines. 1 line when context <50%, 2 lines when context visible. Accent bar turns red when budget >75%. Matches Design D across all UI surfaces.
 - **Design D block accent UI** — All bordered boxes replaced with left-only `██` block accent bars. Eliminates persistent right-border misalignment caused by emoji/unicode width differences across terminals. Color-coded: yellow for won, red for died, gray for neutral.
 - ScoreCard, StatsView, ActiveRun, StartRun components all use custom Ink `borderStyle` with `left: '██'`, no right/top/bottom borders

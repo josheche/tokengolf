@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TOKENGOLF · Design System</title>
+    <script>
+      const stored = localStorage.getItem('tg-preview-theme');
+      const theme = stored || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { overflow-x: hidden; }
+      body { overflow-x: hidden; }
+
+      :root {
+        --font-heading: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+        --font-body: 'Libre Franklin', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'Fira Code', 'SF Mono', 'Cascadia Mono', 'Consolas', monospace;
+      }
+
+      /* ── Spacing scale ── */
+      :root {
+        --space-xs: 0.25rem;   /* 4px  — tight gaps, icon offsets */
+        --space-sm: 0.5rem;    /* 8px  — button padding, small margins */
+        --space-md: 0.75rem;   /* 12px — card internal gaps, h3 margins */
+        --space-lg: 1rem;      /* 16px — standard padding, table cells */
+        --space-xl: 1.5rem;    /* 24px — grid gaps, section horizontal padding */
+        --space-2xl: 2rem;     /* 32px — card padding, demo grids */
+        --space-3xl: 2.5rem;   /* 40px — h2 margins, footer */
+        --space-section: 6rem; /* 96px — section vertical padding */
+      }
+
+      /* ── Dark theme ── */
+      :root {
+        --bg: #1a1812;
+        --bg-raised: #1e1c16;
+        --card: #23211a;
+        --border: #3d3828;
+        --text: #e8dcc4;
+        --muted: #9a9180;
+        --green: #6bb54a;
+        --green-dim: #4a8a32;
+        --cyan: #7cb8d4;
+        --magenta: #c8a0e0;
+        --yellow: #d4a840;
+        --red: #e05848;
+        --orange: #d4884a;
+        --loot-legendary: #d4a840;
+        --loot-epic: #c8a0e0;
+        --loot-pro: #7cb8d4;
+        --loot-solid: #6bb54a;
+        --loot-close: #9a9180;
+        --loot-bust: #e05848;
+        --spend-diamond: #7cb8d4;
+        --spend-gold: #d4a840;
+        --spend-silver: #9a9180;
+        --spend-bronze: #d4884a;
+        --spend-reckless: #e05848;
+        --install-bg: rgba(26,24,18,0.5);
+        --install-border: rgba(232,220,196,0.18);
+        --term-bg: #161410;
+        --term-header-bg: #1e1c16;
+        --tab-bar-bg: #141210;
+        --badge-flow-bg: #1e2e1a;
+        --badge-rogue-bg: #2c1c30;
+        --death-border: #3d2020;
+        --hero-text: #f2ead6;
+      }
+
+      /* ── Light theme ── */
+      [data-theme="light"] {
+        --bg: #f2ead6;
+        --bg-raised: #e2dac4;
+        --card: #f8f4e8;
+        --border: #d4c8a8;
+        --text: #2a2618;
+        --muted: #6e6450;
+        --green: #4a7a2a;
+        --green-dim: #5a8a38;
+        --cyan: #2a6e9a;
+        --magenta: #7a4a9a;
+        --yellow: #8a6a10;
+        --red: #b03020;
+        --orange: #9a5a18;
+        --loot-legendary: #8a6a10;
+        --loot-epic: #7a4a9a;
+        --loot-pro: #2a6e9a;
+        --loot-solid: #4a7a2a;
+        --loot-close: #6e6450;
+        --loot-bust: #b03020;
+        --spend-diamond: #2a6e9a;
+        --spend-gold: #8a6a10;
+        --spend-silver: #6e6450;
+        --spend-bronze: #9a5a18;
+        --spend-reckless: #b03020;
+        --install-bg: rgba(248,244,232,0.8);
+        --install-border: rgba(42,38,24,0.12);
+        --term-bg: #ece4d0;
+        --term-header-bg: #e2dac4;
+        --tab-bar-bg: #e2dac4;
+        --badge-flow-bg: #d4e8c8;
+        --badge-rogue-bg: #e4d4f0;
+        --death-border: #e8c0b8;
+        --hero-text: #2a2618;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+      }
+
+      code { font-family: var(--font-mono); font-size: 0.88em; color: var(--cyan); }
+
+      a { color: var(--cyan); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      /* ── Theme toggle ── */
+      .theme-toggle {
+        position: fixed; top: 1rem; right: 1rem; z-index: 100;
+        width: 44px; height: 44px; border-radius: 50%;
+        border: 1px solid var(--border); background: var(--card);
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.2); line-height: 1; padding: 0;
+      }
+      .theme-toggle:hover { border-color: var(--muted); transform: scale(1.05); }
+      .theme-icon-moon { display: none; }
+      .theme-icon-sun { display: inline; }
+      [data-theme="light"] .theme-icon-sun { display: none; }
+      [data-theme="light"] .theme-icon-moon { display: inline; }
+
+      /* ── Sticky nav ── */
+      .ds-nav {
+        position: sticky; top: 0; z-index: 50;
+        background: var(--bg); border-bottom: 1px solid var(--border);
+        padding: 0.6rem 1.5rem; overflow-x: auto; overflow-y: hidden;
+        display: flex; gap: 0.25rem; align-items: center;
+        -webkit-overflow-scrolling: touch; max-width: 100vw;
+        scrollbar-width: thin;
+      }
+      .ds-nav a {
+        font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600;
+        letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
+        padding: 0.35rem 0.75rem; border-radius: 6px; white-space: nowrap;
+        transition: color 0.15s, background 0.15s; text-decoration: none;
+      }
+      .ds-nav a:hover { color: var(--text); background: var(--card); text-decoration: none; }
+      .ds-nav-title {
+        font-family: var(--font-heading); font-size: 0.8rem; font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase; color: var(--yellow);
+        margin-right: 1rem; white-space: nowrap;
+      }
+
+      /* ── Layout ── */
+      .preview-header {
+        text-align: center; padding: 4rem 1.5rem 2rem; border-bottom: 1px solid var(--border);
+      }
+      .preview-header h1 {
+        font-size: 1.5rem; color: var(--muted); font-weight: 400; letter-spacing: 0.06em;
+      }
+      .preview-header p { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
+
+      .ds-section {
+        max-width: 1060px; margin: 0 auto; padding: 4rem 1.5rem;
+        border-bottom: 1px solid var(--border); overflow: hidden;
+      }
+
+      .ds-section h2 {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--muted); margin-bottom: 2.5rem;
+        font-family: var(--font-body); display: flex; align-items: center; gap: 0.75rem;
+      }
+      .ds-section h2::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+      .ds-label {
+        font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem;
+      }
+      .ds-note {
+        font-size: 0.82rem; color: var(--muted); margin-top: 0.75rem; font-style: italic;
+      }
+      .ds-spacer { height: 2.5rem; }
+
+      /* ── Color Swatches ── */
+      .swatch-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem;
+      }
+      .swatch {
+        border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+      }
+      .swatch-color {
+        height: 56px; display: flex; align-items: flex-end; justify-content: flex-end;
+        padding: 0.35rem 0.5rem;
+      }
+      .swatch-color span {
+        font-family: var(--font-mono); font-size: 0.6rem;
+        background: rgba(0,0,0,0.45); color: #fff; padding: 0.1rem 0.35rem;
+        border-radius: 3px; line-height: 1.3;
+      }
+      .swatch-meta {
+        background: var(--card); padding: 0.5rem 0.6rem;
+      }
+      .swatch-meta .name {
+        font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;
+      }
+      .swatch-meta .var {
+        font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted);
+      }
+
+      /* ── Typography Scale ── */
+      .type-scale-row {
+        display: flex; align-items: baseline; gap: 1.5rem;
+        padding: 1rem 0; border-bottom: 1px solid var(--border);
+      }
+      .type-scale-row:last-child { border-bottom: none; }
+      .type-scale-label {
+        font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted);
+        min-width: 100px; flex-shrink: 0;
+      }
+      .type-scale-sample { flex: 1; min-width: 0; overflow-wrap: break-word; word-break: break-word; }
+      @media (max-width: 600px) {
+        .type-scale-row { flex-direction: column; gap: 0.5rem; }
+        .type-scale-label { min-width: auto; }
+        .type-scale-sample { font-size: inherit !important; }
+      }
+
+      /* ── Glow Cards ── */
+      .glow-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;
+      }
+      .glow-card {
+        --glow-1: var(--loot-legendary); --glow-2: var(--loot-epic);
+        --glow-3: var(--loot-pro); --glow-4: var(--loot-solid);
+        position: relative; border-radius: 14px; overflow: hidden;
+      }
+      .glow-card::before, .glow-card::after {
+        content: ''; position: absolute; inset: 0; border-radius: inherit;
+        background:
+          radial-gradient(circle at 0 0, var(--glow-1), transparent 50%),
+          radial-gradient(circle at 100% 0, var(--glow-2), transparent 50%),
+          radial-gradient(circle at 0 100%, var(--glow-3), transparent 50%),
+          radial-gradient(circle at 100% 100%, var(--glow-4), transparent 50%);
+        opacity: 0.5; transition: opacity 0.4s;
+      }
+      .glow-card:hover::before, .glow-card:hover::after { opacity: 0.85; }
+      .glow-card::before { filter: blur(1.5vmin); animation: glow-pulse 4s ease-in-out alternate infinite; }
+      .glow-card::after { inset: 1.5px; background: var(--card); border-radius: calc(14px - 1.5px); }
+      .glow-card > * { position: relative; z-index: 1; }
+      @keyframes glow-pulse { from { opacity: 0.4; } to { opacity: 0.7; } }
+
+      [data-theme="light"] .glow-card::before,
+      [data-theme="light"] .glow-card::after { opacity: 0.35; }
+      [data-theme="light"] .glow-card:hover::before,
+      [data-theme="light"] .glow-card:hover::after { opacity: 0.55; }
+      [data-theme="light"] .glow-card::after { background: var(--card); }
+
+      /* Tier-specific glow colors */
+      .glow-legendary { --glow-1: var(--loot-legendary); --glow-2: var(--loot-legendary); --glow-3: var(--yellow); --glow-4: var(--orange); }
+      .glow-epic { --glow-1: var(--loot-epic); --glow-2: var(--magenta); --glow-3: var(--loot-epic); --glow-4: var(--cyan); }
+      .glow-pro { --glow-1: var(--loot-pro); --glow-2: var(--cyan); --glow-3: var(--loot-pro); --glow-4: var(--loot-solid); }
+      .glow-solid { --glow-1: var(--loot-solid); --glow-2: var(--green); --glow-3: var(--loot-solid); --glow-4: var(--cyan); }
+      .glow-close { --glow-1: var(--loot-close); --glow-2: var(--muted); --glow-3: var(--loot-close); --glow-4: var(--yellow); }
+      .glow-bust { --glow-1: var(--loot-bust); --glow-2: var(--red); --glow-3: var(--loot-bust); --glow-4: var(--orange); }
+      .glow-mythic { --glow-1: var(--loot-epic); --glow-2: var(--magenta); --glow-3: var(--loot-legendary); --glow-4: var(--cyan); }
+      .glow-diamond { --glow-1: var(--spend-diamond); --glow-2: var(--cyan); --glow-3: var(--spend-diamond); --glow-4: var(--loot-epic); }
+      .glow-gold { --glow-1: var(--spend-gold); --glow-2: var(--yellow); --glow-3: var(--spend-gold); --glow-4: var(--orange); }
+      .glow-silver { --glow-1: var(--spend-silver); --glow-2: var(--muted); --glow-3: var(--spend-silver); --glow-4: var(--muted); }
+      .glow-bronze { --glow-1: var(--spend-bronze); --glow-2: var(--orange); --glow-3: var(--spend-bronze); --glow-4: var(--yellow); }
+      .glow-reckless { --glow-1: var(--spend-reckless); --glow-2: var(--red); --glow-3: var(--spend-reckless); --glow-4: var(--orange); }
+      .glow-death { --glow-1: var(--red); --glow-2: var(--loot-bust); --glow-3: var(--red); --glow-4: var(--loot-bust); }
+
+      /* top accent removed, glow alone communicates tier */
+
+      .card-inner { padding: 1.5rem 1.25rem; text-align: center; }
+      .card-inner .tier-emoji { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+      .card-inner .tier-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; }
+      .card-inner .tier-amount { color: var(--muted); font-size: 0.82rem; }
+
+      .ach-inner { padding: 1.25rem 1.4rem; display: flex; align-items: flex-start; gap: 0.85rem; }
+      .ach-inner .ach-emoji { font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }
+      .ach-inner h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; }
+      .ach-inner p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+      .mode-card-demo { padding: 2rem; }
+      .mode-card-demo h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem; }
+      .mode-card-demo p { color: var(--muted); font-size: 0.95rem; line-height: 1.65; }
+      .mode-card-demo ul { margin-top: 0.75rem; padding-left: 1.25rem; color: var(--muted); font-size: 0.92rem; }
+      .mode-card-demo ul li { margin-bottom: 0.35rem; }
+
+      /* ── Terminal Chrome ── */
+      .term {
+        position: relative; background: var(--term-bg); border: 1px solid var(--border);
+        border-radius: 14px; overflow: hidden; min-width: 0;
+        transition: border-color 0.4s, box-shadow 0.4s;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.55);
+      }
+      .term::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.035) 2px, rgba(0,0,0,0.035) 4px);
+        border-radius: 14px; z-index: 1;
+      }
+      .term[data-glow="cyan"] { box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(124,184,212,0.06); }
+      .term[data-glow="cyan"]:hover { border-color: rgba(124,184,212,0.35); box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(124,184,212,0.12); }
+      .term[data-glow="yellow"] { box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(212,168,64,0.06); }
+      .term[data-glow="yellow"]:hover { border-color: rgba(212,168,64,0.35); box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(212,168,64,0.12); }
+      .term[data-glow="red"] { box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(224,88,72,0.06); }
+      .term[data-glow="red"]:hover { border-color: rgba(224,88,72,0.35); box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(224,88,72,0.12); }
+      .term[data-glow="green"] { box-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 0 48px rgba(107,181,74,0.06); }
+      .term[data-glow="green"]:hover { border-color: rgba(107,181,74,0.35); box-shadow: 0 4px 40px rgba(0,0,0,0.5), 0 0 72px rgba(107,181,74,0.12); }
+
+      [data-theme="light"] .term { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+      [data-theme="light"] .term::after { background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.018) 2px, rgba(0,0,0,0.018) 4px); }
+      [data-theme="light"] .term[data-glow="cyan"] { box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(42,110,154,0.06); }
+      [data-theme="light"] .term[data-glow="cyan"]:hover { border-color: rgba(42,110,154,0.3); box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(42,110,154,0.1); }
+      [data-theme="light"] .term[data-glow="yellow"] { box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(138,106,16,0.08); }
+      [data-theme="light"] .term[data-glow="yellow"]:hover { border-color: rgba(138,106,16,0.3); box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(138,106,16,0.12); }
+      [data-theme="light"] .term[data-glow="red"] { box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(176,48,32,0.06); }
+      [data-theme="light"] .term[data-glow="red"]:hover { border-color: rgba(176,48,32,0.3); box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(176,48,32,0.1); }
+      [data-theme="light"] .term[data-glow="green"] { box-shadow: 0 2px 12px rgba(42,38,24,0.06), 0 0 24px rgba(74,122,42,0.06); }
+      [data-theme="light"] .term[data-glow="green"]:hover { border-color: rgba(74,122,42,0.3); box-shadow: 0 2px 16px rgba(42,38,24,0.06), 0 0 36px rgba(74,122,42,0.1); }
+
+      .term-header {
+        background: var(--term-header-bg); padding: 0.6rem 0.9rem; font-size: 0.75rem;
+        color: var(--muted); font-family: var(--font-mono);
+        border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.65rem;
+      }
+      .term-header::before {
+        content: ""; display: block; width: 46px; min-width: 46px; height: 12px;
+        background:
+          radial-gradient(circle 4.5px at 6px 6px, #ff5f57 4px, transparent 4.5px),
+          radial-gradient(circle 4.5px at 22px 6px, #febc2e 4px, transparent 4.5px),
+          radial-gradient(circle 4.5px at 38px 6px, #28c840 4px, transparent 4.5px);
+        opacity: 0.72; flex-shrink: 0;
+      }
+      .term pre {
+        position: relative; z-index: 0; padding: 1.1rem 1.35rem; overflow-x: auto;
+        -webkit-overflow-scrolling: touch; font-family: var(--font-mono);
+        font-size: 0.78rem; line-height: 1.55; color: var(--text);
+      }
+      .term .t-b { font-weight: 700; }
+      .term .t-dim { opacity: 0.55; }
+      .term .t-red { color: var(--red); }
+      .term .t-green { color: var(--green); }
+      .term .t-yellow { color: var(--yellow); }
+      .term .t-cyan { color: var(--cyan); }
+      .term .t-magenta { color: var(--magenta); }
+      .term .t-white { color: var(--text); }
+      .term .t-muted { color: var(--muted); }
+      .term .border-yellow { color: var(--yellow); }
+      .term .border-red { color: var(--red); }
+      .term .border-gray { color: var(--border); }
+      .term .border-cyan { color: var(--cyan); }
+      .term .border-magenta { color: var(--magenta); }
+      .term .border-white { color: var(--text); }
+
+      /* CLI block variant */
+      .term.cli-block .cmd { color: var(--cyan); }
+      .term.cli-block .comment { color: var(--muted); }
+      .term.cli-block .dollar { color: var(--green); user-select: none; }
+
+      /* ── Tab Bar (shared base) ── */
+      .tab-bar {
+        display: flex; gap: 0.25rem; margin-bottom: 2rem;
+        background: var(--tab-bar-bg); border: 1px solid var(--border);
+        border-radius: 12px; padding: 0.35rem; width: fit-content;
+      }
+      .tab-btn {
+        position: relative; padding: 0.5rem 1.2rem; font-size: 0.8rem; font-weight: 600;
+        color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 7px;
+        cursor: pointer; transition: color 0.2s, background 0.2s, box-shadow 0.2s, border-color 0.2s;
+        white-space: nowrap; letter-spacing: 0.02em; text-transform: uppercase;
+        font-family: var(--font-body);
+      }
+      .tab-btn:hover { color: var(--text); background: rgba(61, 56, 40, 0.25); }
+
+
+      /* ── Glass Pill variant ── */
+      .tab-bar.tab-glass .tab-btn[aria-selected="true"] {
+        color: var(--yellow); background: rgba(212, 168, 64, 0.1);
+        border-color: rgba(212, 168, 64, 0.25); box-shadow: 0 0 16px rgba(212, 168, 64, 0.1);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      }
+      .tab-bar.tab-glass .tab-btn[aria-selected="true"].tab-death {
+        color: var(--red); background: rgba(224, 88, 72, 0.1);
+        border-color: rgba(224, 88, 72, 0.25); box-shadow: 0 0 16px rgba(224, 88, 72, 0.1);
+      }
+      [data-theme="light"] .tab-bar.tab-glass .tab-btn[aria-selected="true"] {
+        color: var(--yellow); background: rgba(138, 106, 16, 0.08);
+        border-color: rgba(138, 106, 16, 0.2); box-shadow: 0 0 8px rgba(138, 106, 16, 0.06);
+      }
+      [data-theme="light"] .tab-bar.tab-glass .tab-btn[aria-selected="true"].tab-death {
+        color: var(--red); background: rgba(176, 48, 32, 0.08);
+        border-color: rgba(176, 48, 32, 0.2); box-shadow: 0 0 8px rgba(176, 48, 32, 0.06);
+      }
+
+      /* Tab defaults use glass pill */
+      .tab-btn[aria-selected="true"] {
+        color: var(--yellow); background: rgba(212, 168, 64, 0.1);
+        border-color: rgba(212, 168, 64, 0.25); box-shadow: 0 0 16px rgba(212, 168, 64, 0.1);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      }
+      .tab-btn[aria-selected="true"].tab-death {
+        color: var(--red); background: rgba(224, 88, 72, 0.1);
+        border-color: rgba(224, 88, 72, 0.25); box-shadow: 0 0 16px rgba(224, 88, 72, 0.1);
+      }
+      .tab-btn.tab-death:not([aria-selected="true"]):hover { color: var(--red); }
+      [data-theme="light"] .tab-btn[aria-selected="true"] {
+        color: var(--yellow); background: rgba(138, 106, 16, 0.08);
+        border-color: rgba(138, 106, 16, 0.2); box-shadow: 0 0 8px rgba(138, 106, 16, 0.06);
+      }
+      [data-theme="light"] .tab-btn[aria-selected="true"].tab-death {
+        color: var(--red); background: rgba(176, 48, 32, 0.08);
+        border-color: rgba(176, 48, 32, 0.2); box-shadow: 0 0 8px rgba(176, 48, 32, 0.06);
+      }
+
+      .tab-panel { display: none; }
+      .tab-panel.active { display: block; animation: panelIn 0.3s ease both; }
+      @keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* ── Install Widget ── */
+      .install-demo { display: flex; flex-direction: column; align-items: center; padding: 3rem 0; gap: 0.6rem; }
+      .install-tabs {
+        display: inline-flex; background: var(--install-bg);
+        backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
+        border: 1px solid var(--install-border); border-radius: 9999px; padding: 0.2rem; gap: 0.15rem;
+      }
+      .install-tab {
+        position: relative; background: transparent; border: none; border-radius: 9999px;
+        padding: 0.4rem 1.1rem; font-family: var(--font-mono); font-size: 0.78rem;
+        letter-spacing: 0.03em; color: var(--muted); cursor: pointer;
+        transition: color 0.2s, background 0.2s;
+      }
+      .install-tab:hover { color: var(--text); }
+      .install-tab.active {
+        background: rgba(107, 181, 74, 0.12); color: var(--green); font-weight: 600;
+        border: 1px solid rgba(107, 181, 74, 0.3); box-shadow: 0 0 12px rgba(107, 181, 74, 0.1);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      }
+      .install-box {
+        display: flex; align-items: center; gap: 0; background: var(--install-bg);
+        backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
+        border: 1px solid var(--install-border); border-radius: 9999px;
+        padding: 0.4rem 0.4rem 0.4rem 1.25rem; max-width: 520px; width: 100%;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+      }
+      .install-cmd {
+        flex: 1; font-family: var(--font-mono); font-size: 0.88rem; color: var(--green);
+        white-space: nowrap; overflow-x: auto; scrollbar-width: none; user-select: all;
+      }
+      .install-cmd::-webkit-scrollbar { display: none; }
+      .copy-btn {
+        background: var(--green); color: var(--bg); border: none; border-radius: 9999px;
+        padding: 0.45rem 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+        transition: background 0.15s, transform 0.1s; white-space: nowrap;
+      }
+      .copy-btn:hover { background: #7cc85a; }
+      .copy-btn:active { transform: scale(0.97); }
+      [data-theme="light"] .install-box { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+      [data-theme="light"] .copy-btn { color: #f2ead6; }
+
+      /* ── Table ── */
+      .classes-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .classes-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; min-width: 480px; }
+      .classes-table th {
+        text-align: left; color: var(--muted); font-weight: 600; font-size: 0.8rem;
+        letter-spacing: 0.06em; text-transform: uppercase; padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border); white-space: nowrap; font-family: var(--font-body);
+      }
+      .classes-table td { padding: 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+      .classes-table tr:last-child td { border-bottom: none; }
+      .classes-table tbody tr:hover td { background: var(--card); }
+      .class-emoji { font-size: 1.4rem; }
+      .difficulty-nightmare { color: var(--red); font-weight: 600; }
+      .difficulty-standard { color: var(--yellow); font-weight: 600; }
+      .difficulty-casual { color: var(--green); font-weight: 600; }
+      .difficulty-tactical { color: var(--magenta); font-weight: 600; }
+
+      /* ── Badges ── */
+      .mode-badge {
+        display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px;
+        margin-bottom: 0.75rem; font-size: 0.75rem; font-weight: 600;
+      }
+      .badge-flow { background: var(--badge-flow-bg); color: var(--green); }
+      .badge-rogue { background: var(--badge-rogue-bg); color: var(--magenta); }
+
+      /* ── Emoji pill ── */
+      .emoji-pill {
+        display: inline-block; padding: 0.15em 0.35em; background: rgba(61, 56, 40, 0.15);
+        border-radius: 8px; font-size: 0.9em; vertical-align: middle; margin-right: 0.6rem;
+      }
+      [data-theme="light"] .emoji-pill { background: rgba(42, 38, 24, 0.06); }
+
+      .section-heading-demo {
+        font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700;
+        letter-spacing: -0.02em; margin-bottom: 1rem;
+      }
+
+      /* ── Label Caps ── */
+      .label-caps {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--muted);
+      }
+
+      /* ── Footer Component ── */
+      .footer-demo {
+        border-top: 1px solid var(--border); text-align: center;
+        padding: 2.5rem 1.5rem; color: var(--muted); font-size: 0.88rem;
+        background: var(--card); border-radius: 14px; margin-top: 1rem;
+      }
+      .footer-demo a { color: var(--muted); }
+      .footer-demo a:hover { color: var(--text); }
+      .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-top: 0.75rem; }
+
+      /* ── Logo ── */
+      .logo-showcase { text-align: center; padding: 3rem 0; }
+      .logo-treatment {
+        font-family: var(--font-heading); font-size: clamp(3rem, 10vw, 5.5rem);
+        font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+        line-height: 1; margin-bottom: 1rem;
+      }
+      .tagline-treatment {
+        font-family: var(--font-heading); font-size: clamp(1rem, 3vw, 1.4rem);
+        font-style: italic; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+      }
+
+      /* ── Utilities ── */
+      .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+      .term-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      @media (max-width: 900px) {
+        .term-grid { grid-template-columns: 1fr; }
+        .compare-row { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 600px) {
+        .term pre { font-size: 0.65rem; padding: 0.75rem; }
+        .tab-bar { width: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab-btn { padding: 0.45rem 0.85rem; font-size: 0.72rem; }
+        .ds-section { padding: 2.5rem 1rem; }
+        .preview-header { padding: 2.5rem 1rem 1.5rem; }
+        .logo-treatment { letter-spacing: 0.06em; }
+        .install-box { padding: 0.35rem 0.35rem 0.35rem 0.75rem; }
+        .install-cmd { font-size: 0.72rem; }
+        .install-tabs { flex-wrap: wrap; border-radius: 12px; justify-content: center; }
+        .install-tab { border-radius: 8px; padding: 0.35rem 0.8rem; font-size: 0.7rem; }
+        .swatch-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.75rem; }
+        .glow-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+        .component-box { padding: 1.25rem; }
+        .section-heading-demo { font-size: 1.3rem; }
+      }
+
+      .component-box {
+        padding: 2rem; border: 1px dashed var(--border); border-radius: 14px;
+        margin-bottom: 1.5rem;
+      }
+      .component-box .ds-label { margin-bottom: 1.25rem; }
+
+      /* Section prose (used on main site) */
+      .section-prose { color: var(--muted); font-size: 1rem; line-height: 1.75; max-width: 680px; }
+      .section-prose strong { color: var(--text); }
+    </style>
+  </head>
+  <body>
+
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+      <span class="theme-icon-sun">☀️</span>
+      <span class="theme-icon-moon">🌙</span>
+    </button>
+
+    <!-- ── Sticky Nav ── -->
+    <nav class="ds-nav">
+      <span class="ds-nav-title">TOKENGOLF DS</span>
+      <a href="#tokens">Tokens</a>
+      <a href="#typography">Type</a>
+      <a href="#logo">Logo</a>
+      <a href="#terminals">Terminals</a>
+      <a href="#tabs">Tabs</a>
+      <a href="#glow-cards">Glow Cards</a>
+      <a href="#tiers">Tiers</a>
+      <a href="#achievements">Achievements</a>
+      <a href="#tables">Tables</a>
+      <a href="#badges">Badges</a>
+      <a href="#install">Install</a>
+      <a href="#footer">Footer</a>
+    </nav>
+
+    <!-- ── Header ── -->
+    <div class="preview-header">
+      <h1>TOKENGOLF Design System</h1>
+      <p>Complete component catalog &amp; design token reference. Toggle dark/light with the button in the top-right.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- DESIGN TOKENS                             -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="tokens">
+      <h2>01 · Design Tokens: Colors</h2>
+
+      <div class="ds-label">Core Palette</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#1a1812"><span>#1a1812</span></div><div class="swatch-meta"><div class="name">Background</div><div class="var">--bg</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#23211a"><span>#23211a</span></div><div class="swatch-meta"><div class="name">Card</div><div class="var">--card</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#3d3828"><span>#3d3828</span></div><div class="swatch-meta"><div class="name">Border</div><div class="var">--border</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#e8dcc4"><span>#e8dcc4</span></div><div class="swatch-meta"><div class="name">Text</div><div class="var">--text</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#9a9180"><span>#9a9180</span></div><div class="swatch-meta"><div class="name">Muted</div><div class="var">--muted</div></div></div>
+      </div>
+
+      <div class="ds-spacer"></div>
+      <div class="ds-label">Accent Colors</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#6bb54a"><span>#6bb54a</span></div><div class="swatch-meta"><div class="name">Green</div><div class="var">--green</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#7cb8d4"><span>#7cb8d4</span></div><div class="swatch-meta"><div class="name">Cyan</div><div class="var">--cyan</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#c8a0e0"><span>#c8a0e0</span></div><div class="swatch-meta"><div class="name">Magenta</div><div class="var">--magenta</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#d4a840"><span>#d4a840</span></div><div class="swatch-meta"><div class="name">Yellow</div><div class="var">--yellow</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#e05848"><span>#e05848</span></div><div class="swatch-meta"><div class="name">Red</div><div class="var">--red</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#d4884a"><span>#d4884a</span></div><div class="swatch-meta"><div class="name">Orange</div><div class="var">--orange</div></div></div>
+      </div>
+
+      <div class="ds-spacer"></div>
+      <div class="ds-label">Loot-Tier Colors (Efficiency)</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#d4a840"><span>#d4a840</span></div><div class="swatch-meta"><div class="name">Legendary</div><div class="var">--loot-legendary</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#c8a0e0"><span>#c8a0e0</span></div><div class="swatch-meta"><div class="name">Epic</div><div class="var">--loot-epic</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#7cb8d4"><span>#7cb8d4</span></div><div class="swatch-meta"><div class="name">Pro</div><div class="var">--loot-pro</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#6bb54a"><span>#6bb54a</span></div><div class="swatch-meta"><div class="name">Solid</div><div class="var">--loot-solid</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#9a9180"><span>#9a9180</span></div><div class="swatch-meta"><div class="name">Close Call</div><div class="var">--loot-close</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#e05848"><span>#e05848</span></div><div class="swatch-meta"><div class="name">Bust</div><div class="var">--loot-bust</div></div></div>
+      </div>
+
+      <div class="ds-spacer"></div>
+      <div class="ds-label">Spend-Tier Colors</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#7cb8d4"><span>#7cb8d4</span></div><div class="swatch-meta"><div class="name">Diamond</div><div class="var">--spend-diamond</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#d4a840"><span>#d4a840</span></div><div class="swatch-meta"><div class="name">Gold</div><div class="var">--spend-gold</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#9a9180"><span>#9a9180</span></div><div class="swatch-meta"><div class="name">Silver</div><div class="var">--spend-silver</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#d4884a"><span>#d4884a</span></div><div class="swatch-meta"><div class="name">Bronze</div><div class="var">--spend-bronze</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#e05848"><span>#e05848</span></div><div class="swatch-meta"><div class="name">Reckless</div><div class="var">--spend-reckless</div></div></div>
+      </div>
+
+      <div class="ds-spacer"></div>
+      <div class="ds-label">Surface Colors</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#161410"><span>#161410</span></div><div class="swatch-meta"><div class="name">Terminal BG</div><div class="var">--term-bg</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1e1c16"><span>#1e1c16</span></div><div class="swatch-meta"><div class="name">Terminal Header</div><div class="var">--term-header-bg</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#141210"><span>#141210</span></div><div class="swatch-meta"><div class="name">Tab Bar BG</div><div class="var">--tab-bar-bg</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1e2e1a"><span>#1e2e1a</span></div><div class="swatch-meta"><div class="name">Badge Flow</div><div class="var">--badge-flow-bg</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#2c1c30"><span>#2c1c30</span></div><div class="swatch-meta"><div class="name">Badge Rogue</div><div class="var">--badge-rogue-bg</div></div></div>
+      </div>
+      <p class="ds-note">All colors shown as dark-mode values. Toggle to light mode to see the adapted palette.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TYPOGRAPHY                                -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="typography">
+      <h2>02 · Typography</h2>
+
+      <div class="ds-label">Type Scale</div>
+      <div style="margin-bottom: 2rem;">
+        <div class="type-scale-row">
+          <div class="type-scale-label">Hero h1<br>clamp(3rem, 10vw, 6rem)</div>
+          <div class="type-scale-sample" style="font-family:var(--font-heading); font-size:3.5rem; font-weight:700; line-height:1; letter-spacing:0.12em; text-transform:uppercase;">TOKENGOLF</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Section h2<br>1.75rem / 700</div>
+          <div class="type-scale-sample" style="font-family:var(--font-heading); font-size:1.75rem; font-weight:700; letter-spacing:-0.02em;"><span class="emoji-pill">🏆</span>Achievements</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Card h3<br>1.15rem / 700</div>
+          <div class="type-scale-sample" style="font-family:var(--font-heading); font-size:1.15rem; font-weight:700;">Every session is automatically tracked</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Achievement h4<br>0.9rem / 700</div>
+          <div class="type-scale-sample" style="font-family:var(--font-heading); font-size:0.9rem; font-weight:700;">Sniper</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Body<br>1rem / 400</div>
+          <div class="type-scale-sample">TOKENGOLF turns Claude Code sessions into a game. Track token efficiency, earn achievements, and level up.</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Section prose<br>1rem / muted</div>
+          <div class="type-scale-sample" style="color:var(--muted); line-height:1.75;">The constraint isn't the point. <em>The discipline the constraint creates</em> is the point.</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Tagline<br>clamp(1rem, 3vw, 1.4rem)</div>
+          <div class="type-scale-sample" style="font-family:var(--font-heading); font-size:1.3rem; font-style:italic; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">Every token matters</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Label caps<br>0.7rem / 700</div>
+          <div class="type-scale-sample label-caps">Class Medals</div>
+        </div>
+        <div class="type-scale-row">
+          <div class="type-scale-label">Monospace<br>0.78rem</div>
+          <div class="type-scale-sample" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--green);">claude plugin install tokengolf</div>
+        </div>
+      </div>
+
+      <div class="ds-label">Font Stacks</div>
+      <div style="font-family:var(--font-mono); font-size:0.78rem; color:var(--muted); line-height:2; overflow-wrap:break-word; word-break:break-word;">
+        <div><span style="color:var(--cyan);">--font-heading:</span> 'Libre Baskerville', Georgia, 'Times New Roman', serif</div>
+        <div><span style="color:var(--cyan);">--font-body:</span> 'Libre Franklin', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif</div>
+        <div><span style="color:var(--cyan);">--font-mono:</span> 'SF Mono', 'Cascadia Mono', 'Fira Code', 'Consolas', monospace</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- LOGO & TAGLINE                            -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="logo">
+      <h2>03 · Logo &amp; Tagline</h2>
+      <div class="logo-showcase">
+        <div class="logo-treatment">TOKENGOLF</div>
+        <div class="tagline-treatment">Every token matters</div>
+      </div>
+      <p class="ds-note" style="text-align:center;">Libre Baskerville 700, <code>text-transform: uppercase</code>, <code>letter-spacing: 0.12em</code>. Tagline: italic, <code>0.08em</code> spacing.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TERMINAL COMPONENTS                       -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="terminals">
+      <h2>04 · Terminal Components</h2>
+
+      <div class="ds-label">Glow Variants (hover to intensify)</div>
+      <div class="term-grid" style="margin-bottom: 2rem;">
+        <div class="term" data-glow="cyan">
+          <div class="term-header">data-glow="cyan"</div>
+          <pre><span class="t-cyan">Cyan glow</span> · used for HUD, CLI commands, default terminals.
+<span class="t-dim">Hover this card to see the glow intensify.</span></pre>
+        </div>
+        <div class="term" data-glow="yellow">
+          <div class="term-header">data-glow="yellow"</div>
+          <pre><span class="t-yellow">Yellow glow</span> · won scorecards, legendary tier.
+<span class="t-dim">The warm gold border matches the accent bar.</span></pre>
+        </div>
+        <div class="term" data-glow="red">
+          <div class="term-header">data-glow="red"</div>
+          <pre><span class="t-red">Red glow</span> · death scorecards, bust runs.
+<span class="t-dim">Ominous. Something went wrong.</span></pre>
+        </div>
+        <div class="term" data-glow="green">
+          <div class="term-header">data-glow="green"</div>
+          <pre><span class="t-green">Green glow</span> · career stats, success state.
+<span class="t-dim">Calm, confident, under par.</span></pre>
+        </div>
+      </div>
+
+      <div class="ds-spacer"></div>
+      <div class="ds-label">HUD Demo (Full)</div>
+      <div class="term" data-glow="cyan" style="max-width:min(720px, 100%); margin-bottom: 2rem;">
+        <div class="term-header">tokengolf demo hud</div>
+        <pre>
+<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.42<span class="t-dim">/5.00</span> <span class="t-yellow">▓░░░░░░░░░░</span> 8% 🌟 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> ⚔️ Sonnet  🪶 <span class="t-green">▓░░░░░░░░░</span> 8%  <span class="t-muted">💬 2p</span>
+
+<span class="border-cyan">██</span> 😤 <span class="t-yellow">GRINDING</span>  🥉 <span class="t-dim">$</span>6.80<span class="t-dim">/20.00</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 34% 💪 <span class="t-cyan">PRO</span>
+<span class="border-cyan">██</span> ⚔️ Sonnet  📚 <span class="t-green">▓▓▓░░░░░░░</span> 34%  <span class="t-muted">💬 8p</span>
+
+<span class="border-red">██</span> 🧟 <span class="t-red">ZOMBIE</span>  💸 <span class="t-dim">$</span>34.24<span class="t-dim">/25.00</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 137% 💥 <span class="t-red">BUST</span>
+<span class="border-red">██</span> ⚔️ Sonnet  🎒 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 45%  <span class="t-muted">💬 10p</span></pre>
+      </div>
+
+      <div class="ds-label">Auto ScoreCard · Won</div>
+      <div class="term" data-glow="yellow" style="max-width:min(720px, 100%); margin-bottom: 2rem;">
+        <div class="term-header">auto scorecard · won (on /exit)</div>
+        <pre>
+<span class="border-yellow">██</span>  <span class="t-b t-yellow">🏆  SESSION COMPLETE</span>
+<span class="border-yellow">██</span>  <span class="t-dim">6 prompts · par $15.00</span>
+<span class="border-yellow">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-yellow">██</span>  <span class="t-green">$0.23</span>  <span class="t-dim">/</span>$15.00  2%  <span class="t-yellow">🌟 LEGENDARY</span>  <span class="t-cyan">⚔️ Sonnet·High</span>  💎 Diamond
+<span class="border-yellow">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-yellow">██</span>  🎯 sniper  🥈 silver  🔥 no_rest  ✅ clean_run  🧰 toolbox  🤫 silent_run
+<span class="border-yellow">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-yellow">██</span>  <span class="t-dim">tokengolf scorecard</span>  ·  <span class="t-dim">tokengolf stats</span></pre>
+      </div>
+
+      <div class="ds-label">Auto ScoreCard · Died</div>
+      <div class="term" data-glow="red" style="max-width:min(720px, 100%); margin-bottom: 2rem;">
+        <div class="term-header">auto scorecard · died (on /exit)</div>
+        <pre>
+<span class="border-red">██</span>  <span class="t-b t-red">💀  PAR BUST</span>
+<span class="border-red">██</span>  <span class="t-dim">22 prompts · par $55.00</span>
+<span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-red">██</span>  <span class="t-red">$3.87</span>  <span class="t-dim">/</span>$55.00  7%  <span class="t-yellow">🌟 LEGENDARY</span>  <span class="t-cyan">⚔️ Sonnet·High</span>  🥈 Silver
+<span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-red">██</span>  <span class="t-magenta">🔮 2 ultrathink invocations</span>
+<span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-red">██</span>  🤦 hubris  💥 blowout  🤡 fumble  🔨 tool_happy  🍷 expensive_taste
+<span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
+<span class="border-red">██</span>  <span class="t-dim">tokengolf scorecard</span>  ·  <span class="t-dim">tokengolf stats</span></pre>
+      </div>
+
+      <div class="ds-label">Career Stats</div>
+      <div class="term" data-glow="green" style="max-width:min(640px, 100%); margin-bottom: 2rem;">
+        <div class="term-header">tokengolf stats</div>
+        <pre>
+<span class="t-b t-yellow">⛳ TOKENGOLF</span>   <span class="t-muted">Career Stats</span>
+
+<span class="border-gray">██</span>
+<span class="border-gray">██</span>  <span class="t-dim">RUNS</span>    <span class="t-dim">WINS</span>    <span class="t-dim">DEATHS</span>    <span class="t-dim">WIN RATE</span>    <span class="t-dim">AVG SPEND</span>
+<span class="border-gray">██</span>  <span class="t-b t-white">24</span>      <span class="t-b t-green">18</span>      <span class="t-b t-red">6</span>         <span class="t-b t-green">75%</span>         <span class="t-b t-cyan">$1.42</span>
+<span class="border-gray">██</span>
+
+<span class="t-yellow">🏆 Personal Best</span>
+<span class="border-yellow">██</span>
+<span class="border-yellow">██</span>  <span class="t-white">1 prompts</span>
+<span class="border-yellow">██</span>  <span class="t-green">$0.00890</span>   🏹   ✨ Mythic
+<span class="border-yellow">██</span></pre>
+      </div>
+
+      <div class="ds-label">CLI Block</div>
+      <div class="term cli-block" data-glow="cyan" style="max-width:min(720px, 100%);">
+        <div class="term-header">terminal</div>
+        <pre>
+<span class="comment"># Install (pick one)</span>
+<span class="dollar">$</span> <span class="cmd">claude plugin install tokengolf</span>  <span class="comment"># recommended</span>
+<span class="dollar">$</span> <span class="cmd">npm install -g tokengolf</span>
+
+<span class="dollar">$</span> <span class="cmd">tokengolf scorecard</span>        <span class="comment"># show last run's results</span>
+<span class="dollar">$</span> <span class="cmd">tokengolf stats</span>            <span class="comment"># career dashboard</span></pre>
+      </div>
+      <p class="ds-note">Terminal anatomy: 14px border-radius, macOS traffic lights in header, scanline overlay via <code>::after</code>, color-coded glow on hover via <code>data-glow</code> attribute. ANSI content uses <code>.t-*</code> color classes and <code>.border-*</code> for <code>██</code> accent blocks.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TAB BAR                                   -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="tabs">
+      <h2>05 · Tab Bar</h2>
+
+      <div class="component-box">
+        <div class="ds-label">Glass Pill · tinted fill + border + blur</div>
+        <div class="tab-bar tab-glass" role="tablist" id="demo-tabs-glass">
+          <button class="tab-btn" role="tab" aria-selected="true" data-panel="gl1">HUD</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-panel="gl2">ScoreCard</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-panel="gl3">Stats</button>
+        </div>
+        <div class="tab-panel active" id="gl1"><p style="color:var(--muted); font-size:0.9rem;">Glass pill: semi-transparent cyan tint, subtle border, backdrop blur.</p></div>
+        <div class="tab-panel" id="gl2"><p style="color:var(--muted); font-size:0.9rem;">ScoreCard panel</p></div>
+        <div class="tab-panel" id="gl3"><p style="color:var(--muted); font-size:0.9rem;">Stats panel</p></div>
+      </div>
+
+      <div class="component-box">
+        <div class="ds-label">Glass Pill · with Death Marks</div>
+        <div class="tab-bar tab-glass" role="tablist" id="demo-tabs-glass-death">
+          <button class="tab-btn" role="tab" aria-selected="true" data-panel="gld1">Class &amp; Efficiency</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-panel="gld2">Combat Style</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-panel="gld3">Endurance</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-panel="gld4">Arcane</button>
+          <button class="tab-btn tab-death" role="tab" aria-selected="false" data-panel="gld5">Death Marks</button>
+        </div>
+        <div class="tab-panel active" id="gld1"><p style="color:var(--muted); font-size:0.9rem;">Click Death Marks to see the red glass pill.</p></div>
+        <div class="tab-panel" id="gld2"><p style="color:var(--muted); font-size:0.9rem;">Combat Style</p></div>
+        <div class="tab-panel" id="gld3"><p style="color:var(--muted); font-size:0.9rem;">Endurance</p></div>
+        <div class="tab-panel" id="gld4"><p style="color:var(--muted); font-size:0.9rem;">Arcane</p></div>
+        <div class="tab-panel" id="gld5"><p style="color:var(--muted); font-size:0.9rem;">Death Marks · red glass pill active state.</p></div>
+      </div>
+
+      <p class="ds-note">Glass pill: warm gold tint, subtle border, backdrop blur. Death variant = red tint.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- GLOW CARDS                                -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="glow-cards">
+      <h2>06 · Glow Cards</h2>
+
+      <div class="ds-label">Default (multi-color rainbow glow)</div>
+      <div class="compare-row" style="margin-bottom: 2.5rem;">
+        <div class="glow-card">
+          <div class="mode-card-demo">
+            <h3>Every session is automatically tracked</h3>
+            <p>No setup, no pre-configuration. TOKENGOLF measures your efficiency against a <strong style="color:var(--text)">par budget</strong> that scales with your session.</p>
+            <ul>
+              <li>Scorecard appears automatically on <code>/exit</code></li>
+              <li>Par scales with prompts</li>
+              <li>Model-calibrated rates</li>
+            </ul>
+          </div>
+        </div>
+        <div class="glow-card">
+          <div class="mode-card-demo">
+            <h3>Effort Levels</h3>
+            <p>Auto-detected from your Claude Code settings. Higher effort = more thinking = more spend.</p>
+            <ul>
+              <li>🪶 <strong style="color:var(--text)">Low</strong> · quick and cheap</li>
+              <li>🔥 <strong style="color:var(--text)">High</strong> · deeper reasoning</li>
+              <li>💥 <strong style="color:var(--text)">Max</strong> · Opus only</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <p class="ds-note" style="margin-bottom: 2rem; margin-top: -1rem;">Technique: <code>::before</code> = blurred glow layer (animated), <code>::after</code> = inner card surface with 1.5px inset. Four radial gradients from corners using <code>--glow-1</code> through <code>--glow-4</code> CSS custom properties. Override these per tier class.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- SPEND TIER CARDS                          -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="tiers">
+      <h2>07 · Spend Tier Cards (tier-contextual glow)</h2>
+      <p class="ds-note" style="margin-bottom: 2rem; margin-top: -1.5rem;">Each card's glow spectrum matches its tier color. Hover to intensify. Inset top accent via <code>box-shadow</code> on <code>::after</code>.</p>
+
+      <div class="glow-grid" style="margin-bottom: 3rem;">
+        <div class="glow-card glow-mythic has-accent" style="--accent-color: var(--loot-epic);"><div class="card-inner"><span class="tier-emoji">✨</span><div class="tier-name" style="color: var(--loot-epic);">Mythic</div><div class="tier-amount">under $0.10</div></div></div>
+        <div class="glow-card glow-diamond has-accent" style="--accent-color: var(--spend-diamond);"><div class="card-inner"><span class="tier-emoji">💎</span><div class="tier-name" style="color: var(--spend-diamond);">Diamond</div><div class="tier-amount">under $0.50</div></div></div>
+        <div class="glow-card glow-gold has-accent" style="--accent-color: var(--spend-gold);"><div class="card-inner"><span class="tier-emoji">🥇</span><div class="tier-name" style="color: var(--spend-gold);">Gold</div><div class="tier-amount">under $1.50</div></div></div>
+        <div class="glow-card glow-silver has-accent" style="--accent-color: var(--spend-silver);"><div class="card-inner"><span class="tier-emoji">🥈</span><div class="tier-name" style="color: var(--spend-silver);">Silver</div><div class="tier-amount">under $4.00</div></div></div>
+        <div class="glow-card glow-bronze has-accent" style="--accent-color: var(--spend-bronze);"><div class="card-inner"><span class="tier-emoji">🥉</span><div class="tier-name" style="color: var(--spend-bronze);">Bronze</div><div class="tier-amount">under $10.00</div></div></div>
+        <div class="glow-card glow-reckless has-accent" style="--accent-color: var(--spend-reckless);"><div class="card-inner"><span class="tier-emoji">💸</span><div class="tier-name" style="color: var(--spend-reckless);">Reckless</div><div class="tier-amount">over $10.00</div></div></div>
+      </div>
+
+      <div class="ds-label">Efficiency Rating Cards (loot-tier glow)</div>
+      <div class="glow-grid">
+        <div class="glow-card glow-legendary has-accent" style="--accent-color: var(--loot-legendary);"><div class="card-inner"><span class="tier-emoji">🌟</span><div class="tier-name" style="color: var(--loot-legendary);">LEGENDARY</div><div class="tier-amount">under 15%</div></div></div>
+        <div class="glow-card glow-epic has-accent" style="--accent-color: var(--loot-epic);"><div class="card-inner"><span class="tier-emoji">🔥</span><div class="tier-name" style="color: var(--loot-epic);">EPIC</div><div class="tier-amount">under 30%</div></div></div>
+        <div class="glow-card glow-pro has-accent" style="--accent-color: var(--loot-pro);"><div class="card-inner"><span class="tier-emoji">💪</span><div class="tier-name" style="color: var(--loot-pro);">PRO</div><div class="tier-amount">under 50%</div></div></div>
+        <div class="glow-card glow-solid has-accent" style="--accent-color: var(--loot-solid);"><div class="card-inner"><span class="tier-emoji">✅</span><div class="tier-name" style="color: var(--loot-solid);">SOLID</div><div class="tier-amount">under 75%</div></div></div>
+        <div class="glow-card glow-close has-accent" style="--accent-color: var(--loot-close);"><div class="card-inner"><span class="tier-emoji">⚠️</span><div class="tier-name" style="color: var(--loot-close);">CLOSE CALL</div><div class="tier-amount">under 100%</div></div></div>
+        <div class="glow-card glow-bust has-accent" style="--accent-color: var(--loot-bust);"><div class="card-inner"><span class="tier-emoji">💥</span><div class="tier-name" style="color: var(--loot-bust);">BUST</div><div class="tier-amount">over 100%</div></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ACHIEVEMENT CARDS                         -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="achievements">
+      <h2>08 · Achievement Cards</h2>
+
+      <div class="ds-label">Contextual Glow by Category</div>
+      <div class="glow-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); margin-bottom: 2rem;">
+        <div class="glow-card glow-legendary"><div class="ach-inner"><div class="ach-emoji">🎯</div><div><h4>Sniper</h4><p>Under 25% of par used</p></div></div></div>
+        <div class="glow-card glow-epic"><div class="ach-inner"><div class="ach-emoji">🧮</div><div><h4>Calculated Risk</h4><p>Extended thinking + EPIC efficiency</p></div></div></div>
+        <div class="glow-card glow-pro"><div class="ach-inner"><div class="ach-emoji">🧰</div><div><h4>Toolbox</h4><p>5+ distinct tools used in one run</p></div></div></div>
+        <div class="glow-card glow-solid"><div class="ach-inner"><div class="ach-emoji">✅</div><div><h4>Clean Run</h4><p>Zero failed tool calls (5+ total)</p></div></div></div>
+      </div>
+
+      <div class="ds-label">Death Mark Cards (red glow)</div>
+      <div class="glow-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
+        <div class="glow-card glow-death"><div class="ach-inner"><div class="ach-emoji">🤦</div><div><h4>Hubris</h4><p>Used extended thinking, busted anyway</p></div></div></div>
+        <div class="glow-card glow-death"><div class="ach-inner"><div class="ach-emoji">💥</div><div><h4>Blowout</h4><p>Spent 2× your par</p></div></div></div>
+        <div class="glow-card glow-death"><div class="ach-inner"><div class="ach-emoji">🤡</div><div><h4>Fumble</h4><p>Died with 5+ failed tool calls</p></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- TABLE                                     -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="tables">
+      <h2>09 · Tables</h2>
+
+      <div class="ds-label">Character Classes Table</div>
+      <div class="classes-table-wrap">
+        <table class="classes-table">
+          <thead><tr><th>Class</th><th>Model</th><th>Difficulty</th><th>Feel</th></tr></thead>
+          <tbody>
+            <tr><td><span class="class-emoji">🏹</span> <strong>Rogue</strong></td><td>Haiku</td><td class="difficulty-nightmare">Nightmare</td><td>Glass cannon. Must prompt precisely.</td></tr>
+            <tr><td><span class="class-emoji">⚔️</span> <strong>Fighter</strong></td><td>Sonnet</td><td class="difficulty-standard">Standard</td><td>Balanced. The default run.</td></tr>
+            <tr><td><span class="class-emoji">⚜️</span> <strong>Paladin</strong></td><td>Opus (plan mode)</td><td class="difficulty-tactical">Tactical</td><td>Strategic planner. Opus plans, Sonnet executes.</td></tr>
+            <tr><td><span class="class-emoji">🧙</span> <strong>Warlock</strong></td><td>Opus</td><td class="difficulty-casual">Casual</td><td>Powerful but expensive.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ds-note">Hover rows for highlight. Color-coded difficulty. No outer border, sits directly on section background.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- BADGES                                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="badges">
+      <h2>10 · Badges &amp; Labels</h2>
+
+      <div class="component-box">
+        <div class="ds-label">Mode Badges</div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+          <span class="mode-badge badge-flow">FLOW MODE</span>
+          <span class="mode-badge badge-rogue">ROGUELIKE</span>
+        </div>
+      </div>
+
+      <div class="component-box">
+        <div class="ds-label">Label Caps</div>
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+          <span class="label-caps">Class Medals</span>
+          <span class="label-caps">Par Efficiency</span>
+          <span class="label-caps">Cost per Prompt</span>
+          <span class="label-caps">Effort-Based</span>
+        </div>
+      </div>
+
+      <div class="component-box">
+        <div class="ds-label">Emoji Pills (Section Headings)</div>
+        <div style="font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;">
+          <span class="emoji-pill">⛳</span>Why "TOKENGOLF"?
+        </div>
+      </div>
+
+      <div class="component-box">
+        <div class="ds-label">Theme Toggle Button</div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 2px 12px rgba(0,0,0,0.2);padding:0;">☀️</button>
+          <span style="color:var(--muted); font-size: 0.82rem;">Fixed top-right, 44px circle, border + card bg, toggles ☀️/🌙</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- INSTALL WIDGET                            -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="install">
+      <h2>11 · Hero Install Widget</h2>
+
+      <div class="install-demo">
+        <div class="install-tabs">
+          <button class="install-tab active" data-cmd="claude plugin install tokengolf" onclick="switchTab(this)">plugin</button>
+          <button class="install-tab" data-cmd="npm install -g tokengolf" onclick="switchTab(this)">npm</button>
+          <button class="install-tab" data-cmd="brew tap josheche/tokengolf && brew install tokengolf" onclick="switchTab(this)">brew</button>
+          <button class="install-tab" data-cmd="curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash" onclick="switchTab(this)">curl</button>
+        </div>
+        <div class="install-box">
+          <code class="install-cmd" id="install-cmd">claude plugin install tokengolf</code>
+          <button class="copy-btn" id="copy-btn" onclick="copyCmd()">Copy</button>
+        </div>
+      </div>
+      <p class="ds-note" style="text-align:center;">Plugin tab is default. Pill-shaped segmented control + command box with copy button. Glass morphism via <code>backdrop-filter: blur(12px)</code>.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- FOOTER                                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="ds-section" id="footer">
+      <h2>12 · Footer</h2>
+
+      <div class="footer-demo">
+        <div>Built for Claude Code power users who want to play the long game.</div>
+        <div class="footer-links">
+          <a href="#">GitHub</a>
+          <a href="#">npm</a>
+          <span>MIT License</span>
+        </div>
+      </div>
+      <p class="ds-note">Centered, muted text, border-top separator. Links inherit muted color, brighten on hover.</p>
+    </div>
+
+    <div style="height:4rem;"></div>
+
+    <script>
+      /* Theme toggle */
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('tg-preview-theme', next);
+      });
+
+      /* Generic tab switcher */
+      document.querySelectorAll('.tab-bar').forEach(bar => {
+        const tabs = bar.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.setAttribute('aria-selected', 'false'));
+            tab.setAttribute('aria-selected', 'true');
+            // Find panels within the same parent container
+            const container = bar.parentElement;
+            container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById(tab.dataset.panel);
+            if (panel) {
+              panel.classList.add('active');
+              panel.style.animation = 'none';
+              panel.offsetHeight;
+              panel.style.animation = '';
+            }
+          });
+        });
+      });
+
+      /* Install tabs */
+      function switchTab(tab) {
+        document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('install-cmd').textContent = tab.dataset.cmd;
+        document.getElementById('copy-btn').textContent = 'Copy';
+      }
+
+      function copyCmd() {
+        const cmd = document.getElementById('install-cmd').textContent;
+        const btn = document.getElementById('copy-btn');
+        navigator.clipboard.writeText(cmd).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+        });
+      }
+
+      /* Smooth scroll for nav */
+      document.querySelectorAll('.ds-nav a').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const target = document.querySelector(a.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    </script>
+  </body>
+</html>
