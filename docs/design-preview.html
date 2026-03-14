@@ -700,7 +700,7 @@
         </div>
         <div class="type-scale-row">
           <div class="type-scale-label">Monospace<br>0.78rem</div>
-          <div class="type-scale-sample" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--green);">claude plugin install tokengolf</div>
+          <div class="type-scale-sample" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--green);">claude plugin marketplace add josheche/tokengolf</div>
         </div>
       </div>
 
@@ -822,7 +822,8 @@
         <div class="term-header">terminal</div>
         <pre>
 <span class="comment"># Install (pick one)</span>
-<span class="dollar">$</span> <span class="cmd">claude plugin install tokengolf</span>  <span class="comment"># recommended</span>
+<span class="dollar">$</span> <span class="cmd">claude plugin marketplace add josheche/tokengolf</span>
+<span class="dollar">$</span> <span class="cmd">claude plugin install tokengolf@tokengolf</span>  <span class="comment"># recommended</span>
 <span class="dollar">$</span> <span class="cmd">npm install -g tokengolf</span>
 
 <span class="dollar">$</span> <span class="cmd">tokengolf scorecard</span>        <span class="comment"># show last run's results</span>
@@ -1021,13 +1022,13 @@
 
       <div class="install-demo">
         <div class="install-tabs">
-          <button class="install-tab active" data-cmd="claude plugin install tokengolf" onclick="switchTab(this)">plugin</button>
+          <button class="install-tab active" data-cmd="claude plugin marketplace add josheche/tokengolf &amp;&amp; claude plugin install tokengolf@tokengolf" onclick="switchTab(this)">plugin</button>
           <button class="install-tab" data-cmd="npm install -g tokengolf" onclick="switchTab(this)">npm</button>
           <button class="install-tab" data-cmd="brew tap josheche/tokengolf && brew install tokengolf" onclick="switchTab(this)">brew</button>
           <button class="install-tab" data-cmd="curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash" onclick="switchTab(this)">curl</button>
         </div>
         <div class="install-box">
-          <code class="install-cmd" id="install-cmd">claude plugin install tokengolf</code>
+          <code class="install-cmd" id="install-cmd">claude plugin marketplace add josheche/tokengolf &amp;&amp; claude plugin install tokengolf@tokengolf</code>
           <button class="copy-btn" id="copy-btn" onclick="copyCmd()">Copy</button>
         </div>
       </div>

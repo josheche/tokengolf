@@ -14,9 +14,10 @@ Every Claude Code session is automatically tracked. No wizard, no upfront budget
 
 ## Installation
 
-**Plugin (recommended)** — one step, auto-updates:
+**Plugin (recommended)** — auto-updates:
 ```
-claude plugin install tokengolf
+claude plugin marketplace add josheche/tokengolf
+claude plugin install tokengolf@tokengolf
 ```
 
 **npm (alternative)** — requires manual hook setup:

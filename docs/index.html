@@ -1150,13 +1150,13 @@
       <p class="hero-tagline">Every token matters</p>
 
       <div class="install-tabs">
-        <button class="install-tab active" data-cmd="claude plugin install tokengolf" onclick="switchInstall(this)">plugin</button>
+        <button class="install-tab active" data-cmd="claude plugin marketplace add josheche/tokengolf &amp;&amp; claude plugin install tokengolf@tokengolf" onclick="switchInstall(this)">plugin</button>
         <button class="install-tab" data-cmd="npm install -g tokengolf" onclick="switchInstall(this)">npm</button>
         <button class="install-tab" data-cmd="brew tap josheche/tokengolf &amp;&amp; brew install tokengolf" onclick="switchInstall(this)">brew</button>
         <button class="install-tab" data-cmd="curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash" onclick="switchInstall(this)">curl</button>
       </div>
       <div class="install-box">
-        <code class="install-cmd" id="install-cmd">claude plugin install tokengolf</code>
+        <code class="install-cmd" id="install-cmd">claude plugin marketplace add josheche/tokengolf &amp;&amp; claude plugin install tokengolf@tokengolf</code>
         <button class="copy-btn" id="copy-btn" onclick="copyInstall()">
           Copy
         </button>
@@ -2027,7 +2027,8 @@
         <div class="term-header">terminal</div>
         <pre>
 <span class="comment"># Install (pick one)</span>
-<span class="dollar">$</span> <span class="cmd">claude plugin install tokengolf</span>  <span class="comment"># recommended — auto-updates</span>
+<span class="dollar">$</span> <span class="cmd">claude plugin marketplace add josheche/tokengolf</span>
+<span class="dollar">$</span> <span class="cmd">claude plugin install tokengolf@tokengolf</span>  <span class="comment"># recommended — auto-updates</span>
 <span class="dollar">$</span> <span class="cmd">npm install -g tokengolf</span>
 <span class="dollar">$</span> <span class="cmd">brew tap josheche/tokengolf && brew install tokengolf</span>
 <span class="dollar">$</span> <span class="cmd">curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash</span>

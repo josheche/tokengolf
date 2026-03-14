@@ -36,10 +36,11 @@ Turn Claude Code token efficiency into a game. Every session is automatically tr
 
 ## Quick Start
 
-**Claude Code Plugin** (recommended — one step, auto-updates)
+**Claude Code Plugin** (recommended — auto-updates)
 
 ```bash
-claude plugin install tokengolf
+claude plugin marketplace add josheche/tokengolf
+claude plugin install tokengolf@tokengolf
 ```
 
 **npm** (alternative — requires hook setup)
