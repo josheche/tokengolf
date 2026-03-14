@@ -11,7 +11,7 @@
       "name": "tokengolf",
       "source": "./plugin",
       "description": "Gamify your Claude Code sessions — track token efficiency, earn achievements, level up your prompting.",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "homepage": "https://josheche.github.io/tokengolf/",
       "license": "MIT"
     }
