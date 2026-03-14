@@ -169,9 +169,10 @@ try {
   const fastStr = run.fastMode ? ' ⚡ Fast' : '';
 
   // On fresh runs (promptCount=0), model is defaulted — don't show par (it'll be wrong model)
-  const budgetLine = (run.promptCount || 0) > 0
-    ? `\nPar: $${par.toFixed(2)} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`
-    : '';
+  const budgetLine =
+    (run.promptCount || 0) > 0
+      ? `\nPar: $${par.toFixed(2)} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`
+      : '';
 
   const context = `## ⛳ TokenGolf Active
 ${urgency}Every token counts.
