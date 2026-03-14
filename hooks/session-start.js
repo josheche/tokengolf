@@ -138,17 +138,17 @@ try {
     );
   } catch {}
   const PAR_RATES = {
-    haiku: 0.55,
-    sonnet: 7.0,
-    opusplan: 22.0,
-    opus: 45.0,
+    haiku: 0.15,
+    sonnet: 1.5,
+    opusplan: 4.5,
+    opus: 8.0,
     ...(_cfg.parRates || {}),
   };
   const PAR_FLOORS = {
-    haiku: 0.5,
-    sonnet: 3.0,
-    opusplan: 8.0,
-    opus: 15.0,
+    haiku: 0.1,
+    sonnet: 0.75,
+    opusplan: 2.0,
+    opus: 3.0,
     ...(_cfg.parFloors || {}),
   };
   const mk = run.model.includes('opusplan')
@@ -162,17 +162,22 @@ try {
     (run.promptCount || 0) > 0 ? PAR_RATES[mk] * Math.sqrt(run.promptCount) : 0,
     PAR_FLOORS[mk]
   );
-  const pct = run.spent / par;
+  const pct = par > 0 ? run.spent / par : 0;
   const urgency = pct >= 0.8 ? '⚠️  PAR CRITICAL — be concise. ' : '';
-  const budgetLine = `Par: $${par.toFixed(2)} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`;
 
   const effortStr = run.effort ? run.effort : 'default';
   const fastStr = run.fastMode ? ' ⚡ Fast' : '';
+
+  // On fresh runs (promptCount=0), model is defaulted — don't show par (it'll be wrong model)
+  const budgetLine =
+    (run.promptCount || 0) > 0
+      ? `\nPar: $${par.toFixed(2)} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`
+      : '';
+
   const context = `## ⛳ TokenGolf Active
 ${urgency}Every token counts.
 
-Model: ${run.model} | Effort: ${effortStr}${fastStr}
-${budgetLine}
+Model: ${run.model} | Effort: ${effortStr}${fastStr}${budgetLine}
 
 Efficiency tips:
 - Use Read with start_line/end_line instead of reading whole files

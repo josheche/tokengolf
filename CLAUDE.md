@@ -60,10 +60,10 @@ The sqrt scaling creates increasing pressure: early prompts have headroom for ex
 
 | Model | Par Rate | Floor | Rationale |
 |-------|----------|-------|-----------|
-| Haiku | $0.55 | $0.50 | ~12× cheaper than Sonnet |
-| Sonnet | $7.00 | $3.00 | Calibrated so typical sessions bust around 20 prompts |
-| Paladin | $22.00 | $8.00 | Opus planning + Sonnet execution blend |
-| Opus | $45.00 | $15.00 | ~6× more expensive than Sonnet |
+| Haiku | $0.15 | $0.10 | Calibrated from API pricing ratios |
+| Sonnet | $1.50 | $0.75 | Heavy sessions (~$0.35/prompt) bust around 20 prompts |
+| Paladin | $4.50 | $2.00 | Opus planning + Sonnet execution blend |
+| Opus | $8.00 | $3.00 | Calibrated from actual session data (~$1.72/prompt heavy) |
 
 Constants: `MODEL_PAR_RATES`, `MODEL_PAR_FLOORS`, `getParBudget()` in `src/lib/score.js`.
 

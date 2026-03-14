@@ -68,17 +68,17 @@ export const MODEL_CLASSES = {
 };
 
 export const MODEL_PAR_RATES = {
-  haiku: 0.55,
-  sonnet: 7.0,
-  opusplan: 22.0,
-  opus: 45.0,
+  haiku: 0.15,
+  sonnet: 1.5,
+  opusplan: 4.5,
+  opus: 8.0,
 };
 
 export const MODEL_PAR_FLOORS = {
-  haiku: 0.5,
-  sonnet: 3.0,
-  opusplan: 8.0,
-  opus: 15.0,
+  haiku: 0.1,
+  sonnet: 0.75,
+  opusplan: 2.0,
+  opus: 3.0,
 };
 
 export function getParBudget(model, promptCount, rateOverrides, floorOverrides) {
