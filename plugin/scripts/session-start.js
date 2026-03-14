@@ -56,6 +56,23 @@ try {
   }
 } catch {}
 
+// Auto-install statusLine if missing or stale
+try {
+  const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+  const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+  const scriptDir = path.dirname(fs.realpathSync(process.argv[1]));
+  const statuslinePath = path.join(scriptDir, 'statusline.sh');
+  if (fs.existsSync(statuslinePath)) {
+    const current = settings.statusLine?.command || '';
+    const needsInstall = !current || current.includes('tokengolf');
+    const needsUpdate = needsInstall && current !== statuslinePath;
+    if (needsUpdate) {
+      settings.statusLine = { type: 'command', command: statuslinePath, padding: 1 };
+      fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+    }
+  }
+} catch {}
+
 function detectEffort() {
   const fromEnv = process.env.CLAUDE_CODE_EFFORT_LEVEL;
   if (fromEnv) return fromEnv;
