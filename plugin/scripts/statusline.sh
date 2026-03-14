@@ -77,8 +77,8 @@ EMOTIONS = {
 }
 
 # Par rates (prompt-scaled budget, with user overrides from config.json)
-PAR_RATES = {'Haiku': 0.55, 'Sonnet': 7.00, 'Opus': 45.00, 'Paladin': 22.00, '?': 7.00}
-PAR_FLOORS = {'Haiku': 0.50, 'Sonnet': 3.00, 'Opus': 15.00, 'Paladin': 8.00, '?': 3.00}
+PAR_RATES = {'Haiku': 0.15, 'Sonnet': 1.50, 'Opus': 8.00, 'Paladin': 4.50, '?': 1.50}
+PAR_FLOORS = {'Haiku': 0.10, 'Sonnet': 0.75, 'Opus': 3.00, 'Paladin': 2.00, '?': 0.75}
 _key_map = {'haiku': 'Haiku', 'sonnet': 'Sonnet', 'opus': 'Opus', 'opusplan': 'Paladin'}
 for _k, _v in _config.get('parRates', {}).items():
     if _k in _key_map: PAR_RATES[_key_map[_k]] = _v
@@ -170,8 +170,7 @@ else:
     line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}{rating_str}"
 
 # Line 2: model + context bar (always shown)
-prompt_str = f"  💬 {prompt_count}p" if prompt_count > 0 else ''
-line2 = f" {accent}██{RESET} {model_label}  {ctx_icon} {ctx_bar} {ctx_pct_val:.0f}%{prompt_str}"
+line2 = f" {accent}██{RESET} {model_label}  {ctx_icon} {ctx_bar} {ctx_pct_val:.0f}%"
 
 # Output (leading blank line separates from any existing statusline above)
 print()

@@ -9,8 +9,8 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
 // Par rates (prompt-scaled budget) — same as MODEL_PAR_RATES in score.js
-const PAR_RATES = { Haiku: 0.55, Sonnet: 7.0, Opus: 45.0, Paladin: 22.0, '?': 7.0 };
-const PAR_FLOORS = { Haiku: 0.5, Sonnet: 3.0, Opus: 15.0, Paladin: 8.0, '?': 3.0 };
+const PAR_RATES = { Haiku: 0.15, Sonnet: 1.5, Opus: 8.0, Paladin: 4.5, '?': 1.5 };
+const PAR_FLOORS = { Haiku: 0.1, Sonnet: 0.75, Opus: 3.0, Paladin: 2.0, '?': 0.75 };
 
 function getPar(modelName, promptCount) {
   return Math.max(

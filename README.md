@@ -98,12 +98,12 @@ Par grows with your session, but **sublinearly** — early prompts give you room
 
 | Model      | Par Rate | Floor  |
 | ---------- | -------- | ------ |
-| 🏹 Haiku   | $0.55    | $0.50  |
-| ⚔️ Sonnet  | $7.00    | $3.00  |
-| ⚜️ Paladin | $22.00   | $8.00  |
-| 🧙 Opus    | $45.00   | $15.00 |
+| 🏹 Haiku   | $0.15    | $0.10  |
+| ⚔️ Sonnet  | $1.50    | $0.75  |
+| ⚜️ Paladin | $4.50    | $2.00  |
+| 🧙 Opus    | $8.00    | $3.00  |
 
-The floor prevents 1-prompt sessions from being instant BUST. The sqrt scaling means a 4-prompt Sonnet session has par $14.00, while a 16-prompt session has par $28.00 (not $112). Long sessions must be increasingly efficient to stay under par.
+The floor prevents 1-prompt sessions from being instant BUST. The sqrt scaling means a 4-prompt Sonnet session has par $3.00, while a 16-prompt session has par $6.00 (not $24). Long sessions must be increasingly efficient to stay under par.
 
 Rates and floors are configurable per model:
 
@@ -292,10 +292,10 @@ After install, a status line appears in every Claude Code session showing cost, 
 
 ```
 ██ 😎 VIBING  💎 $0.42/9.90 ▓░░░░░░░░░░ 4% 🌟 LEGENDARY
-██ ⚔️ Sonnet  🪶 ▓░░░░░░░░░ 8%  💬 2p
+██ ⚔️ Sonnet  🪶 ▓░░░░░░░░░ 8%
 
 ██ 😤 GRINDING  🥉 $6.80/19.80 ▓▓▓▓░░░░░░░ 34% 💪 PRO
-██ ⚔️ Sonnet  📚 ▓▓▓░░░░░░░ 34%  💬 8p
+██ ⚔️ Sonnet  📚 ▓▓▓░░░░░░░ 34%
 ```
 
 Accent `██` color matches your efficiency tier — yellow for LEGENDARY, magenta for EPIC, cyan for PRO, green for SOLID, white for CLOSE CALL, red for BUST. Line 2 shows model class, context weight (**🪶** · **📚** · **🎒** · **🧱** · **🪨** · **🗿** — feather to stone), and prompt count. **💤** replaces the emotion icon when fainted.
@@ -310,7 +310,7 @@ When you `/exit`, the scorecard appears automatically — cost vs par, model bre
 ██  🏆  SESSION COMPLETE
 ██  ──────────────────────────────────────────────────
 ██  SPENT      PAR       USED    MODEL        TIER
-██  $0.21    $7.00      3%     ⚔️ Sonnet     🥇 Gold
+██  $0.21    $1.50      14%    ⚔️ Sonnet     🥇 Gold
 ██
 ██  🌟 LEGENDARY
 ██  ──────────────────────────────────────────────────
