@@ -140,15 +140,16 @@ export const SCORECARD_FIXTURES = [
     },
   },
   {
+    // par = 7.0 × √10 ≈ 22.14, spent 48.0 → 217% BUST, blowout (≥200%)
     title: 'Died · Sonnet · death marks',
     run: {
       id: 'run_demo_5',
       model: 'claude-sonnet-4-6',
-      spent: 3.87,
+      spent: 48.0,
       status: 'died',
       effort: 'high',
       fastMode: false,
-      promptCount: 22,
+      promptCount: 10,
       totalToolCalls: 48,
       toolCalls: { Read: 18, Edit: 12, Bash: 10, Grep: 5, Write: 3 },
       failedToolCalls: 7,
@@ -162,7 +163,7 @@ export const SCORECARD_FIXTURES = [
         { trigger: 'auto', context_window: { used_percentage: 94 } },
         { trigger: 'auto', context_window: { used_percentage: 91 } },
       ],
-      modelBreakdown: { 'claude-sonnet-4-6': 3.52, 'claude-haiku-4-5-20251001': 0.35 },
+      modelBreakdown: { 'claude-sonnet-4-6': 43.68, 'claude-haiku-4-5-20251001': 4.32 },
       achievements: [
         { key: 'hubris', label: 'Hubris — Ultrathink, busted anyway', emoji: '🤦' },
         { key: 'blowout', label: 'Blowout — Spent 2× par', emoji: '💥' },
@@ -175,29 +176,30 @@ export const SCORECARD_FIXTURES = [
     },
   },
   {
+    // par = 0.55 × √2 ≈ 0.778, spent 0.82 → 105% BUST, so_close (100-110%), silent_death (≤2 prompts)
     title: 'Died · Haiku · SO CLOSE',
     run: {
       id: 'run_demo_6',
       model: 'claude-haiku-4-5-20251001',
-      spent: 0.43,
+      spent: 0.82,
       status: 'died',
       effort: null,
       fastMode: false,
-      promptCount: 9,
-      totalToolCalls: 15,
-      toolCalls: { Read: 7, Edit: 4, Bash: 3, Grep: 1 },
+      promptCount: 2,
+      totalToolCalls: 8,
+      toolCalls: { Read: 4, Edit: 2, Bash: 1, Grep: 1 },
       failedToolCalls: 1,
       subagentSpawns: 0,
-      turnCount: 12,
+      turnCount: 6,
       thinkingInvocations: 0,
       thinkingTokens: 0,
       sessionCount: 1,
       fainted: false,
       compactionEvents: [],
-      modelBreakdown: { 'claude-haiku-4-5-20251001': 0.43 },
+      modelBreakdown: { 'claude-haiku-4-5-20251001': 0.82 },
       achievements: [
         { key: 'so_close', label: 'So Close — Died within 10% of par', emoji: '😭' },
-        { key: 'silent_death', label: 'Silent Death — Died with 2 prompts', emoji: '🪦' },
+        { key: 'silent_death', label: 'Silent Death — Died with ≤2 prompts', emoji: '🪦' },
       ],
       startedAt: AGO(18),
       endedAt: NOW,
@@ -261,11 +263,11 @@ export const STATS_FIXTURES = [
       recentRuns: [
         { status: 'won', spent: 0.23, model: 'claude-sonnet-4-6', promptCount: 6 },
         { status: 'won', spent: 3.41, model: 'claude-opus-4-6', promptCount: 8 },
-        { status: 'died', spent: 3.87, model: 'claude-sonnet-4-6', promptCount: 22 },
+        { status: 'died', spent: 48.0, model: 'claude-sonnet-4-6', promptCount: 10 },
         { status: 'won', spent: 0.08, model: 'claude-haiku-4-5-20251001', promptCount: 4 },
         { status: 'won', spent: 0.0034, model: 'claude-sonnet-4-6', promptCount: 2 },
         { status: 'won', spent: 2.18, model: 'opusplan', promptCount: 10 },
-        { status: 'died', spent: 12.4, model: 'claude-opus-4-6', promptCount: 5 },
+        { status: 'died', spent: 85.0, model: 'claude-opus-4-6', promptCount: 3 },
         { status: 'won', spent: 0.41, model: 'claude-sonnet-4-6', promptCount: 3 },
       ],
       achievements: [
@@ -299,7 +301,7 @@ export const STATS_FIXTURES = [
       },
       recentRuns: [
         { status: 'won', spent: 0.34, model: 'claude-sonnet-4-6', promptCount: 3 },
-        { status: 'died', spent: 1.92, model: 'claude-sonnet-4-6', promptCount: 8 },
+        { status: 'died', spent: 24.0, model: 'claude-sonnet-4-6', promptCount: 8 },
         { status: 'won', spent: 0.41, model: 'claude-sonnet-4-6', promptCount: 4 },
       ],
       achievements: [

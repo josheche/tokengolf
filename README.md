@@ -37,17 +37,20 @@ Turn Claude Code token efficiency into a game. Every session is automatically tr
 ## Quick Start
 
 **Claude Code Plugin** (recommended — one step, auto-updates)
+
 ```bash
 claude plugin install tokengolf
 ```
 
 **npm** (alternative — requires hook setup)
+
 ```bash
 npm install -g tokengolf
 tokengolf install          # patches ~/.claude/settings.json
 ```
 
 **Homebrew**
+
 ```bash
 brew tap josheche/tokengolf
 brew install tokengolf
@@ -55,6 +58,7 @@ tokengolf install
 ```
 
 **curl**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/josheche/tokengolf/main/install.sh | bash
 ```
@@ -92,12 +96,12 @@ efficiency = actual_cost / par
 
 Par grows with your session, but **sublinearly** — early prompts give you room to explore, while pressure builds as the session goes on. Efficient prompts beat par; wasteful ones fall behind. Spend more than par and the run **busts** — logged as a death with red accents and death achievements.
 
-| Model | Par Rate | Floor |
-|-------|----------|-------|
-| 🏹 Haiku | $0.55 | $0.50 |
-| ⚔️ Sonnet | $7.00 | $3.00 |
-| ⚜️ Paladin | $22.00 | $8.00 |
-| 🧙 Opus | $45.00 | $15.00 |
+| Model      | Par Rate | Floor  |
+| ---------- | -------- | ------ |
+| 🏹 Haiku   | $0.55    | $0.50  |
+| ⚔️ Sonnet  | $7.00    | $3.00  |
+| ⚜️ Paladin | $22.00   | $8.00  |
+| 🧙 Opus    | $45.00   | $15.00 |
 
 The floor prevents 1-prompt sessions from being instant BUST. The sqrt scaling means a 4-prompt Sonnet session has par $14.00, while a 16-prompt session has par $28.00 (not $112). Long sessions must be increasingly efficient to stay under par.
 
@@ -115,12 +119,13 @@ tokengolf config floor reset      # restore defaults
 
 ## Character Classes
 
-| Class | Model | Difficulty | Feel |
-|-------|-------|------------|------|
-| 🏹 **Rogue** | Haiku | Nightmare | Glass cannon. Prompt precisely or die. |
-| ⚔️ **Fighter** | Sonnet | Standard | Balanced. The default run. |
-| ⚜️ **Paladin** | Opus (plan mode) | Tactical | Strategic planner. Opus plans, Sonnet executes. |
-| 🧙 **Warlock** | Opus | Casual | Powerful but expensive. |
+| Class          | Model            | Difficulty | Feel                                            |
+| -------------- | ---------------- | ---------- | ----------------------------------------------- |
+| 🏹 **Rogue**   | Haiku            | Nightmare  | Glass cannon. Prompt precisely or die.          |
+| ⚔️ **Fighter** | Sonnet           | Standard   | Balanced. The default run.                      |
+| ⚜️ **Paladin** | Opus (plan mode) | Tactical   | Strategic planner. Opus plans, Sonnet executes. |
+| 🧙 **Warlock** | Opus             | Casual     | Powerful but expensive.                         |
+
 Effort levels: Low / **Medium** / High / Max (Opus-only). Fast mode (`/fast` in Claude Code) is auto-detected and unlocks unique achievements (Lightning Run, Daredevil).
 
 ---
@@ -130,14 +135,14 @@ Effort levels: Low / **Medium** / High / Max (Opus-only). Fast mode (`/fast` in 
 **Efficiency** (% of par used):
 
 | 🌟 LEGENDARY | 🔥 EPIC | 💪 PRO | ✅ SOLID | ⚠️ CLOSE CALL | 💥 BUST |
-|---|---|---|---|---|---|
-| < 15% | < 30% | < 50% | < 75% | < 100% | > 100% |
+| ------------ | ------- | ------ | -------- | ------------- | ------- |
+| < 15%        | < 30%   | < 50%  | < 75%    | < 100%        | > 100%  |
 
 **Spend tier** (model-calibrated — shown here for Sonnet):
 
 | ✨ Mythic | 💎 Diamond | 🥇 Gold | 🥈 Silver | 🥉 Bronze | 💸 Reckless |
-|---|---|---|---|---|---|
-| < $0.10 | < $0.50 | < $1.50 | < $4.00 | < $10.00 | > $10.00 |
+| --------- | ---------- | ------- | --------- | --------- | ----------- |
+| < $0.10   | < $0.50    | < $1.50 | < $4.00   | < $10.00  | > $10.00    |
 
 Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Same relative difficulty, different absolute cost.
 
@@ -147,23 +152,24 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 
 60+ achievements tracking how you prompt, what tools you use, and how efficiently you spend. Here are some highlights:
 
-| | Achievement | How |
-|---|---|---|
-| 🥊 | **One Shot** | Completed in a single prompt |
-| 🎯 | **Sniper** | Under 25% of par used |
-| 💎 | **Diamond** | Haiku under $0.10 total |
-| 🔪 | **Surgeon** | 1–3 Edit calls, under par |
-| 🤫 | **Silent Run** | No extended thinking, SOLID or better |
-| 👑 | **Archmagus** | Opus at max effort, completed |
-| 🥷 | **Ghost Run** | Manual compact at ≤30% context |
-| 🐺 | **Lone Wolf** | No subagents spawned |
-| 🤦 | **Hubris** | Used ultrathink, busted anyway *(death mark)* |
-| 💥 | **Blowout** | Spent 2× your par *(death mark)* |
+|     | Achievement    | How                                           |
+| --- | -------------- | --------------------------------------------- |
+| 🥊  | **One Shot**   | Completed in a single prompt                  |
+| 🎯  | **Sniper**     | Under 25% of par used                         |
+| 💎  | **Diamond**    | Haiku under $0.10 total                       |
+| 🔪  | **Surgeon**    | 1–3 Edit calls, under par                     |
+| 🤫  | **Silent Run** | No extended thinking, SOLID or better         |
+| 👑  | **Archmagus**  | Opus at max effort, completed                 |
+| 🥷  | **Ghost Run**  | Manual compact at ≤30% context                |
+| 🐺  | **Lone Wolf**  | No subagents spawned                          |
+| 🤦  | **Hubris**     | Used ultrathink, busted anyway _(death mark)_ |
+| 💥  | **Blowout**    | Spent 2× your par _(death mark)_              |
 
 <details>
 <summary><strong>Full achievement list (60+)</strong></summary>
 
 **Class**
+
 - 💎 Diamond — Haiku under $0.10 total spend
 - 🥇 Gold — Completed with Haiku
 - 🥈 Silver — Completed with Sonnet
@@ -172,6 +178,7 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 - ♟️ Grand Strategist — EPIC efficiency as Paladin
 
 **Efficiency**
+
 - 🎯 Sniper — Under 25% of par used
 - ⚡ Efficient — Under 50% of par used
 - 🪙 Penny Pincher — Total spend under $0.10
@@ -179,6 +186,7 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 - 🍷 Expensive Taste — Over $0.50 per prompt (≥3 prompts)
 
 **Prompting skill**
+
 - 🥊 One Shot — Completed in a single prompt
 - 💬 Conversationalist — 20+ prompts in one run
 - 🤐 Terse — ≤3 prompts, ≥10 tool calls
@@ -186,6 +194,7 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 - 🏗️ High Leverage — 5+ tool calls per prompt (≥2 prompts)
 
 **Tool mastery**
+
 - 👁️ Read Only — Won with no Edit or Write calls
 - ✏️ Editor — 10+ Edit calls
 - 🐚 Bash Warrior — 10+ Bash calls comprising ≥50% of tools
@@ -194,27 +203,32 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 - 🧰 Toolbox — 5+ distinct tools used
 
 **Effort**
+
 - 🏎️ Speedrunner — Low effort, completed under par
 - 🏋️ Tryhard — High/max effort, EPIC efficiency
 - 👑 Archmagus — Opus at max effort, completed
 
 **Fast mode**
+
 - ⛈️ Lightning Run — Opus fast mode, completed under par
 - 🎰 Daredevil — Opus fast mode, EPIC efficiency
 
 **Time**
+
 - ⏱️ Speedrun — Completed in under 5 minutes
 - 🏃 Marathon — Session over 60 minutes
 - 🫠 Endurance — Session over 3 hours
 
 **Ultrathink**
+
 - 🔮 Spell Cast — Used extended thinking during the run
 - 🧮 Calculated Risk — Ultrathink + EPIC efficiency
 - 🌀 Deep Thinker — 3+ ultrathink invocations, completed under par
 - 🤫 Silent Run — No extended thinking, SOLID or better
-- 🤦 Hubris — Used ultrathink, busted anyway *(death mark)*
+- 🤦 Hubris — Used ultrathink, busted anyway _(death mark)_
 
 **Multi-model**
+
 - 🏹 Frugal — Haiku handled ≥50% of session cost
 - 🎲 Rogue Run — Haiku handled ≥75% of session cost
 - 🔷 Purist — Single model family throughout
@@ -224,35 +238,42 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 - ⚠️ Class Defection — Declared one class but cost skewed to another
 
 **Paladin planning ratio**
+
 - 🏛️ Architect — Opus handled >60% of cost (heavy planner)
 - 💨 Blitz — Opus handled <25% of cost (light plan, fast execution)
 - ⚖️ Equilibrium — Opus/Sonnet balanced at 40–60%
 
 **Rest & recovery**
+
 - 🔥 No Rest for the Wicked — Completed in one session
 - 🏕️ Made Camp — Completed across multiple sessions
 - 🧟 Came Back — Fainted (hit usage limits) and finished anyway
 
 **Context management (gear)**
+
 - 📦 Overencumbered — Context auto-compacted during run
 - 🎒 Traveling Light — Manual compact at ≤50% context
 - 🪶 Ultralight — Manual compact at ≤40% context
 - 🥷 Ghost Run — Manual compact at ≤30% context
 
 **Tool reliability**
+
 - ✅ Clean Run — Zero failed tool calls (≥5 total)
 - 🐂 Stubborn — 10+ failed tool calls, still won
 
 **Subagents**
+
 - 🐺 Lone Wolf — Completed with no subagents spawned
 - 📡 Summoner — 5+ subagents spawned
 - 🪖 Army of One — 10+ subagents, under 50% par used
 
 **Turn discipline**
+
 - 🤖 Agentic — 3+ Claude turns per user prompt
 - 🐕 Obedient — Exactly one turn per prompt (≥3 prompts)
 
-**Death marks** *(fire on bust, not win)*
+**Death marks** _(fire on bust, not win)_
+
 - 💥 Blowout — Spent 2× your par
 - 😭 So Close — Died within 10% of par
 - 🔨 Tool Happy — Died with 30+ tool calls
@@ -311,11 +332,11 @@ When you `/exit`, the scorecard appears automatically — cost vs par, model bre
 ```
 ██  💀  PAR BUST
 ██  ──────────────────────────────────────────────────
-██  $3.87  /$1.50 par  258%  ⚔️ Sonnet  💸 Reckless
+██  $48.00  /$22.14 par  217%  ⚔️ Sonnet·High  💥 BUST
 ██  ──────────────────────────────────────────────────
 ██  🤦 Hubris   💥 Blowout   🤡 Fumble   🔨 Tool Happy
 ██  ──────────────────────────────────────────────────
-██  Cause of death: Par exceeded by $2.37
+██  Cause of death: Par exceeded by $25.86
 ██  Tip: Use Read with line ranges instead of full file reads.
 ```
 
@@ -326,8 +347,8 @@ When you `/exit`, the scorecard appears automatically — cost vs par, model bre
 
 Write `ultrathink` anywhere in your prompt to trigger extended thinking mode. It's not a slash command — just say it in natural language:
 
-> *"ultrathink: is this the right architecture before I write anything?"*
-> *"can you ultrathink through the tradeoffs here?"*
+> _"ultrathink: is this the right architecture before I write anything?"_
+> _"can you ultrathink through the tradeoffs here?"_
 
 Extended thinking tokens are billed at full output rate. A single ultrathink on Sonnet can cost $0.50–2.00 depending on problem depth. TokenGolf detects thinking blocks from your session transcripts and tracks invocations and estimated thinking tokens — both show on your scorecard.
 
@@ -355,7 +376,7 @@ These patterns compound over time. **Better prompting habits → lower daily spe
 <details>
 <summary><strong>Why "TokenGolf"?</strong></summary>
 
-[Code golf](https://en.wikipedia.org/wiki/Code_golf) is the engineering practice of solving a problem in as few characters (or lines, or bytes) as possible. The constraint isn't the point — the *discipline the constraint creates* is the point. Writing the shortest possible solution forces you to understand the problem deeply and use your tools precisely.
+[Code golf](https://en.wikipedia.org/wiki/Code_golf) is the engineering practice of solving a problem in as few characters (or lines, or bytes) as possible. The constraint isn't the point — the _discipline the constraint creates_ is the point. Writing the shortest possible solution forces you to understand the problem deeply and use your tools precisely.
 
 Token golf is the same idea applied to AI sessions. Your budget is par. Every unnecessary prompt, every redundant context dump, every "can you also..." tacked onto a request is a stroke over par. The game doesn't literally resemble golf — it borrows the concept: **optimize under constraint, measure your score, improve your game.**
 
@@ -366,17 +387,17 @@ Token golf is the same idea applied to AI sessions. Your budget is par. Every un
 
 Installed automatically via plugin, or manually via `tokengolf install` (npm):
 
-| Hook | When | What it does |
-|------|------|-------------|
-| `SessionStart` | Session opens | Auto-creates run, injects par budget into Claude's context. |
-| `PostToolUse` | After every tool | Tracks tool usage by type. Fires par warning at 80%. |
-| `PostToolUseFailure` | After a tool error | Increments `failedToolCalls` — powers Clean Run, Stubborn, Fumble. |
-| `UserPromptSubmit` | Each prompt | Counts prompts. Injects halfway nudge at 50% of par. |
-| `PreCompact` | Before compaction | Records manual vs auto compact + context % — powers gear achievements. |
-| `SessionEnd` | Session closes | Scans transcripts for cost + ultrathink, saves run, displays scorecard. |
-| `SubagentStart` | Subagent spawned | Increments `subagentSpawns` — powers Lone Wolf, Summoner, Army of One. |
-| `Stop` | Claude finishes a turn | Increments `turnCount` — powers Agentic, Obedient. |
-| `StatusLine` | Continuously | Live HUD with cost, tier, efficiency, context %, model class. |
+| Hook                 | When                   | What it does                                                            |
+| -------------------- | ---------------------- | ----------------------------------------------------------------------- |
+| `SessionStart`       | Session opens          | Auto-creates run, injects par budget into Claude's context.             |
+| `PostToolUse`        | After every tool       | Tracks tool usage by type. Fires par warning at 80%.                    |
+| `PostToolUseFailure` | After a tool error     | Increments `failedToolCalls` — powers Clean Run, Stubborn, Fumble.      |
+| `UserPromptSubmit`   | Each prompt            | Counts prompts. Injects halfway nudge at 50% of par.                    |
+| `PreCompact`         | Before compaction      | Records manual vs auto compact + context % — powers gear achievements.  |
+| `SessionEnd`         | Session closes         | Scans transcripts for cost + ultrathink, saves run, displays scorecard. |
+| `SubagentStart`      | Subagent spawned       | Increments `subagentSpawns` — powers Lone Wolf, Summoner, Army of One.  |
+| `Stop`               | Claude finishes a turn | Increments `turnCount` — powers Agentic, Obedient.                      |
+| `StatusLine`         | Continuously           | Live HUD with cost, tier, efficiency, context %, model class.           |
 
 </details>
 
@@ -384,6 +405,7 @@ Installed automatically via plugin, or manually via `tokengolf install` (npm):
 <summary><strong>State</strong></summary>
 
 All data lives in `~/.tokengolf/`:
+
 - `current-run.json` — active run
 - `runs.json` — completed run history
 

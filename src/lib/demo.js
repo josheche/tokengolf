@@ -180,18 +180,18 @@ const SCENARIOS = [
     title: 'Opus · 4 prompts · EPIC',
     hud: {
       model: 'claude-opus-4-6',
-      cost: 8.2,
+      cost: 18.0,
       prompts: 4,
       ctxPct: 52,
       emotionKey: 'CRUISING',
     },
   },
   {
-    title: 'Haiku · 12 prompts · CLOSE CALL',
+    title: 'Haiku · 20 prompts · CLOSE CALL',
     hud: {
       model: 'claude-haiku-4-5-20251001',
       cost: 2.1,
-      prompts: 12,
+      prompts: 20,
       ctxPct: 78,
       emotionKey: 'SWEATING',
     },
@@ -210,10 +210,10 @@ const SCENARIOS = [
     title: 'Opus · 3 prompts · overencumbered context',
     hud: {
       model: 'claude-opus-4-6',
-      cost: 12.0,
+      cost: 28.0,
       prompts: 3,
       ctxPct: 91,
-      emotionKey: 'OVERWHELMED',
+      emotionKey: 'FOCUSED',
     },
   },
   {
