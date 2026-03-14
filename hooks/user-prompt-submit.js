@@ -12,9 +12,27 @@ try {
   const updated = { ...run, promptCount: (run.promptCount || 0) + 1 };
   fs.writeFileSync(STATE_FILE, JSON.stringify(updated, null, 2));
 
-  // Par-based nudge at 50% — once (between 50-60%).
-  const PAR_RATES = { haiku: 0.2, sonnet: 2.5, opusplan: 6.0, opus: 12.5 };
-  const PAR_FLOORS = { haiku: 0.5, sonnet: 3.0, opusplan: 8.0, opus: 15.0 };
+  // Par-based nudge at 50% — once (between 50-60%, with user overrides from config.json)
+  let _cfg = {};
+  try {
+    _cfg = JSON.parse(
+      fs.readFileSync(path.join(os.homedir(), '.tokengolf', 'config.json'), 'utf8')
+    );
+  } catch {}
+  const PAR_RATES = {
+    haiku: 0.2,
+    sonnet: 2.5,
+    opusplan: 6.0,
+    opus: 12.5,
+    ...(_cfg.parRates || {}),
+  };
+  const PAR_FLOORS = {
+    haiku: 0.5,
+    sonnet: 3.0,
+    opusplan: 8.0,
+    opus: 15.0,
+    ...(_cfg.parFloors || {}),
+  };
   const mk = (updated.model || '').includes('opusplan')
     ? 'opusplan'
     : (updated.model || '').includes('haiku')

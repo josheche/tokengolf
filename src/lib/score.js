@@ -81,13 +81,15 @@ export const MODEL_PAR_FLOORS = {
   opus: 15.0,
 };
 
-export function getParBudget(model, promptCount) {
+export function getParBudget(model, promptCount, rateOverrides, floorOverrides) {
   const m = (model || '').toLowerCase();
   let key = 'sonnet';
   if (m.includes('opusplan')) key = 'opusplan';
   else if (m.includes('haiku')) key = 'haiku';
   else if (m.includes('opus')) key = 'opus';
-  return Math.max((promptCount || 0) * MODEL_PAR_RATES[key], MODEL_PAR_FLOORS[key]);
+  const rates = rateOverrides ? { ...MODEL_PAR_RATES, ...rateOverrides } : MODEL_PAR_RATES;
+  const floors = floorOverrides ? { ...MODEL_PAR_FLOORS, ...floorOverrides } : MODEL_PAR_FLOORS;
+  return Math.max((promptCount || 0) * rates[key], floors[key]);
 }
 
 export function getTier(spent, model) {

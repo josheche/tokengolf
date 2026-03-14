@@ -76,9 +76,14 @@ EMOTIONS = {
     'VIBING':       ('😎', '(◕‿◕)',        G),
 }
 
-# Par rates (prompt-scaled budget)
+# Par rates (prompt-scaled budget, with user overrides from config.json)
 PAR_RATES = {'Haiku': 0.20, 'Sonnet': 2.50, 'Opus': 12.50, 'Paladin': 6.00, '?': 2.50}
 PAR_FLOORS = {'Haiku': 0.50, 'Sonnet': 3.00, 'Opus': 15.00, 'Paladin': 8.00, '?': 3.00}
+_key_map = {'haiku': 'Haiku', 'sonnet': 'Sonnet', 'opus': 'Opus', 'opusplan': 'Paladin'}
+for _k, _v in _config.get('parRates', {}).items():
+    if _k in _key_map: PAR_RATES[_key_map[_k]] = _v
+for _k, _v in _config.get('parFloors', {}).items():
+    if _k in _key_map: PAR_FLOORS[_key_map[_k]] = _v
 
 def get_par(model_name, prompt_count):
     return max(prompt_count * PAR_RATES.get(model_name, 2.50), PAR_FLOORS.get(model_name, 3.00))

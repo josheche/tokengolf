@@ -83,9 +83,12 @@ try {
   const cleanExits = ['clear', 'logout', 'prompt_input_exit', 'bypass_permissions_disabled'];
   const fainted = !cleanExits.includes(reason) && reason !== 'other' ? false : reason === 'other';
 
-  // Par-based death: spent > par = BUST
+  // Par-based death: spent > par = BUST (with user overrides from config.json)
   const { getParBudget: gp } = await import(path.join(__dir, '../src/lib/score.js'));
-  const par = gp(run.model, run.promptCount);
+  const { getEffectiveParRates, getEffectiveParFloors } = await import(
+    path.join(__dir, '../src/lib/config.js')
+  );
+  const par = gp(run.model, run.promptCount, getEffectiveParRates(), getEffectiveParFloors());
   let status;
   if (result.spent > par) status = 'died';
   else if (fainted)

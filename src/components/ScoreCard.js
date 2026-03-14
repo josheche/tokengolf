@@ -12,6 +12,7 @@ import {
   getOpusPct,
   MODEL_CLASSES,
 } from '../lib/score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from '../lib/config.js';
 import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function ScoreCard({ run }) {
@@ -29,7 +30,12 @@ export function ScoreCard({ run }) {
 
   const tier = getTier(run.spent, run.model);
   const mc = getModelClass(run.model);
-  const par = getParBudget(run.model, run.promptCount);
+  const par = getParBudget(
+    run.model,
+    run.promptCount,
+    getEffectiveParRates(),
+    getEffectiveParFloors()
+  );
   const efficiency = getEfficiencyRating(run.spent, par);
   const pct = getBudgetPct(run.spent, par);
   const haikuPct = getHaikuPct(run.modelBreakdown, run.spent);

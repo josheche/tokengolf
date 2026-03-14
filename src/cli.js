@@ -4,7 +4,16 @@ import { render } from 'ink';
 import React from 'react';
 
 import { getLastRun, getStats } from './lib/store.js';
-import { getConfig, setConfig, VALID_EMOTION_MODES } from './lib/config.js';
+import {
+  getConfig,
+  setConfig,
+  deleteConfig,
+  VALID_EMOTION_MODES,
+  VALID_MODEL_KEYS,
+  getEffectiveParRates,
+  getEffectiveParFloors,
+} from './lib/config.js';
+import { MODEL_PAR_RATES, MODEL_PAR_FLOORS } from './lib/score.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
@@ -74,15 +83,17 @@ program
   });
 
 program
-  .command('config [key] [value]')
+  .command('config [key] [args...]')
   .description('View or set config values (e.g. tokengolf config emotions emoji)')
-  .action((key, value) => {
+  .action((key, args) => {
     const config = getConfig();
     if (!key) {
-      for (const [k, v] of Object.entries(config)) console.log(`${k}: ${v}`);
+      for (const [k, v] of Object.entries(config))
+        console.log(`${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`);
       return;
     }
     if (key === 'emotions') {
+      const value = args[0];
       if (!value) {
         console.log(`emotionMode: ${config.emotionMode || 'off'}`);
         return;
@@ -94,6 +105,50 @@ program
       }
       setConfig('emotionMode', value);
       console.log(`emotionMode: ${value}`);
+      return;
+    }
+    if (key === 'par' || key === 'floor') {
+      const configKey = key === 'par' ? 'parRates' : 'parFloors';
+      const defaults = key === 'par' ? MODEL_PAR_RATES : MODEL_PAR_FLOORS;
+      const effective = key === 'par' ? getEffectiveParRates() : getEffectiveParFloors();
+      const label = key === 'par' ? 'Par rates' : 'Par floors';
+      const modelArg = args[0];
+      const valueArg = args[1];
+
+      if (!modelArg) {
+        console.log(`${label} ($/prompt):`);
+        const overrides = config[configKey] || {};
+        for (const mk of VALID_MODEL_KEYS) {
+          const tag = mk in overrides ? ' (custom)' : ' (default)';
+          console.log(`  ${mk}: $${effective[mk].toFixed(2)}${tag}`);
+        }
+        return;
+      }
+      if (modelArg === 'reset') {
+        deleteConfig(configKey);
+        console.log(`${label} reset to defaults.`);
+        for (const mk of VALID_MODEL_KEYS) console.log(`  ${mk}: $${defaults[mk].toFixed(2)}`);
+        return;
+      }
+      if (!VALID_MODEL_KEYS.includes(modelArg)) {
+        console.log(`Unknown model: ${modelArg}`);
+        console.log(`Valid models: ${VALID_MODEL_KEYS.join(', ')}`);
+        process.exit(1);
+      }
+      if (!valueArg) {
+        console.log(`${modelArg}: $${effective[modelArg].toFixed(2)}`);
+        return;
+      }
+      const num = parseFloat(valueArg);
+      if (isNaN(num) || num <= 0) {
+        console.log(`Invalid value: ${valueArg} (must be a positive number)`);
+        process.exit(1);
+      }
+      const existing = config[configKey] || {};
+      setConfig(configKey, { ...existing, [modelArg]: num });
+      console.log(
+        `${key === 'par' ? 'Par rate' : 'Par floor'} for ${modelArg}: $${num.toFixed(2)}`
+      );
       return;
     }
     console.log(`Unknown config key: ${key}`);

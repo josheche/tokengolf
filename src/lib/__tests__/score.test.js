@@ -84,6 +84,25 @@ describe('getParBudget', () => {
   it('null model defaults to sonnet', () => {
     expect(getParBudget(null, 5)).toBe(12.5);
   });
+
+  // Override tests
+  it('rate override: sonnet custom rate', () => {
+    expect(getParBudget('claude-sonnet-4-6', 5, { sonnet: 1.5 })).toBe(7.5);
+  });
+  it('floor override: opus custom floor', () => {
+    // 1 prompt × 12.5 = 12.5 < custom floor 20.0 → floor wins
+    expect(getParBudget('claude-opus-4-6', 1, null, { opus: 20.0 })).toBe(20.0);
+  });
+  it('partial override: only one model overridden, others use defaults', () => {
+    expect(getParBudget('claude-haiku-4-5', 5, { sonnet: 1.5 })).toBe(1.0);
+  });
+  it('both overrides: rate and floor', () => {
+    // 2 prompts × 1.0 = 2.0 < floor 5.0 → floor wins
+    expect(getParBudget('claude-sonnet-4-6', 2, { sonnet: 1.0 }, { sonnet: 5.0 })).toBe(5.0);
+  });
+  it('no overrides (backward compat): 2 args still works', () => {
+    expect(getParBudget('claude-sonnet-4-6', 5)).toBe(12.5);
+  });
 });
 
 describe('getTier (model-calibrated)', () => {

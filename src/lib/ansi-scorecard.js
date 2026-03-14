@@ -9,6 +9,7 @@ import {
   getParBudget,
   formatCost,
 } from './score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from './config.js';
 
 const R = '\x1b[31m',
   G = '\x1b[32m',
@@ -51,7 +52,12 @@ export function termWidth(str) {
 export function renderScorecard(run) {
   const W = Math.min(Math.max((process.stdout.columns || 88) - 8, 40), 80);
   const won = run.status === 'won';
-  const effBudget = getParBudget(run.model, run.promptCount);
+  const effBudget = getParBudget(
+    run.model,
+    run.promptCount,
+    getEffectiveParRates(),
+    getEffectiveParFloors()
+  );
 
   const bc = won ? Y : R;
   const BLK = '██';
