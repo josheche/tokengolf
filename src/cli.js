@@ -17,7 +17,7 @@ import { MODEL_PAR_RATES, MODEL_PAR_FLOORS } from './lib/score.js';
 import { ScoreCard } from './components/ScoreCard.js';
 import { StatsView } from './components/StatsView.js';
 
-program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.1.0');
+program.name('tokengolf').description('⛳ Gamify your Claude Code sessions').version('0.5.4');
 
 program
   .command('scorecard')
@@ -95,7 +95,7 @@ program
     if (key === 'emotions') {
       const value = args[0];
       if (!value) {
-        console.log(`emotionMode: ${config.emotionMode || 'off'}`);
+        console.log(`emotionMode: ${config.emotionMode || 'emoji'}`);
         return;
       }
       if (!VALID_EMOTION_MODES.includes(value)) {
@@ -116,7 +116,8 @@ program
       const valueArg = args[1];
 
       if (!modelArg) {
-        console.log(`${label} ($/prompt):`);
+        const units = key === 'par' ? '$/√prompt' : '$';
+        console.log(`${label} (${units}):`);
         const overrides = config[configKey] || {};
         for (const mk of VALID_MODEL_KEYS) {
           const tag = mk in overrides ? ' (custom)' : ' (default)';

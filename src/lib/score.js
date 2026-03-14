@@ -635,7 +635,7 @@ export function calculateAchievements(run, rateOverrides, floorOverrides) {
   if (subagentSpawns >= 10 && pct < 0.5)
     achievements.push({
       key: 'army',
-      label: `Army of One — ${subagentSpawns} subagents, EFFICIENT cost`,
+      label: `Army of One — ${subagentSpawns} subagents, under 50% par`,
       emoji: '🪖',
     });
 

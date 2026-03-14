@@ -130,31 +130,30 @@ export function StatsView({ stats }) {
         <Text color="gray" dimColor>
           Recent runs:
         </Text>
-        {stats.recentRuns.slice(0, 8).map((run, i) => {
-          const won = run.status === 'won';
-          const tier = getTier(run.spent, run.model);
-          const mc = getModelClass(run.model);
-          const par = getParBudget(
-            run.model,
-            run.promptCount,
-            getEffectiveParRates(),
-            getEffectiveParFloors()
-          );
-          const pct = getBudgetPct(run.spent, par);
-          return (
-            <Box key={i} gap={2}>
-              <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
-              <Text color="white">{`${run.promptCount || 0}p`.padEnd(4)}</Text>
-              <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
-              <Text color="gray">/{formatCost(par)}</Text>
-              <Text>{mc.emoji}</Text>
-              <Text color={tier.color}>{tier.emoji}</Text>
-              <Text color="gray" dimColor>
-                {pct}%
-              </Text>
-            </Box>
-          );
-        })}
+        {(() => {
+          const effRates = getEffectiveParRates();
+          const effFloors = getEffectiveParFloors();
+          return stats.recentRuns.slice(0, 8).map((run, i) => {
+            const won = run.status === 'won';
+            const tier = getTier(run.spent, run.model);
+            const mc = getModelClass(run.model);
+            const par = getParBudget(run.model, run.promptCount, effRates, effFloors);
+            const pct = getBudgetPct(run.spent, par);
+            return (
+              <Box key={i} gap={2}>
+                <Text color={won ? 'green' : 'red'}>{won ? '✓' : '✗'}</Text>
+                <Text color="white">{`${run.promptCount || 0}p`.padEnd(4)}</Text>
+                <Text color={won ? 'green' : 'red'}>{formatCost(run.spent)}</Text>
+                <Text color="gray">/{formatCost(par)}</Text>
+                <Text>{mc.emoji}</Text>
+                <Text color={tier.color}>{tier.emoji}</Text>
+                <Text color="gray" dimColor>
+                  {pct}%
+                </Text>
+              </Box>
+            );
+          });
+        })()}
       </Box>
 
       {/* Achievements */}

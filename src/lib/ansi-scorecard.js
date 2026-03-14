@@ -121,7 +121,7 @@ export function renderScorecard(run) {
   if (multiSession) midRow += `  ${DIM}${sessions} sessions${RESET}`;
 
   const achievements = run.achievements || [];
-  const achTokens = achievements.map((a) => `${a.emoji} ${a.key}`);
+  const achTokens = achievements.map((a) => `${a.emoji} ${a.label || a.key}`);
   const achLines = [];
   let currentLine = '';
   for (const token of achTokens) {

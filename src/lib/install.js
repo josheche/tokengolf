@@ -240,17 +240,20 @@ export function installHooks() {
 
   fs.writeFileSync(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2));
 
+  // Ensure ~/.tokengolf exists before writing any files
+  const TG_DIR = path.join(os.homedir(), '.tokengolf');
+  if (!fs.existsSync(TG_DIR)) fs.mkdirSync(TG_DIR, { recursive: true });
+
   // Stamp installed version for auto-sync detection
   try {
     const pkgVersion = JSON.parse(
       fs.readFileSync(path.resolve(path.dirname(realEntry), '../package.json'), 'utf8')
     ).version;
-    fs.writeFileSync(path.join(os.homedir(), '.tokengolf', 'installed-version'), pkgVersion);
+    fs.writeFileSync(path.join(TG_DIR, 'installed-version'), pkgVersion);
     console.log(`  ✓ installed-version → ${pkgVersion}`);
   } catch {}
 
   // Create default config if it doesn't exist
-  const TG_DIR = path.join(os.homedir(), '.tokengolf');
   const CONFIG_FILE = path.join(TG_DIR, 'config.json');
   if (!fs.existsSync(CONFIG_FILE)) {
     if (!fs.existsSync(TG_DIR)) fs.mkdirSync(TG_DIR, { recursive: true });

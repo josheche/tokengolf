@@ -162,8 +162,12 @@ if emotion_mode == 'emoji':
     icon = emotion_emoji
 else:
     icon = '💤' if fainted else '⛳'
-emotion_display = f"{emotion_color}{emotion_key}{RESET}"
-line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}{rating_str}"
+if emotion_mode == 'off':
+    emotion_display = ''
+    line1 = f" {accent}██{RESET} {icon}  {cost_str}{rating_str}"
+else:
+    emotion_display = f"{emotion_color}{emotion_key}{RESET}"
+    line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}{rating_str}"
 
 # Line 2: model + context bar (always shown)
 prompt_str = f"  💬 {prompt_count}p" if prompt_count > 0 else ''
