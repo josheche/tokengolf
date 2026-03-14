@@ -19,27 +19,30 @@
   <!-- Background -->
   <rect width="1200" height="300" fill="url(#bg)"/>
 
+  <!-- Block accent bar (left) -->
+  <rect x="0" y="0" width="8" height="300" fill="#d4a840"/>
+
   <!-- Top decorative rule -->
   <rect x="100" y="40" width="1000" height="1" fill="url(#rule)"/>
 
   <!-- Flag icon -->
-  <text x="600" y="115" text-anchor="middle" font-size="52" fill="#d4a840" opacity="0.9">&#9971;</text>
+  <text x="600" y="110" text-anchor="middle" font-size="48" fill="#d4a840" opacity="0.9">&#9971;</text>
 
   <!-- Title -->
-  <text x="600" y="175" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="bold" letter-spacing="6">
+  <text x="600" y="170" text-anchor="middle" font-family="'Libre Baskerville', Georgia, serif" font-size="64" font-weight="bold" letter-spacing="6">
     <tspan fill="url(#gold)">Token</tspan><tspan fill="#e8dcc4">Golf</tspan>
   </text>
 
   <!-- Tagline -->
-  <text x="600" y="215" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" fill="#9a9180" letter-spacing="1">
-    Every token matters
+  <text x="600" y="212" text-anchor="middle" font-family="'Libre Franklin', 'Helvetica Neue', sans-serif" font-size="18" fill="#9a9180" letter-spacing="1.5">
+    Every token counts. Every session is scored.
   </text>
 
   <!-- Bottom decorative rule -->
-  <rect x="100" y="248" width="1000" height="1" fill="url(#rule)"/>
+  <rect x="100" y="242" width="1000" height="1" fill="url(#rule)"/>
 
-  <!-- Subtle tagline detail -->
-  <text x="600" y="278" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" fill="#3d3828" letter-spacing="3">
-    4 classes &#183; 60+ achievements &#183; 9 hooks
+  <!-- Stats detail -->
+  <text x="600" y="272" text-anchor="middle" font-family="'Fira Code', 'Courier New', monospace" font-size="13" fill="#3d3828" letter-spacing="2">
+    4 classes &#183; 60+ achievements &#183; 9 hooks &#183; zero config
   </text>
 </svg>
