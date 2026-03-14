@@ -68,10 +68,10 @@ export const MODEL_CLASSES = {
 };
 
 export const MODEL_PAR_RATES = {
-  haiku: 0.2,
-  sonnet: 2.5,
-  opusplan: 6.0,
-  opus: 12.5,
+  haiku: 0.55,
+  sonnet: 7.0,
+  opusplan: 22.0,
+  opus: 45.0,
 };
 
 export const MODEL_PAR_FLOORS = {
@@ -89,7 +89,7 @@ export function getParBudget(model, promptCount, rateOverrides, floorOverrides) 
   else if (m.includes('opus')) key = 'opus';
   const rates = rateOverrides ? { ...MODEL_PAR_RATES, ...rateOverrides } : MODEL_PAR_RATES;
   const floors = floorOverrides ? { ...MODEL_PAR_FLOORS, ...floorOverrides } : MODEL_PAR_FLOORS;
-  return Math.max((promptCount || 0) * rates[key], floors[key]);
+  return Math.max((promptCount || 0) > 0 ? rates[key] * Math.sqrt(promptCount) : 0, floors[key]);
 }
 
 export function getTier(spent, model) {

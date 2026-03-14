@@ -8,7 +8,7 @@ A CLI game that gamifies Claude Code sessions by turning token/dollar efficiency
 
 Every Claude Code session is automatically tracked. No wizard, no upfront budget commitment. The budget (par) scales dynamically with session activity.
 
-**Par budget** = `max(prompts × model_par_rate, model_floor)`. Each prompt adds to your expected cost. Efficient prompts beat par; wasteful prompts fall behind. BUST (>100% of par) = `status: 'died'`, red accent, death achievements.
+**Par budget** = `max(rate × sqrt(prompts), model_floor)`. Par grows sublinearly — early prompts have headroom, pressure mounts over time. Efficient prompts beat par; wasteful prompts fall behind. BUST (>100% of par) = `status: 'died'`, red accent, death achievements.
 
 ---
 
@@ -47,21 +47,23 @@ npm users get auto-sync: hooks update automatically on version change via sessio
 
 ## Par Budget System
 
-Par = the expected cost for a session, scaled by prompts and model.
+Par = the expected cost for a session, scaled sublinearly by prompts and model.
 
 ```
-par = max(prompts × model_par_rate, model_floor)
+par = max(rate × sqrt(prompts), model_floor)
 efficiency = actual_cost / par
 ```
+
+The sqrt scaling creates increasing pressure: early prompts have headroom for exploration, but long sessions must be increasingly efficient to stay under par.
 
 ### Model Par Rates
 
 | Model | Par Rate | Floor | Rationale |
 |-------|----------|-------|-----------|
-| Haiku | $0.20/prompt | $0.50 | ~12× cheaper than Sonnet |
-| Sonnet | $2.50/prompt | $3.00 | Calibrated from 62 real sessions |
-| Paladin | $6.00/prompt | $8.00 | Opus planning + Sonnet execution blend |
-| Opus | $12.50/prompt | $15.00 | ~5× more expensive than Sonnet |
+| Haiku | $0.55 | $0.50 | ~12× cheaper than Sonnet |
+| Sonnet | $7.00 | $3.00 | Calibrated so typical sessions bust around 20 prompts |
+| Paladin | $22.00 | $8.00 | Opus planning + Sonnet execution blend |
+| Opus | $45.00 | $15.00 | ~6× more expensive than Sonnet |
 
 Constants: `MODEL_PAR_RATES`, `MODEL_PAR_FLOORS`, `getParBudget()` in `src/lib/score.js`.
 
@@ -125,7 +127,7 @@ Nine hooks in `hooks/`, installed via `tokengolf install`. All are synchronous J
 
 2. **Every session is a run** — SessionStart creates a run if none exists. Any Claude Code session is tracked automatically. No wizard, no upfront commitment.
 
-3. **Par budget scales with prompts** — `max(prompts × par_rate, floor)`. The denominator grows as you work. Efficient sessions beat par; wasteful ones bust.
+3. **Par budget scales sublinearly with prompts** — `max(rate × sqrt(prompts), floor)`. Par grows slower than spending, creating increasing pressure. Early prompts have headroom; long sessions must be efficient or bust.
 
 4. **Death is cosmetic** — BUST (>100% of par) = `status: 'died'`, red accent, death achievements. It's a scoring signal, not a hard stop.
 

@@ -20,10 +20,10 @@ try {
     );
   } catch {}
   const PAR_RATES = {
-    haiku: 0.2,
-    sonnet: 2.5,
-    opusplan: 6.0,
-    opus: 12.5,
+    haiku: 0.55,
+    sonnet: 7.0,
+    opusplan: 22.0,
+    opus: 45.0,
     ...(_cfg.parRates || {}),
   };
   const PAR_FLOORS = {
@@ -40,7 +40,10 @@ try {
       : (updated.model || '').includes('opus')
         ? 'opus'
         : 'sonnet';
-  const par = Math.max((updated.promptCount || 0) * PAR_RATES[mk], PAR_FLOORS[mk]);
+  const par = Math.max(
+    (updated.promptCount || 0) > 0 ? PAR_RATES[mk] * Math.sqrt(updated.promptCount) : 0,
+    PAR_FLOORS[mk]
+  );
   const pct = updated.spent / par;
   if (pct >= 0.5 && pct < 0.6) {
     process.stdout.write(

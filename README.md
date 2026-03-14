@@ -86,20 +86,20 @@ tokengolf install                # patch ~/.claude/settings.json with hooks (npm
 Every Claude Code session is automatically tracked — no setup, no pre-configuration. TokenGolf measures your efficiency against a **par budget** that scales with your session:
 
 ```
-par = max(prompts × model_par_rate, model_floor)
+par = max(rate × sqrt(prompts), model_floor)
 efficiency = actual_cost / par
 ```
 
-Each prompt you send adds to the expected cost. Efficient prompts beat par; wasteful ones fall behind. Spend more than par and the run **busts** — logged as a death with red accents and death achievements.
+Par grows with your session, but **sublinearly** — early prompts give you room to explore, while pressure builds as the session goes on. Efficient prompts beat par; wasteful ones fall behind. Spend more than par and the run **busts** — logged as a death with red accents and death achievements.
 
 | Model | Par Rate | Floor |
 |-------|----------|-------|
-| 🏹 Haiku | $0.20/prompt | $0.50 |
-| ⚔️ Sonnet | $2.50/prompt | $3.00 |
-| ⚜️ Paladin | $6.00/prompt | $8.00 |
-| 🧙 Opus | $12.50/prompt | $15.00 |
+| 🏹 Haiku | $0.55 | $0.50 |
+| ⚔️ Sonnet | $7.00 | $3.00 |
+| ⚜️ Paladin | $22.00 | $8.00 |
+| 🧙 Opus | $45.00 | $15.00 |
 
-The floor prevents 1-prompt sessions from being instant BUST. Par grows with your session — so a 10-prompt Sonnet session has a par of $25, while a 2-prompt session has par $5.
+The floor prevents 1-prompt sessions from being instant BUST. The sqrt scaling means a 4-prompt Sonnet session has par $14.00, while a 16-prompt session has par $28.00 (not $112). Long sessions must be increasingly efficient to stay under par.
 
 Rates and floors are configurable per model:
 
@@ -270,10 +270,10 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 After install, a status line appears in every Claude Code session showing cost, efficiency, context load, model class, and emotion.
 
 ```
-██ 😎 VIBING  💎 $0.42/5.00 ▓░░░░░░░░░░ 8% 🌟 LEGENDARY
+██ 😎 VIBING  💎 $0.42/9.90 ▓░░░░░░░░░░ 4% 🌟 LEGENDARY
 ██ ⚔️ Sonnet  🪶 ▓░░░░░░░░░ 8%  💬 2p
 
-██ 😤 GRINDING  🥉 $6.80/20.00 ▓▓▓▓░░░░░░░ 34% 💪 PRO
+██ 😤 GRINDING  🥉 $6.80/19.80 ▓▓▓▓░░░░░░░ 34% 💪 PRO
 ██ ⚔️ Sonnet  📚 ▓▓▓░░░░░░░ 34%  💬 8p
 ```
 
@@ -289,7 +289,7 @@ When you `/exit`, the scorecard appears automatically — cost vs par, model bre
 ██  🏆  SESSION COMPLETE
 ██  ──────────────────────────────────────────────────
 ██  SPENT      PAR       USED    MODEL        TIER
-██  $0.21    $3.00     14%     ⚔️ Sonnet     🥇 Gold
+██  $0.21    $7.00      3%     ⚔️ Sonnet     🥇 Gold
 ██
 ██  🌟 LEGENDARY
 ██  ──────────────────────────────────────────────────

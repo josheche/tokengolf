@@ -1202,16 +1202,16 @@
           No setup, no pre-configuration. TOKENGOLF measures your efficiency against a <strong>par budget</strong> that scales with your session:
         </p>
         <p class="mono" style="margin:1rem 0; font-size:0.95em">
-          par = max(prompts &times; model_par_rate, model_floor)<br>
+          par = max(rate &times; &radic;prompts, model_floor)<br>
           efficiency = actual_cost / par
         </p>
         <p>
-          Each prompt you send adds to the expected cost. Efficient prompts beat par; wasteful ones fall behind. Spend more than par and the run <strong>busts</strong>, logged as a death with red accents and death achievements.
+          Par grows with your session, but <strong>sublinearly</strong>. Early prompts give you room to explore. Pressure builds as the session goes on. Spend more than par and the run <strong>busts</strong>, logged as a death with red accents and death achievements.
         </p>
         <ul>
           <li>Scorecard appears automatically on <code>/exit</code></li>
-          <li>Par scales with prompts, so longer sessions get bigger budgets</li>
-          <li>Model-calibrated: Haiku $0.20/prompt, Sonnet $2.50, Opus $12.50</li>
+          <li>Sqrt scaling: longer sessions get bigger budgets, but slower than spending grows</li>
+          <li>Model-calibrated: Haiku $0.55, Sonnet $7.00, Opus $45.00</li>
           <li>Floor prevents 1-prompt sessions from instant BUST</li>
         </ul>
       </div>
@@ -1290,7 +1290,7 @@
             <div class="term" data-glow="yellow">
               <div class="term-header">Legendary · early session</div>
               <pre>
-<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.42<span class="t-dim">/5.00</span> <span class="t-yellow">▓░░░░░░░░░░</span> 8% 🌟 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.42<span class="t-dim">/9.90</span> <span class="t-yellow">▓░░░░░░░░░░</span> 4% 🌟 <span class="t-yellow">LEGENDARY</span>
 <span class="border-yellow">██</span> ⚔️ Sonnet  🪶 <span class="t-green">▓░░░░░░░░░</span> 8%  <span class="t-muted">💬 2p</span></pre>
             </div>
           </div>
@@ -1299,7 +1299,7 @@
             <div class="term" data-glow="cyan">
               <div class="term-header">Pro · mid session</div>
               <pre>
-<span class="border-cyan">██</span> 😤 <span class="t-yellow">GRINDING</span>  🥉 <span class="t-dim">$</span>6.80<span class="t-dim">/20.00</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 34% 💪 <span class="t-cyan">PRO</span>
+<span class="border-cyan">██</span> 😤 <span class="t-yellow">GRINDING</span>  🥉 <span class="t-dim">$</span>6.80<span class="t-dim">/19.80</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 34% 💪 <span class="t-cyan">PRO</span>
 <span class="border-cyan">██</span> ⚔️ Sonnet  📚 <span class="t-green">▓▓▓░░░░░░░</span> 34%  <span class="t-muted">💬 8p</span></pre>
             </div>
           </div>
@@ -1308,7 +1308,7 @@
             <div class="term" data-glow="yellow">
               <div class="term-header">Legendary · high effort</div>
               <pre>
-<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.41<span class="t-dim">/12.50</span> <span class="t-yellow">░░░░░░░░░░░</span> 3% 🌟 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.41<span class="t-dim">/15.65</span> <span class="t-yellow">░░░░░░░░░░░</span> 3% 🌟 <span class="t-yellow">LEGENDARY</span>
 <span class="border-yellow">██</span> ⚔️ Sonnet·High  📚 <span class="t-green">▓▓▓░░░░░░░</span> 29%  <span class="t-muted">💬 5p</span></pre>
             </div>
           </div>
@@ -1317,7 +1317,7 @@
             <div class="term" data-glow="cyan">
               <div class="term-header">Epic · Opus run</div>
               <pre>
-<span class="border-magenta">██</span> 🛹 <span class="t-green">CRUISING</span>  🥈 <span class="t-dim">$</span>8.20<span class="t-dim">/50.00</span> <span class="t-magenta">▓▓░░░░░░░░░</span> 16% 🔥 <span class="t-magenta">EPIC</span>
+<span class="border-magenta">██</span> 🛹 <span class="t-green">CRUISING</span>  🥈 <span class="t-dim">$</span>18.00<span class="t-dim">/90.00</span> <span class="t-magenta">▓▓░░░░░░░░░</span> 20% 🔥 <span class="t-magenta">EPIC</span>
 <span class="border-magenta">██</span> 🧙 Opus  🎒 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 52%  <span class="t-muted">💬 4p</span></pre>
             </div>
           </div>
@@ -1326,8 +1326,8 @@
             <div class="term">
               <div class="term-header">Close Call · Haiku near bust</div>
               <pre>
-<span class="border-white">██</span> 😰 <span class="t-yellow">SWEATING</span>  🥉 <span class="t-dim">$</span>2.10<span class="t-dim">/2.40</span> <span class="t-white">▓▓▓▓▓▓▓▓▓▓░</span> 87% ⚠️ <span class="t-white">CLOSE CALL</span>
-<span class="border-white">██</span> 🏹 Haiku  🪨 <span class="t-yellow">▓▓▓▓▓▓▓▓░░</span> 78%  <span class="t-muted">💬 12p</span></pre>
+<span class="border-white">██</span> 😰 <span class="t-yellow">SWEATING</span>  🥉 <span class="t-dim">$</span>2.10<span class="t-dim">/2.46</span> <span class="t-white">▓▓▓▓▓▓▓▓▓░░</span> 85% ⚠️ <span class="t-white">CLOSE CALL</span>
+<span class="border-white">██</span> 🏹 Haiku  🪨 <span class="t-yellow">▓▓▓▓▓▓▓▓░░</span> 78%  <span class="t-muted">💬 20p</span></pre>
             </div>
           </div>
 
@@ -1335,7 +1335,7 @@
             <div class="term" data-glow="red">
               <div class="term-header">Bust · past par, dead</div>
               <pre>
-<span class="border-red">██</span> 🧟 <span class="t-red">ZOMBIE</span>  💸 <span class="t-dim">$</span>34.24<span class="t-dim">/25.00</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 137% 💥 <span class="t-red">BUST</span>
+<span class="border-red">██</span> 🧟 <span class="t-red">ZOMBIE</span>  💸 <span class="t-dim">$</span>34.24<span class="t-dim">/22.14</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 155% 💥 <span class="t-red">BUST</span>
 <span class="border-red">██</span> ⚔️ Sonnet  🎒 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 45%  <span class="t-muted">💬 10p</span></pre>
             </div>
           </div>
@@ -1344,7 +1344,7 @@
             <div class="term" data-glow="cyan">
               <div class="term-header">Overwhelmed · high context</div>
               <pre>
-<span class="border-cyan">██</span> 🤯 <span class="t-red">OVERWHELMED</span>  🥈 <span class="t-dim">$</span>12.00<span class="t-dim">/37.50</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 32% 💪 <span class="t-cyan">PRO</span>
+<span class="border-cyan">██</span> 🤯 <span class="t-red">OVERWHELMED</span>  🥉 <span class="t-dim">$</span>28.00<span class="t-dim">/77.94</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 36% 💪 <span class="t-cyan">PRO</span>
 <span class="border-cyan">██</span> 🧙 Opus  🗿 <span class="t-red">▓▓▓▓▓▓▓▓▓░</span> 91%  <span class="t-muted">💬 3p</span></pre>
             </div>
           </div>
@@ -1353,7 +1353,7 @@
             <div class="term" data-glow="cyan">
               <div class="term-header">Sleeping · idle session</div>
               <pre>
-<span class="border-magenta">██</span> 💤 <span class="t-dim">SLEEPING</span>  🥉 <span class="t-dim">$</span>4.22<span class="t-dim">/15.00</span> <span class="t-magenta">▓▓▓░░░░░░░░</span> 28% 🔥 <span class="t-magenta">EPIC</span>
+<span class="border-magenta">██</span> 💤 <span class="t-dim">SLEEPING</span>  🥉 <span class="t-dim">$</span>4.22<span class="t-dim">/17.15</span> <span class="t-magenta">▓▓▓░░░░░░░░</span> 25% 🔥 <span class="t-magenta">EPIC</span>
 <span class="border-magenta">██</span> ⚔️ Sonnet  🧱 <span class="t-yellow">▓▓▓▓▓▓▓░░░</span> 67%  <span class="t-muted">💬 6p</span></pre>
             </div>
           </div>
@@ -1371,9 +1371,9 @@
               <div class="term-header">auto scorecard · won (on /exit)</div>
             <pre>
 <span class="border-yellow">██</span>  <span class="t-b t-yellow">🏆  SESSION COMPLETE</span>
-<span class="border-yellow">██</span>  <span class="t-dim">6 prompts · par $15.00</span>
+<span class="border-yellow">██</span>  <span class="t-dim">6 prompts · par $17.15</span>
 <span class="border-yellow">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
-<span class="border-yellow">██</span>  <span class="t-green">$0.23</span>  <span class="t-dim">/</span>$15.00  2%  <span class="t-yellow">🌟 LEGENDARY</span>  <span class="t-cyan">⚔️ Sonnet·High</span>  💎 Diamond
+<span class="border-yellow">██</span>  <span class="t-green">$0.23</span>  <span class="t-dim">/</span>$17.15  1%  <span class="t-yellow">🌟 LEGENDARY</span>  <span class="t-cyan">⚔️ Sonnet·High</span>  💎 Diamond
 <span class="border-yellow">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
 <span class="border-yellow">██</span>  🎯 sniper  🥈 silver  🔥 no_rest  ✅ clean_run  🧰 toolbox  🤫 silent_run
 <span class="border-yellow">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
@@ -1389,9 +1389,9 @@
               <div class="term-header">auto scorecard · died (on /exit)</div>
             <pre>
 <span class="border-red">██</span>  <span class="t-b t-red">💀  PAR BUST</span>
-<span class="border-red">██</span>  <span class="t-dim">22 prompts · par $55.00</span>
+<span class="border-red">██</span>  <span class="t-dim">10 prompts · par $22.14</span>
 <span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
-<span class="border-red">██</span>  <span class="t-red">$3.87</span>  <span class="t-dim">/</span>$55.00  7%  <span class="t-yellow">🌟 LEGENDARY</span>  <span class="t-cyan">⚔️ Sonnet·High</span>  🥈 Silver
+<span class="border-red">██</span>  <span class="t-red">$48.00</span>  <span class="t-dim">/</span>$22.14  217%  <span class="t-red">💥 BUST</span>  <span class="t-cyan">⚔️ Sonnet·High</span>  💸 Reckless
 <span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
 <span class="border-red">██</span>  <span class="t-magenta">🔮 2 ultrathink invocations</span>
 <span class="border-red">██</span>  <span class="t-dim">────────────────────────────────────────────────</span>
@@ -1412,11 +1412,11 @@
 <span class="border-yellow">██</span>
 <span class="border-yellow">██</span>  <span class="t-b t-yellow">🏆  SESSION COMPLETE</span>
 <span class="border-yellow">██</span>
-<span class="border-yellow">██</span>  <span class="t-dim">6 prompts · par $15.00</span>
+<span class="border-yellow">██</span>  <span class="t-dim">6 prompts · par $17.15</span>
 <span class="border-yellow">██</span>
 <span class="border-yellow">██</span>
 <span class="border-yellow">██</span>  <span class="t-dim">SPENT</span>      <span class="t-dim">PAR</span>       <span class="t-dim">USED</span>    <span class="t-dim">MODEL</span>             <span class="t-dim">EFFORT</span>     <span class="t-dim">TIER</span>
-<span class="border-yellow">██</span>  <span class="t-b t-green">$0.23</span>      $15.00    <span class="t-green">2%</span>      <span class="t-cyan">⚔️ Sonnet·High</span>    <span class="t-orange">🔥 High</span>    💎 Diamond
+<span class="border-yellow">██</span>  <span class="t-b t-green">$0.23</span>      $17.15    <span class="t-green">1%</span>      <span class="t-cyan">⚔️ Sonnet·High</span>    <span class="t-orange">🔥 High</span>    💎 Diamond
 <span class="border-yellow">██</span>
 <span class="border-yellow">██</span>  <span class="t-b t-yellow">🌟 LEGENDARY</span>
 <span class="border-yellow">██</span>
@@ -1450,13 +1450,13 @@
 <span class="border-red">██</span>
 <span class="border-red">██</span>  <span class="t-b t-red">💀  PAR BUST</span>
 <span class="border-red">██</span>
-<span class="border-red">██</span>  <span class="t-dim">22 prompts · par $55.00</span>
+<span class="border-red">██</span>  <span class="t-dim">10 prompts · par $22.14</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>  <span class="t-dim">SPENT</span>      <span class="t-dim">PAR</span>       <span class="t-dim">USED</span>    <span class="t-dim">MODEL</span>             <span class="t-dim">EFFORT</span>     <span class="t-dim">TIER</span>
-<span class="border-red">██</span>  <span class="t-b t-red">$3.87</span>      $55.00    <span class="t-green">7%</span>      <span class="t-cyan">⚔️ Sonnet·High</span>    <span class="t-orange">🔥 High</span>    🥈 Silver
+<span class="border-red">██</span>  <span class="t-b t-red">$48.00</span>     $22.14    <span class="t-red">217%</span>    <span class="t-cyan">⚔️ Sonnet·High</span>    <span class="t-orange">🔥 High</span>    💸 Reckless
 <span class="border-red">██</span>
-<span class="border-red">██</span>  <span class="t-b t-yellow">🌟 LEGENDARY</span>
+<span class="border-red">██</span>  <span class="t-b t-red">💥 BUST</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>  <span class="t-dim">Achievements unlocked:</span>
@@ -1471,7 +1471,7 @@
 <span class="border-red">██</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>  <span class="t-dim">Model usage:</span>  <span class="t-cyan">🏹 9% Haiku</span>
-<span class="border-red">██</span>  <span class="t-muted">Sonnet</span> <span class="t-white">91%</span> <span class="t-dim">$3.52</span>   <span class="t-muted">Haiku</span> <span class="t-white">9%</span> <span class="t-dim">$0.35</span>
+<span class="border-red">██</span>  <span class="t-muted">Sonnet</span> <span class="t-white">91%</span> <span class="t-dim">$43.68</span>   <span class="t-muted">Haiku</span> <span class="t-white">9%</span> <span class="t-dim">$4.32</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>
 <span class="border-red">██</span>  <span class="t-dim">Tool calls:</span>
@@ -1506,14 +1506,14 @@
 <span class="border-yellow">██</span>
 
 <span class="t-dim">Recent runs:</span>
-<span class="t-green">✓</span>  <span class="t-white">6p</span>    <span class="t-green">$0.23</span>  <span class="t-muted">/$15.00</span>  ⚔️  💎  <span class="t-dim">2%</span>
-<span class="t-green">✓</span>  <span class="t-white">8p</span>    <span class="t-green">$3.41</span>  <span class="t-muted">/$100.00</span>  🧙  🥇  <span class="t-dim">3%</span>
-<span class="t-red">✗</span>  <span class="t-white">22p</span>   <span class="t-red">$3.87</span>  <span class="t-muted">/$55.00</span>  ⚔️  🥈  <span class="t-dim">7%</span>
-<span class="t-green">✓</span>  <span class="t-white">4p</span>    <span class="t-green">$0.08</span>  <span class="t-muted">/$0.80</span>  🏹  💎  <span class="t-dim">10%</span>
-<span class="t-green">✓</span>  <span class="t-white">2p</span>    <span class="t-green">$0.00340</span>  <span class="t-muted">/$5.00</span>  ⚔️  ✨   <span class="t-dim">0%</span>
-<span class="t-green">✓</span>  <span class="t-white">10p</span>   <span class="t-green">$2.18</span>  <span class="t-muted">/$60.00</span>  ⚜️  🥇  <span class="t-dim">4%</span>
-<span class="t-red">✗</span>  <span class="t-white">5p</span>    <span class="t-red">$12.40</span>  <span class="t-muted">/$62.50</span>  🧙  🥈  <span class="t-dim">20%</span>
-<span class="t-green">✓</span>  <span class="t-white">3p</span>    <span class="t-green">$0.41</span>  <span class="t-muted">/$7.50</span>  ⚔️  💎  <span class="t-dim">5%</span>
+<span class="t-green">✓</span>  <span class="t-white">6p</span>    <span class="t-green">$0.23</span>  <span class="t-muted">/$17.15</span>  ⚔️  💎  <span class="t-dim">1%</span>
+<span class="t-green">✓</span>  <span class="t-white">8p</span>    <span class="t-green">$3.41</span>  <span class="t-muted">/$127.28</span>  🧙  🥇  <span class="t-dim">3%</span>
+<span class="t-red">✗</span>  <span class="t-white">10p</span>   <span class="t-red">$48.00</span>  <span class="t-muted">/$22.14</span>  ⚔️  💸  <span class="t-dim">217%</span>
+<span class="t-green">✓</span>  <span class="t-white">4p</span>    <span class="t-green">$0.08</span>  <span class="t-muted">/$1.10</span>  🏹  💎  <span class="t-dim">7%</span>
+<span class="t-green">✓</span>  <span class="t-white">2p</span>    <span class="t-green">$0.00340</span>  <span class="t-muted">/$9.90</span>  ⚔️  ✨   <span class="t-dim">0%</span>
+<span class="t-green">✓</span>  <span class="t-white">10p</span>   <span class="t-green">$2.18</span>  <span class="t-muted">/$69.57</span>  ⚜️  🥇  <span class="t-dim">3%</span>
+<span class="t-red">✗</span>  <span class="t-white">3p</span>    <span class="t-red">$85.00</span>  <span class="t-muted">/$77.94</span>  🧙  💸  <span class="t-dim">109%</span>
+<span class="t-green">✓</span>  <span class="t-white">3p</span>    <span class="t-green">$0.41</span>  <span class="t-muted">/$12.12</span>  ⚔️  💎  <span class="t-dim">3%</span>
 
 <span class="t-dim">Recent achievements:</span>
 🎯 <span class="t-dim">Sniper</span>  🥈 <span class="t-dim">Silver</span>  🔥 <span class="t-dim">No Rest</span>  ✅ <span class="t-dim">Clean Run</span>   🧰 <span class="t-dim">Toolbox</span>  💎 <span class="t-dim">Diamond</span>
@@ -1640,12 +1640,12 @@
         </div>
         <div class="card glow-card mode-card">
           <h3>🏅 Efficiency Rating</h3>
-          <p>What percentage of your par budget you used. A relative measure. Par grows with each prompt, so long sessions get proportionally bigger budgets.</p>
+          <p>What percentage of your par budget you used. A relative measure. Par grows sublinearly (sqrt) with each prompt, so pressure builds over time.</p>
         </div>
       </div>
 
       <p class="section-prose" style="margin-top:var(--space-2xl);">
-        These are two independent axes. A 23-prompt Opus session has a par of $287.50. Spending $85 on that session is 💸 Reckless (absolute spend above Bronze) but 🔥 EPIC (only 30% of par used). <strong>High spend doesn't mean low efficiency.</strong> The scorecard shows both so you can see where you stand from each angle.
+        These are two independent axes. A 25-prompt Opus session has a par of $225. Spending $55 on that session is 💸 Reckless (absolute spend above Bronze) but 🔥 EPIC (only 24% of par used). <strong>High spend doesn't mean low efficiency.</strong> The scorecard shows both so you can see where you stand from each angle.
       </p>
     </section>
 

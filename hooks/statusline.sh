@@ -77,7 +77,7 @@ EMOTIONS = {
 }
 
 # Par rates (prompt-scaled budget, with user overrides from config.json)
-PAR_RATES = {'Haiku': 0.20, 'Sonnet': 2.50, 'Opus': 12.50, 'Paladin': 6.00, '?': 2.50}
+PAR_RATES = {'Haiku': 0.55, 'Sonnet': 7.00, 'Opus': 45.00, 'Paladin': 22.00, '?': 7.00}
 PAR_FLOORS = {'Haiku': 0.50, 'Sonnet': 3.00, 'Opus': 15.00, 'Paladin': 8.00, '?': 3.00}
 _key_map = {'haiku': 'Haiku', 'sonnet': 'Sonnet', 'opus': 'Opus', 'opusplan': 'Paladin'}
 for _k, _v in _config.get('parRates', {}).items():
@@ -86,7 +86,7 @@ for _k, _v in _config.get('parFloors', {}).items():
     if _k in _key_map: PAR_FLOORS[_key_map[_k]] = _v
 
 def get_par(model_name, prompt_count):
-    return max(prompt_count * PAR_RATES.get(model_name, 2.50), PAR_FLOORS.get(model_name, 3.00))
+    return max(PAR_RATES.get(model_name, 7.00) * (prompt_count ** 0.5) if prompt_count > 0 else 0, PAR_FLOORS.get(model_name, 3.00))
 
 def get_emotion(fainted, par, cost, ctx_pct, failed_tools, prompt_count, model_name):
     if fainted: return 'SLEEPING'

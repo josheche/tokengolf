@@ -138,10 +138,10 @@ try {
     );
   } catch {}
   const PAR_RATES = {
-    haiku: 0.2,
-    sonnet: 2.5,
-    opusplan: 6.0,
-    opus: 12.5,
+    haiku: 0.55,
+    sonnet: 7.0,
+    opusplan: 22.0,
+    opus: 45.0,
     ...(_cfg.parRates || {}),
   };
   const PAR_FLOORS = {
@@ -158,7 +158,10 @@ try {
       : run.model.includes('opus')
         ? 'opus'
         : 'sonnet';
-  const par = Math.max((run.promptCount || 0) * PAR_RATES[mk], PAR_FLOORS[mk]);
+  const par = Math.max(
+    (run.promptCount || 0) > 0 ? PAR_RATES[mk] * Math.sqrt(run.promptCount) : 0,
+    PAR_FLOORS[mk]
+  );
   const pct = run.spent / par;
   const urgency = pct >= 0.8 ? '⚠️  BUDGET CRITICAL — be concise. ' : '';
   const budgetLine = `Budget: $${par.toFixed(2)} (par) | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`;

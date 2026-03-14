@@ -9,11 +9,14 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
 // Par rates (prompt-scaled budget) — same as MODEL_PAR_RATES in score.js
-const PAR_RATES = { Haiku: 0.2, Sonnet: 2.5, Opus: 12.5, Paladin: 6.0, '?': 2.5 };
+const PAR_RATES = { Haiku: 0.55, Sonnet: 7.0, Opus: 45.0, Paladin: 22.0, '?': 7.0 };
 const PAR_FLOORS = { Haiku: 0.5, Sonnet: 3.0, Opus: 15.0, Paladin: 8.0, '?': 3.0 };
 
 function getPar(modelName, promptCount) {
-  return Math.max(promptCount * (PAR_RATES[modelName] || 2.5), PAR_FLOORS[modelName] || 3.0);
+  return Math.max(
+    promptCount > 0 ? (PAR_RATES[modelName] || 7.0) * Math.sqrt(promptCount) : 0,
+    PAR_FLOORS[modelName] || 3.0
+  );
 }
 
 const EMOTION_COLORS = {
@@ -230,7 +233,7 @@ export function runDemo() {
   console.log('');
   console.log(`${BOLD}${C}⛳ TokenGolf — HUD Demo${RESET}`);
   console.log(`${DIM}Live statusline shown in every Claude Code session${RESET}`);
-  console.log(`${DIM}Par scales with prompts: par = max(prompts × rate, floor)${RESET}`);
+  console.log(`${DIM}Par scales with prompts: par = max(rate × sqrt(prompts), floor)${RESET}`);
   console.log('');
 
   for (const { title, hud } of SCENARIOS) {
