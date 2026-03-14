@@ -67,11 +67,14 @@ npm users get auto-sync — hooks update automatically on version change.
 <summary>All commands</summary>
 
 ```bash
-tokengolf scorecard   # last run scorecard
-tokengolf stats       # career dashboard
-tokengolf config      # view or set config values
-tokengolf demo        # show all UI states (hud, scorecard, stats)
-tokengolf install     # patch ~/.claude/settings.json with hooks (npm only)
+tokengolf scorecard              # last run scorecard
+tokengolf stats                  # career dashboard
+tokengolf config                 # view all config values
+tokengolf config emotions emoji  # set emotion mode (off, emoji, ascii)
+tokengolf config par             # view/set par rates per model
+tokengolf config floor           # view/set par floors per model
+tokengolf demo                   # show all UI states (hud, scorecard, stats)
+tokengolf install                # patch ~/.claude/settings.json with hooks (npm only)
 ```
 
 </details>
@@ -97,6 +100,16 @@ Each prompt you send adds to the expected cost. Efficient prompts beat par; wast
 | 🧙 Opus | $12.50/prompt | $15.00 |
 
 The floor prevents 1-prompt sessions from being instant BUST. Par grows with your session — so a 10-prompt Sonnet session has a par of $25, while a 2-prompt session has par $5.
+
+Rates and floors are configurable per model:
+
+```bash
+tokengolf config par              # list all rates
+tokengolf config par sonnet 1.5   # set Sonnet par rate to $1.50/prompt
+tokengolf config par reset        # restore defaults
+tokengolf config floor opus 20.0  # set Opus floor to $20.00
+tokengolf config floor reset      # restore defaults
+```
 
 ---
 

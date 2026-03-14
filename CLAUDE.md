@@ -39,6 +39,8 @@ npm users get auto-sync: hooks update automatically on version change via sessio
 | `tokengolf demo [component]` | Show UI demos (all, hud, scorecard, stats) |
 | `tokengolf config` | List all config values |
 | `tokengolf config emotions [mode]` | Get/set emotion mode (`off`, `emoji`, `ascii`) |
+| `tokengolf config par [model] [rate]` | View/set par rates per model, or `reset` |
+| `tokengolf config floor [model] [value]` | View/set par floors per model, or `reset` |
 | `tokengolf install` | Patch `~/.claude/settings.json` with hooks |
 
 ---
