@@ -11,14 +11,13 @@ Gamify your Claude Code sessions. Track token efficiency, earn achievements, lev
 
 ## Commands
 
-- `/tokengolf:start` — Begin a roguelike run (quest + budget + class)
 - `/tokengolf:scorecard` — View last run's scorecard
 - `/tokengolf:stats` — Career stats dashboard
 - `/tokengolf:config` — View or change settings
 
 ## Full TUI
 
-For the interactive wizard and rich Ink-rendered views, install the npm package alongside:
+For rich Ink-rendered views, install the npm package alongside:
 
 ```bash
 npm install -g tokengolf

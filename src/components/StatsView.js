@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
 import { getTier, getModelClass, getBudgetPct, getParBudget, formatCost } from '../lib/score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from '../lib/config.js';
 import { ACCENT_BORDER, ACCENT_PADDING } from '../lib/ui.js';
 
 export function StatsView({ stats }) {
@@ -133,7 +134,12 @@ export function StatsView({ stats }) {
           const won = run.status === 'won';
           const tier = getTier(run.spent, run.model);
           const mc = getModelClass(run.model);
-          const par = getParBudget(run.model, run.promptCount);
+          const par = getParBudget(
+            run.model,
+            run.promptCount,
+            getEffectiveParRates(),
+            getEffectiveParFloors()
+          );
           const pct = getBudgetPct(run.spent, par);
           return (
             <Box key={i} gap={2}>

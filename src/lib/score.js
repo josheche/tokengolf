@@ -30,8 +30,8 @@ export const MODEL_BUDGET_TIERS = {
 
 export function getModelBudgets(model) {
   const m = (model || '').toLowerCase();
-  if (m.includes('haiku')) return MODEL_BUDGET_TIERS.haiku;
   if (m.includes('opusplan')) return MODEL_BUDGET_TIERS.opusplan;
+  if (m.includes('haiku')) return MODEL_BUDGET_TIERS.haiku;
   if (m.includes('opus')) return MODEL_BUDGET_TIERS.opus;
   return MODEL_BUDGET_TIERS.sonnet;
 }
@@ -160,10 +160,10 @@ export function getHaikuPct(modelBreakdown, totalSpent) {
   return Math.round((haikuCost / totalSpent) * 100);
 }
 
-export function calculateAchievements(run) {
+export function calculateAchievements(run, rateOverrides, floorOverrides) {
   const achievements = [];
   const won = run.status === 'won';
-  const effBudget = getParBudget(run.model, run.promptCount);
+  const effBudget = getParBudget(run.model, run.promptCount, rateOverrides, floorOverrides);
   const pct = run.spent / effBudget;
   const mc = getModelClass(run.model);
 

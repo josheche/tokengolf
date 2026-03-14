@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { calculateAchievements } from './score.js';
+import { getEffectiveParRates, getEffectiveParFloors } from './config.js';
 import { STATE_DIR } from './state.js';
 const RUNS_FILE = path.join(STATE_DIR, 'runs.json');
 
@@ -23,7 +24,7 @@ function writeRuns(runs) {
 
 export function saveRun(run) {
   const runs = readRuns();
-  const achievements = calculateAchievements(run);
+  const achievements = calculateAchievements(run, getEffectiveParRates(), getEffectiveParFloors());
   const record = {
     id: `run_${Date.now()}`,
     ...run,
@@ -58,7 +59,6 @@ export function getStats() {
   const allAchievements = runs.flatMap((r) =>
     (r.achievements || []).map((a) => ({
       ...a,
-      quest: r.quest,
       earnedAt: r.endedAt,
     }))
   );
