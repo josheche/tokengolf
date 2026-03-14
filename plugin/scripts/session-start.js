@@ -163,8 +163,8 @@ try {
     PAR_FLOORS[mk]
   );
   const pct = run.spent / par;
-  const urgency = pct >= 0.8 ? '⚠️  BUDGET CRITICAL — be concise. ' : '';
-  const budgetLine = `Budget: $${par.toFixed(2)} (par) | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`;
+  const urgency = pct >= 0.8 ? '⚠️  PAR CRITICAL — be concise. ' : '';
+  const budgetLine = `Par: $${par.toFixed(2)} | Spent: $${run.spent.toFixed(4)} (${Math.round(pct * 100)}%) | Remaining: $${(par - run.spent).toFixed(4)}`;
 
   const effortStr = run.effort ? run.effort : 'default';
   const fastStr = run.fastMode ? ' ⚡ Fast' : '';
