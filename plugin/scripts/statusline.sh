@@ -2,6 +2,7 @@
 STATE_FILE="$HOME/.tokengolf/current-run.json"
 SESSION_JSON=$(cat)
 [ ! -f "$STATE_FILE" ] && exit 0
+command -v python3 >/dev/null 2>&1 || exit 0
 
 TG_SESSION_JSON="$SESSION_JSON" python3 - "$STATE_FILE" <<'PYEOF'
 import sys, json, os

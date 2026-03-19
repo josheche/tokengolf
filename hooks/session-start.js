@@ -6,9 +6,10 @@ import os from 'os';
 const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 const STATE_DIR = path.join(os.homedir(), '.tokengolf');
 
-// Auto-sync: if npm package version changed since last install, update hook paths
+// Auto-sync: if npm package version changed since last install, update hook paths (npm-only)
 try {
   const pkgPath = path.resolve(path.dirname(process.argv[1]), '../package.json');
+  if (!fs.existsSync(pkgPath)) throw new Error('not npm install');
   const currentVersion = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
   const stampFile = path.join(STATE_DIR, 'installed-version');
   let installedVersion = null;
@@ -35,17 +36,7 @@ try {
           }
         }
       }
-      // Update statusLine paths
-      const statuslinePath = path.join(hooksDir, 'statusline.sh');
-      const wrapperPath = path.join(hooksDir, 'statusline-wrapper.sh');
-      if (settings.statusLine?.command) {
-        const cmd = settings.statusLine.command;
-        if (cmd.includes('statusline-wrapper')) {
-          settings.statusLine.command = wrapperPath;
-        } else if (cmd.includes('statusline.sh')) {
-          settings.statusLine.command = statuslinePath;
-        }
-      }
+      // statusLine paths now use stable ~/.tokengolf/statusline.sh — auto-install block handles updates
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
     } catch {}
     fs.writeFileSync(stampFile, currentVersion);
@@ -56,18 +47,23 @@ try {
   }
 } catch {}
 
-// Auto-install statusLine if missing or stale
+// Auto-install statusLine: copy to stable ~/.tokengolf/ path (survives plugin uninstall)
 try {
   const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
   const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
   const scriptDir = path.dirname(fs.realpathSync(process.argv[1]));
-  const statuslinePath = path.join(scriptDir, 'statusline.sh');
-  if (fs.existsSync(statuslinePath)) {
+  const srcStatusline = path.join(scriptDir, 'statusline.sh');
+  const stablePath = path.join(STATE_DIR, 'statusline.sh');
+  if (fs.existsSync(srcStatusline)) {
+    // Always copy latest version to stable location
+    if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
+    fs.copyFileSync(srcStatusline, stablePath);
+    fs.chmodSync(stablePath, 0o755);
     const current = settings.statusLine?.command || '';
     const needsInstall = !current || current.includes('tokengolf');
-    const needsUpdate = needsInstall && current !== statuslinePath;
+    const needsUpdate = needsInstall && current !== stablePath;
     if (needsUpdate) {
-      settings.statusLine = { type: 'command', command: statuslinePath, padding: 1 };
+      settings.statusLine = { type: 'command', command: stablePath, padding: 1 };
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
     }
   }

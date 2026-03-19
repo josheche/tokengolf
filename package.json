@@ -9,7 +9,7 @@
   "scripts": {
     "build": "esbuild src/cli.js --bundle --platform=node --format=esm --loader:.js=jsx --packages=external --outfile=dist/cli.js && chmod +x dist/cli.js",
     "build:plugin": "esbuild hooks/session-end.js --bundle --platform=node --format=esm --packages=external --outfile=plugin/scripts/session-end.js && cp hooks/session-start.js hooks/post-tool-use.js hooks/post-tool-use-failure.js hooks/user-prompt-submit.js hooks/pre-compact.js hooks/subagent-start.js hooks/stop.js plugin/scripts/ && cp hooks/statusline.sh plugin/scripts/ && chmod +x plugin/scripts/statusline.sh",
-    "prepare": "npm run build && husky",
+    "prepare": "npm run build && npm run build:plugin && husky",
     "dev": "node --import tsx/esm src/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
