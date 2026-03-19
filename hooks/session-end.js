@@ -32,11 +32,11 @@ try {
   const reason = event.reason || 'other';
 
   // Read authoritative cost from StatusLine sidecar (same source as the HUD)
+  const cwdKey = (process.env.PWD || process.cwd()).replace(/\//g, '-');
+  const costFile = path.join(os.homedir(), '.tokengolf', `session-cost${cwdKey}`);
   let liveCost = null;
   try {
-    const raw = fs
-      .readFileSync(path.join(os.homedir(), '.tokengolf', 'session-cost'), 'utf8')
-      .trim();
+    const raw = fs.readFileSync(costFile, 'utf8').trim();
     const parsed = parseFloat(raw);
     if (!isNaN(parsed) && parsed > 0) liveCost = parsed;
   } catch {}
@@ -122,7 +122,7 @@ try {
   clearCurrentRun();
   // Clean up sidecar cost file
   try {
-    fs.unlinkSync(path.join(os.homedir(), '.tokengolf', 'session-cost'));
+    fs.unlinkSync(costFile);
   } catch {}
 
   writeTTY('\n' + renderScorecard(saved) + '\n\n');

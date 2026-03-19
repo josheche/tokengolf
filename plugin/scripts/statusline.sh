@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-STATE_FILE="$HOME/.tokengolf/current-run.json"
+CWD_KEY=$(echo "$PWD" | tr '/' '-')
+STATE_FILE="$HOME/.tokengolf/current-run${CWD_KEY}.json"
 SESSION_JSON=$(cat)
 [ ! -f "$STATE_FILE" ] && exit 0
 command -v python3 >/dev/null 2>&1 || exit 0
@@ -8,7 +9,7 @@ TG_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 TG_GIT_DIRTY=$(git status --porcelain 2>/dev/null | head -c 1)
 TG_CWD=$(basename "$PWD")
 
-TG_SESSION_JSON="$SESSION_JSON" TG_GIT_BRANCH="$TG_GIT_BRANCH" TG_GIT_DIRTY="$TG_GIT_DIRTY" TG_CWD="$TG_CWD" python3 - "$STATE_FILE" <<'PYEOF'
+TG_SESSION_JSON="$SESSION_JSON" TG_GIT_BRANCH="$TG_GIT_BRANCH" TG_GIT_DIRTY="$TG_GIT_DIRTY" TG_CWD="$TG_CWD" TG_CWD_KEY="$CWD_KEY" python3 - "$STATE_FILE" <<'PYEOF'
 import sys, json, os
 
 try:
@@ -28,7 +29,8 @@ emotion_mode = _config.get('emotionMode', 'emoji')
 cost    = (session.get('cost') or {}).get('total_cost_usd') or run.get('spent', 0)
 # Persist CC's authoritative cost so session-end can read it (SessionEnd doesn't receive cost in stdin)
 try:
-    with open(os.path.join(os.path.expanduser('~'), '.tokengolf', 'session-cost'), 'w') as _cf: _cf.write(str(cost))
+    cwd_key = os.environ.get('TG_CWD_KEY', '')
+    with open(os.path.join(os.path.expanduser('~'), '.tokengolf', f'session-cost{cwd_key}'), 'w') as _cf: _cf.write(str(cost))
 except: pass
 ctx_pct = (session.get('context_window') or {}).get('used_percentage') or None
 sm = session.get('model') or {}; m = (sm.get('id','') or run.get('model','') if isinstance(sm,dict) else sm or run.get('model','')).lower()

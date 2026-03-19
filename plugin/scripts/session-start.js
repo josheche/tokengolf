@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
 const STATE_DIR = path.join(os.homedir(), '.tokengolf');
+const cwdKey = (process.env.PWD || process.cwd()).replace(/\//g, '-');
+const STATE_FILE = path.join(STATE_DIR, `current-run${cwdKey}.json`);
 
 // Auto-sync: if npm package version changed since last install, update hook paths (npm-only)
 try {
@@ -94,6 +95,17 @@ function detectFastMode() {
     return false;
   }
 }
+
+// Migrate from global current-run.json if this project's run doesn't exist yet
+try {
+  const globalFile = path.join(STATE_DIR, 'current-run.json');
+  if (!fs.existsSync(STATE_FILE) && fs.existsSync(globalFile)) {
+    const globalRun = JSON.parse(fs.readFileSync(globalFile, 'utf8'));
+    if (globalRun.cwd === (process.env.PWD || process.cwd())) {
+      fs.renameSync(globalFile, STATE_FILE);
+    }
+  }
+} catch {}
 
 try {
   const cwd = process.env.PWD || process.cwd();
