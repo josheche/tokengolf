@@ -6,6 +6,21 @@ TokenGolf patch notes — what changed, what it measures, and why the mechanic e
 
 ## [Unreleased]
 
+---
+
+## [1.1.0] — 2026-03-18
+
+### Added
+- **3-line statusline HUD** — New top line shows efficiency rating + project name + git branch/dirty status (`📂 myapp  ⎇ main ✓`). Rating moved from line 1 to its own line for cleaner layout.
+- **Per-project state isolation** — Run state is now keyed by working directory (`current-run-{cwd}.json`). Concurrent Claude Code sessions in different repos no longer collide. Migration from global `current-run.json` is automatic.
+- **Stable statusline path** — `statusline.sh` is copied to `~/.tokengolf/statusline.sh` on every session start. Survives plugin uninstall and npm removal (exits cleanly with no active run). Wrapper script also writes to stable path.
+- **python3 availability guard** — `statusline.sh` checks for python3 before invoking it. Graceful silent exit on systems without python3.
+- **Plugin build in CI pipeline** — `npm run prepare` now includes `build:plugin` so the plugin bundle can't ship stale.
+
+### Fixed
+- **npm-only auto-sync guard** — Early bail via `fs.existsSync(pkgPath)` so plugin users skip 50 lines of dead auto-sync code on every session start.
+- **install.js error handling** — `copyFileSync` and version stamp wrapped in try-catch with user-facing warnings instead of raw stack traces.
+
 ### Changed
 - **Sublinear par scaling (sqrt)** — Par formula changed from `prompts × rate` to `rate × sqrt(prompts)`. Early prompts have headroom for exploration; pressure builds as the session goes on. Long wasteful sessions bust. Rates recalibrated: Haiku $0.55, Sonnet $7.00, Paladin $22.00, Opus $45.00. Floors unchanged. All models bust around 20 prompts at typical per-prompt spend.
 - **Design D HUD** — StatusLine HUD redesigned with `██` accent bar, inline `▓░` progress bars for budget and context, no separator lines. 1 line when context <50%, 2 lines when context visible. Accent bar turns red when budget >75%. Matches Design D across all UI surfaces.
