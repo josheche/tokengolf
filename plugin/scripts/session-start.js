@@ -64,7 +64,7 @@ try {
     const needsInstall = !current || current.includes('tokengolf');
     const needsUpdate = needsInstall && current !== stablePath;
     if (needsUpdate) {
-      settings.statusLine = { type: 'command', command: stablePath, padding: 1 };
+      settings.statusLine = { type: 'command', command: stablePath, padding: 0 };
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
     }
   }

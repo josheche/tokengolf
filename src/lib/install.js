@@ -208,7 +208,7 @@ export function installHooks() {
       settings.statusLine = {
         type: 'command',
         command: STABLE_WRAPPER,
-        padding: existing?.padding ?? 1,
+        padding: existing?.padding ?? 0,
       };
       console.log('  ✓ statusLine       → updated paths (kept your existing statusline)');
     } else {
@@ -216,7 +216,7 @@ export function installHooks() {
       settings.statusLine = {
         type: 'command',
         command: STABLE_STATUSLINE,
-        padding: existing?.padding ?? 1,
+        padding: existing?.padding ?? 0,
       };
       console.log('  ✓ statusLine       → updated to current install path');
     }
@@ -235,7 +235,7 @@ export function installHooks() {
     settings.statusLine = {
       type: 'command',
       command: STABLE_WRAPPER,
-      padding: 1,
+      padding: 0,
     };
     console.log('  ✓ statusLine       → wrapped your existing statusline + tokengolf HUD');
   } else {
@@ -243,7 +243,7 @@ export function installHooks() {
     settings.statusLine = {
       type: 'command',
       command: STABLE_STATUSLINE,
-      padding: 1,
+      padding: 0,
     };
     console.log('  ✓ statusLine       → live HUD in every Claude session');
   }
