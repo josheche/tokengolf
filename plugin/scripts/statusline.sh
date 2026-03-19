@@ -4,7 +4,11 @@ SESSION_JSON=$(cat)
 [ ! -f "$STATE_FILE" ] && exit 0
 command -v python3 >/dev/null 2>&1 || exit 0
 
-TG_SESSION_JSON="$SESSION_JSON" python3 - "$STATE_FILE" <<'PYEOF'
+TG_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+TG_GIT_DIRTY=$(git status --porcelain 2>/dev/null | head -c 1)
+TG_CWD=$(basename "$PWD")
+
+TG_SESSION_JSON="$SESSION_JSON" TG_GIT_BRANCH="$TG_GIT_BRANCH" TG_GIT_DIRTY="$TG_GIT_DIRTY" TG_CWD="$TG_CWD" python3 - "$STATE_FILE" <<'PYEOF'
 import sys, json, os
 
 try:
@@ -165,16 +169,26 @@ else:
     icon = '💤' if fainted else '⛳'
 if emotion_mode == 'off':
     emotion_display = ''
-    line1 = f" {accent}██{RESET} {icon}  {cost_str}{rating_str}"
+    line1 = f" {accent}██{RESET} {icon}  {cost_str}"
 else:
     emotion_display = f"{emotion_color}{emotion_key}{RESET}"
-    line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}{rating_str}"
+    line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}"
 
 # Line 2: model + context bar (always shown)
 line2 = f" {accent}██{RESET} {model_label}  {ctx_icon} {ctx_bar} {ctx_pct_val:.0f}%"
 
+# Line 3: rating + project path + git status
+git_branch = os.environ.get('TG_GIT_BRANCH', '').strip()
+git_dirty = len(os.environ.get('TG_GIT_DIRTY', '')) > 0
+cwd_name = os.environ.get('TG_CWD', '')
+git_status_icon = f'{Y}●{RESET}' if git_dirty else f'{G}✓{RESET}'
+git_str = f'  {DIM}⎇{RESET} {git_branch} {git_status_icon}' if git_branch else ''
+path_str = f'{DIM}📂{RESET} {cwd_name}' if cwd_name else ''
+line3 = f" {accent}██{RESET} {eff_emoji} {rc}{rating}{RESET}  {path_str}{git_str}"
+
 # Output (leading blank line separates from any existing statusline above)
 print()
+print(line3)
 print(line1)
 print(line2)
 if emotion_mode == 'ascii':
