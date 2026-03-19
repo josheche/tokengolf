@@ -9,7 +9,7 @@ const HOOKS_DIR = path.resolve(path.dirname(realEntry), '../hooks');
 const SRC_STATUSLINE_PATH = path.join(HOOKS_DIR, 'statusline.sh');
 const TG_DIR = path.join(os.homedir(), '.tokengolf');
 const STABLE_STATUSLINE = path.join(TG_DIR, 'statusline.sh');
-const WRAPPER_PATH = path.join(HOOKS_DIR, 'statusline-wrapper.sh');
+const STABLE_WRAPPER = path.join(TG_DIR, 'statusline-wrapper.sh');
 const CLAUDE_DIR = path.join(os.homedir(), '.claude');
 const CLAUDE_SETTINGS = path.join(CLAUDE_DIR, 'settings.json');
 
@@ -196,7 +196,7 @@ export function installHooks() {
     if (userStatusline) {
       // Re-wrap: preserve user's statusline + update tokengolf path
       fs.writeFileSync(
-        WRAPPER_PATH,
+        STABLE_WRAPPER,
         [
           '#!/usr/bin/env bash',
           'SESSION_JSON=$(cat)',
@@ -204,10 +204,10 @@ export function installHooks() {
           `echo "$SESSION_JSON" | bash ${STABLE_STATUSLINE}`,
         ].join('\n') + '\n'
       );
-      fs.chmodSync(WRAPPER_PATH, 0o755);
+      fs.chmodSync(STABLE_WRAPPER, 0o755);
       settings.statusLine = {
         type: 'command',
-        command: WRAPPER_PATH,
+        command: STABLE_WRAPPER,
         padding: existing?.padding ?? 1,
       };
       console.log('  ✓ statusLine       → updated paths (kept your existing statusline)');
@@ -223,7 +223,7 @@ export function installHooks() {
   } else if (existingCmd) {
     // User has a non-TG statusline — wrap it
     fs.writeFileSync(
-      WRAPPER_PATH,
+      STABLE_WRAPPER,
       [
         '#!/usr/bin/env bash',
         'SESSION_JSON=$(cat)',
@@ -231,10 +231,10 @@ export function installHooks() {
         `echo "$SESSION_JSON" | bash ${STABLE_STATUSLINE}`,
       ].join('\n') + '\n'
     );
-    fs.chmodSync(WRAPPER_PATH, 0o755);
+    fs.chmodSync(STABLE_WRAPPER, 0o755);
     settings.statusLine = {
       type: 'command',
-      command: WRAPPER_PATH,
+      command: STABLE_WRAPPER,
       padding: 1,
     };
     console.log('  ✓ statusLine       → wrapped your existing statusline + tokengolf HUD');
