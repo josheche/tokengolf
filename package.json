@@ -19,7 +19,7 @@
     "format:check": "prettier --check src/ hooks/",
     "version": "./scripts/sync-plugin-version.sh && git add CHANGELOG.md plugin/ .claude-plugin/",
     "postversion": "git push && git push --tags",
-    "postpublish": "./scripts/update-homebrew.sh"
+    "postpublish": "./scripts/create-release.sh && ./scripts/update-homebrew.sh"
   },
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
