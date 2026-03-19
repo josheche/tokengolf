@@ -34,7 +34,18 @@ const EMOTION_COLORS = {
   VIBING: G,
 };
 
-function hudLine({ model, cost, prompts, ctxPct, effort, fainted, emotionKey }) {
+function hudLine({
+  model,
+  cost,
+  prompts,
+  ctxPct,
+  effort,
+  fainted,
+  emotionKey,
+  project,
+  gitBranch,
+  gitDirty,
+}) {
   const m = (model || '').toLowerCase();
   let modelName, modelEmoji;
   if (m.includes('haiku')) {
@@ -104,7 +115,6 @@ function hudLine({ model, cost, prompts, ctxPct, effort, fainted, emotionKey }) 
   const barEmpty = barW - barFilled;
   const bar = `${accent}${'▓'.repeat(barFilled)}${'░'.repeat(barEmpty)}${RESET}`;
   const costStr = `${tierEmoji} ${DIM}$${RESET}${cost.toFixed(2)}${DIM}/${par.toFixed(2)}${RESET} ${bar} ${pct.toFixed(0)}%`;
-  const ratingStr = ` ${effEmoji} ${rc}${rating}${RESET}`;
 
   // Context bar (line 2, always shown — default to 0)
   const ctxPctVal = ctxPct != null ? ctxPct : 0;
@@ -133,7 +143,7 @@ function hudLine({ model, cost, prompts, ctxPct, effort, fainted, emotionKey }) 
   }
   const ctxBar = `${ctxColor}${'▓'.repeat(ctxFilled)}${'░'.repeat(ctxEmpty)}${RESET}`;
 
-  // Line 1: accent + icon + emotion + cost bar + rating
+  // Line 1: accent + icon + emotion + cost bar
   const icon = fainted ? '💤' : '⛳';
   let emotionDisplay;
   if (emotionKey) {
@@ -141,32 +151,55 @@ function hudLine({ model, cost, prompts, ctxPct, effort, fainted, emotionKey }) 
   } else {
     emotionDisplay = `${G}VIBING${RESET}`;
   }
-  const line1 = ` ${accent}██${RESET} ${icon} ${emotionDisplay}  ${costStr}${ratingStr}`;
+  const line1 = ` ${accent}██${RESET} ${icon} ${emotionDisplay}  ${costStr}`;
 
   // Line 2: model + context bar (always shown)
-  const promptStr = (prompts || 0) > 0 ? `  💬 ${prompts}p` : '';
-  const line2 = ` ${accent}██${RESET} ${modelLabel}  ${ctxIcon} ${ctxBar} ${ctxPctVal}%${promptStr}`;
+  const line2 = ` ${accent}██${RESET} ${modelLabel}  ${ctxIcon} ${ctxBar} ${ctxPctVal}%`;
 
-  return `${line1}\n${line2}`;
+  // Line 3: rating + project path + git branch
+  const projName = project || 'myproject';
+  const branch = gitBranch || 'main';
+  const dirtyIcon = gitDirty ? `${Y}●${RESET}` : `${G}✓${RESET}`;
+  const line3 = ` ${accent}██${RESET} ${effEmoji} ${rc}${rating}${RESET}  ${DIM}📂${RESET} ${projName}  ${DIM}⎇${RESET} ${branch} ${dirtyIcon}`;
+
+  return `${line3}\n${line1}\n${line2}`;
 }
 
+// Scenarios calibrated against current par rates:
+// Sonnet: rate=1.5, floor=0.75  |  Opus: rate=8.0, floor=3.0  |  Haiku: rate=0.15, floor=0.10
+// par = max(rate × sqrt(prompts), floor)
 const SCENARIOS = [
   {
-    title: 'Fresh session · Sonnet · 2 prompts · VIBING',
-    hud: { model: 'claude-sonnet-4-6', cost: 0.42, prompts: 2, ctxPct: 8, emotionKey: 'VIBING' },
-  },
-  {
-    title: 'Sonnet · 8 prompts · efficient · GRINDING',
+    title: 'Fresh session · Sonnet · 2 prompts · LEGENDARY',
+    // par = 1.5*sqrt(2) = $2.12, cost $0.18 → 8% = LEGENDARY
     hud: {
       model: 'claude-sonnet-4-6',
-      cost: 6.8,
+      cost: 0.18,
+      prompts: 2,
+      ctxPct: 8,
+      emotionKey: 'VIBING',
+      project: 'myapp',
+      gitBranch: 'main',
+      gitDirty: false,
+    },
+  },
+  {
+    title: 'Sonnet · 8 prompts · efficient · PRO',
+    // par = 1.5*sqrt(8) = $4.24, cost $1.50 → 35% = PRO
+    hud: {
+      model: 'claude-sonnet-4-6',
+      cost: 1.5,
       prompts: 8,
       ctxPct: 34,
       emotionKey: 'GRINDING',
+      project: 'api-server',
+      gitBranch: 'feat/auth',
+      gitDirty: true,
     },
   },
   {
     title: 'Sonnet·High · 5 prompts · LEGENDARY',
+    // par = 1.5*sqrt(5) = $3.35, cost $0.41 → 12% = LEGENDARY
     hud: {
       model: 'claude-sonnet-4-6',
       cost: 0.41,
@@ -174,57 +207,80 @@ const SCENARIOS = [
       ctxPct: 29,
       effort: 'high',
       emotionKey: 'VIBING',
+      project: 'tokengolf',
+      gitBranch: 'main',
+      gitDirty: false,
     },
   },
   {
     title: 'Opus · 4 prompts · EPIC',
+    // par = 8.0*sqrt(4) = $16.00, cost $3.80 → 24% = EPIC
     hud: {
       model: 'claude-opus-4-6',
-      cost: 18.0,
+      cost: 3.8,
       prompts: 4,
       ctxPct: 52,
       emotionKey: 'CRUISING',
+      project: 'ml-pipeline',
+      gitBranch: 'refactor/v2',
+      gitDirty: false,
     },
   },
   {
-    title: 'Haiku · 20 prompts · CLOSE CALL',
+    title: 'Haiku · 12 prompts · CLOSE CALL',
+    // par = 0.15*sqrt(12) = $0.52, cost $0.45 → 87% = CLOSE CALL
     hud: {
       model: 'claude-haiku-4-5-20251001',
-      cost: 2.1,
-      prompts: 20,
+      cost: 0.45,
+      prompts: 12,
       ctxPct: 78,
       emotionKey: 'SWEATING',
+      project: 'docs-site',
+      gitBranch: 'fix/typos',
+      gitDirty: true,
     },
   },
   {
-    title: 'Sonnet · 10 prompts · BUSTED',
+    title: 'Sonnet · 10 prompts · BUST',
+    // par = 1.5*sqrt(10) = $4.74, cost $6.20 → 131% = BUST
     hud: {
       model: 'claude-sonnet-4-6',
-      cost: 34.24,
+      cost: 6.2,
       prompts: 10,
       ctxPct: 45,
       emotionKey: 'ZOMBIE',
+      project: 'monorepo',
+      gitBranch: 'main',
+      gitDirty: true,
     },
   },
   {
     title: 'Opus · 3 prompts · overencumbered context',
+    // par = 8.0*sqrt(3) = $13.86, cost $5.50 → 40% = PRO
     hud: {
       model: 'claude-opus-4-6',
-      cost: 28.0,
+      cost: 5.5,
       prompts: 3,
       ctxPct: 91,
       emotionKey: 'FOCUSED',
+      project: 'kernel',
+      gitBranch: 'dev',
+      gitDirty: false,
     },
   },
   {
     title: 'Fainted 💤 — usage limit hit, run resumes next session',
+    // par = 1.5*sqrt(6) = $3.67, cost $0.92 → 25% = EPIC
     hud: {
       model: 'claude-sonnet-4-6',
-      cost: 4.22,
+      cost: 0.92,
       prompts: 6,
       ctxPct: 67,
       fainted: true,
       emotionKey: 'SLEEPING',
+      project: 'webapp',
+      gitBranch: 'feat/deploy',
+      gitDirty: false,
     },
   },
 ];

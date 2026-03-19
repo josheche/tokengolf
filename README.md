@@ -289,17 +289,21 @@ Thresholds scale per model — Haiku Diamond is $0.15, Opus Diamond is $2.50. Sa
 
 ## Live HUD
 
-After install, a status line appears in every Claude Code session showing cost, efficiency, context load, model class, and emotion.
+After install, a 3-line status bar appears in every Claude Code session showing efficiency rating, project info, cost, emotion, model, and context load.
 
 ```
-██ 😎 VIBING  💎 $0.42/9.90 ▓░░░░░░░░░░ 4% 🌟 LEGENDARY
+██ 🌟 LEGENDARY  📂 myapp  ⎇ main ✓
+██ 😎 VIBING  💎 $0.42/9.90 ▓░░░░░░░░░░ 4%
 ██ ⚔️ Sonnet  🪶 ▓░░░░░░░░░ 8%
 
-██ 😤 GRINDING  🥉 $6.80/19.80 ▓▓▓▓░░░░░░░ 34% 💪 PRO
+██ 💪 PRO  📂 api-server  ⎇ feat/auth ●
+██ 😤 GRINDING  🥉 $6.80/19.80 ▓▓▓▓░░░░░░░ 34%
 ██ ⚔️ Sonnet  📚 ▓▓▓░░░░░░░ 34%
 ```
 
-Accent `██` color matches your efficiency tier — yellow for LEGENDARY, magenta for EPIC, cyan for PRO, green for SOLID, white for CLOSE CALL, red for BUST. Line 2 shows model class, context weight (**🪶** · **📚** · **🎒** · **🧱** · **🪨** · **🗿** — feather to stone), and prompt count. **💤** replaces the emotion icon when fainted.
+**Line 1**: Efficiency rating + project name + git branch (✓ clean, ● dirty). **Line 2**: Emotion + cost vs par + progress bar. **Line 3**: Model class + context weight (**🪶** · **📚** · **🎒** · **🧱** · **🪨** · **🗿** — feather to stone). Accent `██` color matches your efficiency tier. **💤** replaces the emotion icon when fainted.
+
+Emotions are a composite signal: par %, context %, failed tools, prompt count. From 😎 VIBING through 😤 GRINDING to 🧟 ZOMBIE (past bust). Three display modes: `tokengolf config emotions emoji` (default), `ascii` (kaomoji + label on a 4th line), or `off`.
 
 ---
 
@@ -407,8 +411,11 @@ Installed automatically via plugin, or manually via `tokengolf install` (npm):
 
 All data lives in `~/.tokengolf/`:
 
-- `current-run.json` — active run
-- `runs.json` — completed run history
+- `current-run-{cwd}.json` — active run (per-project, so concurrent sessions in different repos don't collide)
+- `session-cost-{cwd}` — cost sidecar from statusline (per-project)
+- `runs.json` — completed run history (shared)
+- `config.json` — user preferences (emotion mode, custom par rates)
+- `statusline.sh` — stable copy of the HUD script (survives plugin/npm uninstall)
 
 No database, no native deps, no compilation.
 

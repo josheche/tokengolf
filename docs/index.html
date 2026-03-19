@@ -1282,7 +1282,7 @@
       <!-- ── HUD panel ── -->
       <div class="tab-panel active" id="panel-hud" role="tabpanel" aria-labelledby="tab-hud">
         <p class="demo-label" style="margin-bottom:1.5rem">
-          <strong>Live HUD</strong> appears in every Claude Code session. Shows emotion, cost vs par, efficiency rating, context load, model class, and prompt count. Accent color matches your efficiency tier.
+          <strong>Live HUD</strong> appears in every Claude Code session. 3-line display: efficiency rating with project/git info, emotion with cost vs par, model class with context load. Accent color matches your efficiency tier.
         </p>
         <div class="demos-grid">
 
@@ -1290,7 +1290,8 @@
             <div class="term" data-glow="yellow">
               <div class="term-header">Legendary · early session</div>
               <pre>
-<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.42<span class="t-dim">/9.90</span> <span class="t-yellow">▓░░░░░░░░░░</span> 4% 🌟 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> 🌟 <span class="t-yellow">LEGENDARY</span>  <span class="t-dim">📂</span> myapp  <span class="t-dim">⎇</span> main <span class="t-green">✓</span>
+<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.18<span class="t-dim">/2.12</span> <span class="t-yellow">▓░░░░░░░░░░</span> 8%
 <span class="border-yellow">██</span> ⚔️ Sonnet  🪶 <span class="t-green">▓░░░░░░░░░</span> 8%</pre>
             </div>
           </div>
@@ -1299,7 +1300,8 @@
             <div class="term" data-glow="cyan">
               <div class="term-header">Pro · mid session</div>
               <pre>
-<span class="border-cyan">██</span> 😤 <span class="t-yellow">GRINDING</span>  🥉 <span class="t-dim">$</span>6.80<span class="t-dim">/19.80</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 34% 💪 <span class="t-cyan">PRO</span>
+<span class="border-cyan">██</span> 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">📂</span> api-server  <span class="t-dim">⎇</span> feat/auth <span class="t-yellow">●</span>
+<span class="border-cyan">██</span> 😤 <span class="t-yellow">GRINDING</span>  🥈 <span class="t-dim">$</span>1.50<span class="t-dim">/4.24</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 35%
 <span class="border-cyan">██</span> ⚔️ Sonnet  📚 <span class="t-green">▓▓▓░░░░░░░</span> 34%</pre>
             </div>
           </div>
@@ -1308,16 +1310,18 @@
             <div class="term" data-glow="yellow">
               <div class="term-header">Legendary · high effort</div>
               <pre>
-<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.41<span class="t-dim">/15.65</span> <span class="t-yellow">░░░░░░░░░░░</span> 3% 🌟 <span class="t-yellow">LEGENDARY</span>
+<span class="border-yellow">██</span> 🌟 <span class="t-yellow">LEGENDARY</span>  <span class="t-dim">📂</span> tokengolf  <span class="t-dim">⎇</span> main <span class="t-green">✓</span>
+<span class="border-yellow">██</span> 😎 <span class="t-green">VIBING</span>  💎 <span class="t-dim">$</span>0.41<span class="t-dim">/3.35</span> <span class="t-yellow">▓░░░░░░░░░░</span> 12%
 <span class="border-yellow">██</span> ⚔️ Sonnet·High  📚 <span class="t-green">▓▓▓░░░░░░░</span> 29%</pre>
             </div>
           </div>
 
           <div class="demo-item">
-            <div class="term" data-glow="cyan">
+            <div class="term" data-glow="magenta">
               <div class="term-header">Epic · Opus run</div>
               <pre>
-<span class="border-magenta">██</span> 🛹 <span class="t-green">CRUISING</span>  🥈 <span class="t-dim">$</span>18.00<span class="t-dim">/90.00</span> <span class="t-magenta">▓▓░░░░░░░░░</span> 20% 🔥 <span class="t-magenta">EPIC</span>
+<span class="border-magenta">██</span> 🔥 <span class="t-magenta">EPIC</span>  <span class="t-dim">📂</span> ml-pipeline  <span class="t-dim">⎇</span> refactor/v2 <span class="t-green">✓</span>
+<span class="border-magenta">██</span> 🛹 <span class="t-green">CRUISING</span>  💎 <span class="t-dim">$</span>3.80<span class="t-dim">/16.00</span> <span class="t-magenta">▓▓▓░░░░░░░░</span> 24%
 <span class="border-magenta">██</span> 🧙 Opus  🎒 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 52%</pre>
             </div>
           </div>
@@ -1326,7 +1330,8 @@
             <div class="term">
               <div class="term-header">Close Call · Haiku near bust</div>
               <pre>
-<span class="border-white">██</span> 😰 <span class="t-yellow">SWEATING</span>  🥉 <span class="t-dim">$</span>2.10<span class="t-dim">/2.46</span> <span class="t-white">▓▓▓▓▓▓▓▓▓░░</span> 85% ⚠️ <span class="t-white">CLOSE CALL</span>
+<span class="border-white">██</span> ⚠️ <span class="t-white">CLOSE CALL</span>  <span class="t-dim">📂</span> docs-site  <span class="t-dim">⎇</span> fix/typos <span class="t-yellow">●</span>
+<span class="border-white">██</span> 😰 <span class="t-yellow">SWEATING</span>  🥇 <span class="t-dim">$</span>0.45<span class="t-dim">/0.52</span> <span class="t-white">▓▓▓▓▓▓▓▓▓░░</span> 87%
 <span class="border-white">██</span> 🏹 Haiku  🪨 <span class="t-yellow">▓▓▓▓▓▓▓▓░░</span> 78%</pre>
             </div>
           </div>
@@ -1335,7 +1340,8 @@
             <div class="term" data-glow="red">
               <div class="term-header">Bust · past par, dead</div>
               <pre>
-<span class="border-red">██</span> 🧟 <span class="t-red">ZOMBIE</span>  💸 <span class="t-dim">$</span>34.24<span class="t-dim">/22.14</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 155% 💥 <span class="t-red">BUST</span>
+<span class="border-red">██</span> 💥 <span class="t-red">BUST</span>  <span class="t-dim">📂</span> monorepo  <span class="t-dim">⎇</span> main <span class="t-yellow">●</span>
+<span class="border-red">██</span> 🧟 <span class="t-red">ZOMBIE</span>  🥈 <span class="t-dim">$</span>6.20<span class="t-dim">/4.74</span> <span class="t-red">▓▓▓▓▓▓▓▓▓▓▓</span> 131%
 <span class="border-red">██</span> ⚔️ Sonnet  🎒 <span class="t-cyan">▓▓▓▓▓░░░░░</span> 45%</pre>
             </div>
           </div>
@@ -1344,16 +1350,18 @@
             <div class="term" data-glow="cyan">
               <div class="term-header">Overwhelmed · high context</div>
               <pre>
-<span class="border-cyan">██</span> 🤯 <span class="t-red">OVERWHELMED</span>  🥉 <span class="t-dim">$</span>28.00<span class="t-dim">/77.94</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 36% 💪 <span class="t-cyan">PRO</span>
+<span class="border-cyan">██</span> 💪 <span class="t-cyan">PRO</span>  <span class="t-dim">📂</span> kernel  <span class="t-dim">⎇</span> dev <span class="t-green">✓</span>
+<span class="border-cyan">██</span> 🤯 <span class="t-red">OVERWHELMED</span>  💎 <span class="t-dim">$</span>5.50<span class="t-dim">/13.86</span> <span class="t-cyan">▓▓▓▓░░░░░░░</span> 40%
 <span class="border-cyan">██</span> 🧙 Opus  🗿 <span class="t-red">▓▓▓▓▓▓▓▓▓░</span> 91%</pre>
             </div>
           </div>
 
           <div class="demo-item">
-            <div class="term" data-glow="cyan">
-              <div class="term-header">Sleeping · idle session</div>
+            <div class="term" data-glow="magenta">
+              <div class="term-header">Sleeping · fainted session</div>
               <pre>
-<span class="border-magenta">██</span> 💤 <span class="t-dim">SLEEPING</span>  🥉 <span class="t-dim">$</span>4.22<span class="t-dim">/17.15</span> <span class="t-magenta">▓▓▓░░░░░░░░</span> 25% 🔥 <span class="t-magenta">EPIC</span>
+<span class="border-magenta">██</span> 🔥 <span class="t-magenta">EPIC</span>  <span class="t-dim">📂</span> webapp  <span class="t-dim">⎇</span> feat/deploy <span class="t-green">✓</span>
+<span class="border-magenta">██</span> 💤 <span class="t-dim">SLEEPING</span>  💎 <span class="t-dim">$</span>0.92<span class="t-dim">/3.67</span> <span class="t-magenta">▓▓▓░░░░░░░░</span> 25%
 <span class="border-magenta">██</span> ⚔️ Sonnet  🧱 <span class="t-yellow">▓▓▓▓▓▓▓░░░</span> 67%</pre>
             </div>
           </div>
