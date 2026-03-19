@@ -171,7 +171,8 @@ import fs2 from "fs";
 import path2 from "path";
 import os2 from "os";
 var STATE_DIR = path2.join(os2.homedir(), ".tokengolf");
-var STATE_FILE = path2.join(STATE_DIR, "current-run.json");
+var cwdKey = (process.env.PWD || process.cwd()).replace(/\//g, "-");
+var STATE_FILE = path2.join(STATE_DIR, `current-run${cwdKey}.json`);
 function ensureDir() {
   if (!fs2.existsSync(STATE_DIR)) fs2.mkdirSync(STATE_DIR, { recursive: true });
 }
@@ -942,9 +943,11 @@ try {
   } catch {
   }
   const reason = event.reason || "other";
+  const cwdKey2 = (process.env.PWD || process.cwd()).replace(/\//g, "-");
+  const costFile = path5.join(os3.homedir(), ".tokengolf", `session-cost${cwdKey2}`);
   let liveCost = null;
   try {
-    const raw = fs5.readFileSync(path5.join(os3.homedir(), ".tokengolf", "session-cost"), "utf8").trim();
+    const raw = fs5.readFileSync(costFile, "utf8").trim();
     const parsed = parseFloat(raw);
     if (!isNaN(parsed) && parsed > 0) liveCost = parsed;
   } catch {
@@ -1012,7 +1015,7 @@ try {
   });
   clearCurrentRun();
   try {
-    fs5.unlinkSync(path5.join(os3.homedir(), ".tokengolf", "session-cost"));
+    fs5.unlinkSync(costFile);
   } catch {
   }
   writeTTY("\n" + renderScorecard(saved) + "\n\n");

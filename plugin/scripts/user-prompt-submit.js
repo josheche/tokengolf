@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const STATE_FILE = path.join(os.homedir(), '.tokengolf', 'current-run.json');
+const cwdKey = (process.env.PWD || process.cwd()).replace(/\//g, '-');
+const STATE_FILE = path.join(os.homedir(), '.tokengolf', `current-run${cwdKey}.json`);
 
 try {
   const run = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));

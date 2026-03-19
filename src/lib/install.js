@@ -6,8 +6,10 @@ import os from 'os';
 // to find the actual project directory, then resolve hooks/ relative to it.
 const realEntry = fs.realpathSync(process.argv[1]);
 const HOOKS_DIR = path.resolve(path.dirname(realEntry), '../hooks');
-const STATUSLINE_PATH = path.join(HOOKS_DIR, 'statusline.sh');
-const WRAPPER_PATH = path.join(HOOKS_DIR, 'statusline-wrapper.sh');
+const SRC_STATUSLINE_PATH = path.join(HOOKS_DIR, 'statusline.sh');
+const TG_DIR = path.join(os.homedir(), '.tokengolf');
+const STABLE_STATUSLINE = path.join(TG_DIR, 'statusline.sh');
+const STABLE_WRAPPER = path.join(TG_DIR, 'statusline-wrapper.sh');
 const CLAUDE_DIR = path.join(os.homedir(), '.claude');
 const CLAUDE_SETTINGS = path.join(CLAUDE_DIR, 'settings.json');
 
@@ -143,16 +145,24 @@ export function installHooks() {
   });
 
   // Install statusLine (non-destructive: wrap existing if present)
+  // Copy to stable ~/.tokengolf/ path (survives npm uninstall / plugin removal)
+  if (!fs.existsSync(TG_DIR)) fs.mkdirSync(TG_DIR, { recursive: true });
   try {
-    fs.chmodSync(STATUSLINE_PATH, 0o755);
-  } catch {}
+    fs.copyFileSync(SRC_STATUSLINE_PATH, STABLE_STATUSLINE);
+    fs.chmodSync(STABLE_STATUSLINE, 0o755);
+  } catch (err) {
+    console.log(`  ⚠️  Could not copy statusline.sh: ${err.message}`);
+    console.log('      The HUD may not work. Try reinstalling tokengolf.');
+  }
 
   const existing = settings.statusLine;
   const existingCmd = typeof existing === 'string' ? existing : (existing?.command ?? null);
-  // Detect any tokengolf statusline (from any install path — npm, homebrew, project dir)
+  // Detect any tokengolf statusline (from any install path — npm, homebrew, project dir, stable)
   const isTgStatusline = (cmd) =>
     cmd &&
-    (cmd.includes('tokengolf/hooks/statusline') || cmd.includes('tokengolf\\hooks\\statusline'));
+    (cmd.includes('tokengolf/hooks/statusline') ||
+      cmd.includes('tokengolf\\hooks\\statusline') ||
+      cmd.includes('.tokengolf/statusline'));
   const alreadyOurs = isTgStatusline(existingCmd);
 
   // Extract user's non-TG statusline command from a wrapper, following chains recursively
@@ -186,18 +196,18 @@ export function installHooks() {
     if (userStatusline) {
       // Re-wrap: preserve user's statusline + update tokengolf path
       fs.writeFileSync(
-        WRAPPER_PATH,
+        STABLE_WRAPPER,
         [
           '#!/usr/bin/env bash',
           'SESSION_JSON=$(cat)',
           `echo "$SESSION_JSON" | ${userStatusline} 2>/dev/null || true`,
-          `echo "$SESSION_JSON" | bash ${STATUSLINE_PATH}`,
+          `echo "$SESSION_JSON" | bash ${STABLE_STATUSLINE}`,
         ].join('\n') + '\n'
       );
-      fs.chmodSync(WRAPPER_PATH, 0o755);
+      fs.chmodSync(STABLE_WRAPPER, 0o755);
       settings.statusLine = {
         type: 'command',
-        command: WRAPPER_PATH,
+        command: STABLE_WRAPPER,
         padding: existing?.padding ?? 1,
       };
       console.log('  ✓ statusLine       → updated paths (kept your existing statusline)');
@@ -205,7 +215,7 @@ export function installHooks() {
       // Direct install — no user statusline to preserve
       settings.statusLine = {
         type: 'command',
-        command: STATUSLINE_PATH,
+        command: STABLE_STATUSLINE,
         padding: existing?.padding ?? 1,
       };
       console.log('  ✓ statusLine       → updated to current install path');
@@ -213,18 +223,18 @@ export function installHooks() {
   } else if (existingCmd) {
     // User has a non-TG statusline — wrap it
     fs.writeFileSync(
-      WRAPPER_PATH,
+      STABLE_WRAPPER,
       [
         '#!/usr/bin/env bash',
         'SESSION_JSON=$(cat)',
         `echo "$SESSION_JSON" | ${existingCmd} 2>/dev/null || true`,
-        `echo "$SESSION_JSON" | bash ${STATUSLINE_PATH}`,
+        `echo "$SESSION_JSON" | bash ${STABLE_STATUSLINE}`,
       ].join('\n') + '\n'
     );
-    fs.chmodSync(WRAPPER_PATH, 0o755);
+    fs.chmodSync(STABLE_WRAPPER, 0o755);
     settings.statusLine = {
       type: 'command',
-      command: WRAPPER_PATH,
+      command: STABLE_WRAPPER,
       padding: 1,
     };
     console.log('  ✓ statusLine       → wrapped your existing statusline + tokengolf HUD');
@@ -232,17 +242,13 @@ export function installHooks() {
     // No existing statusline — install directly
     settings.statusLine = {
       type: 'command',
-      command: STATUSLINE_PATH,
+      command: STABLE_STATUSLINE,
       padding: 1,
     };
     console.log('  ✓ statusLine       → live HUD in every Claude session');
   }
 
   fs.writeFileSync(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2));
-
-  // Ensure ~/.tokengolf exists before writing any files
-  const TG_DIR = path.join(os.homedir(), '.tokengolf');
-  if (!fs.existsSync(TG_DIR)) fs.mkdirSync(TG_DIR, { recursive: true });
 
   // Stamp installed version for auto-sync detection
   try {
@@ -251,7 +257,9 @@ export function installHooks() {
     ).version;
     fs.writeFileSync(path.join(TG_DIR, 'installed-version'), pkgVersion);
     console.log(`  ✓ installed-version → ${pkgVersion}`);
-  } catch {}
+  } catch (err) {
+    console.log(`  ⚠️  Could not stamp installed version: ${err.message}`);
+  }
 
   // Create default config if it doesn't exist
   const CONFIG_FILE = path.join(TG_DIR, 'config.json');

@@ -3,7 +3,8 @@ import path from 'path';
 import os from 'os';
 
 export const STATE_DIR = path.join(os.homedir(), '.tokengolf');
-const STATE_FILE = path.join(STATE_DIR, 'current-run.json');
+const cwdKey = (process.env.PWD || process.cwd()).replace(/\//g, '-');
+const STATE_FILE = path.join(STATE_DIR, `current-run${cwdKey}.json`);
 
 function ensureDir() {
   if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });

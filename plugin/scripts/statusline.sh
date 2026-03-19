@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-STATE_FILE="$HOME/.tokengolf/current-run.json"
+CWD_KEY=$(echo "$PWD" | tr '/' '-')
+STATE_FILE="$HOME/.tokengolf/current-run${CWD_KEY}.json"
 SESSION_JSON=$(cat)
 [ ! -f "$STATE_FILE" ] && exit 0
+command -v python3 >/dev/null 2>&1 || exit 0
 
-TG_SESSION_JSON="$SESSION_JSON" python3 - "$STATE_FILE" <<'PYEOF'
+TG_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+TG_GIT_DIRTY=$(git status --porcelain 2>/dev/null | head -c 1)
+TG_CWD=$(basename "$PWD")
+
+TG_SESSION_JSON="$SESSION_JSON" TG_GIT_BRANCH="$TG_GIT_BRANCH" TG_GIT_DIRTY="$TG_GIT_DIRTY" TG_CWD="$TG_CWD" TG_CWD_KEY="$CWD_KEY" python3 - "$STATE_FILE" <<'PYEOF'
 import sys, json, os
 
 try:
@@ -23,7 +29,8 @@ emotion_mode = _config.get('emotionMode', 'emoji')
 cost    = (session.get('cost') or {}).get('total_cost_usd') or run.get('spent', 0)
 # Persist CC's authoritative cost so session-end can read it (SessionEnd doesn't receive cost in stdin)
 try:
-    with open(os.path.join(os.path.expanduser('~'), '.tokengolf', 'session-cost'), 'w') as _cf: _cf.write(str(cost))
+    cwd_key = os.environ.get('TG_CWD_KEY', '')
+    with open(os.path.join(os.path.expanduser('~'), '.tokengolf', f'session-cost{cwd_key}'), 'w') as _cf: _cf.write(str(cost))
 except: pass
 ctx_pct = (session.get('context_window') or {}).get('used_percentage') or None
 sm = session.get('model') or {}; m = (sm.get('id','') or run.get('model','') if isinstance(sm,dict) else sm or run.get('model','')).lower()
@@ -137,7 +144,6 @@ bar_filled = min(bar_w, int(pct / 100 * bar_w + 0.5))
 bar_empty = bar_w - bar_filled
 bar = f"{accent}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
 cost_str = f"{tier_emoji} {DIM}${RESET}{cost:.2f}{DIM}/{par:.2f}{RESET} {bar} {pct:.0f}%"
-rating_str = f" {eff_emoji} {rc}{rating}{RESET}"
 
 # Context bar (line 2, always shown — default ctx_pct to 0)
 ctx_pct_val = ctx_pct if ctx_pct is not None else 0
@@ -164,16 +170,26 @@ else:
     icon = '💤' if fainted else '⛳'
 if emotion_mode == 'off':
     emotion_display = ''
-    line1 = f" {accent}██{RESET} {icon}  {cost_str}{rating_str}"
+    line1 = f" {accent}██{RESET} {icon}  {cost_str}"
 else:
     emotion_display = f"{emotion_color}{emotion_key}{RESET}"
-    line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}{rating_str}"
+    line1 = f" {accent}██{RESET} {icon} {emotion_display}  {cost_str}"
 
 # Line 2: model + context bar (always shown)
 line2 = f" {accent}██{RESET} {model_label}  {ctx_icon} {ctx_bar} {ctx_pct_val:.0f}%"
 
+# Line 3: rating + project path + git status
+git_branch = os.environ.get('TG_GIT_BRANCH', '').strip()
+git_dirty = len(os.environ.get('TG_GIT_DIRTY', '')) > 0
+cwd_name = os.environ.get('TG_CWD', '')
+git_status_icon = f'{Y}●{RESET}' if git_dirty else f'{G}✓{RESET}'
+git_str = f'  {DIM}⎇{RESET} {git_branch} {git_status_icon}' if git_branch else ''
+path_str = f'{DIM}📂{RESET} {cwd_name}' if cwd_name else ''
+line3 = f" {accent}██{RESET} {eff_emoji} {rc}{rating}{RESET}  {path_str}{git_str}"
+
 # Output (leading blank line separates from any existing statusline above)
 print()
+print(line3)
 print(line1)
 print(line2)
 if emotion_mode == 'ascii':
