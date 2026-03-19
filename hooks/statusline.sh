@@ -144,7 +144,6 @@ bar_filled = min(bar_w, int(pct / 100 * bar_w + 0.5))
 bar_empty = bar_w - bar_filled
 bar = f"{accent}{'▓' * bar_filled}{'░' * bar_empty}{RESET}"
 cost_str = f"{tier_emoji} {DIM}${RESET}{cost:.2f}{DIM}/{par:.2f}{RESET} {bar} {pct:.0f}%"
-rating_str = f" {eff_emoji} {rc}{rating}{RESET}"
 
 # Context bar (line 2, always shown — default ctx_pct to 0)
 ctx_pct_val = ctx_pct if ctx_pct is not None else 0

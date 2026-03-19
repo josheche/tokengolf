@@ -147,8 +147,13 @@ export function installHooks() {
   // Install statusLine (non-destructive: wrap existing if present)
   // Copy to stable ~/.tokengolf/ path (survives npm uninstall / plugin removal)
   if (!fs.existsSync(TG_DIR)) fs.mkdirSync(TG_DIR, { recursive: true });
-  fs.copyFileSync(SRC_STATUSLINE_PATH, STABLE_STATUSLINE);
-  fs.chmodSync(STABLE_STATUSLINE, 0o755);
+  try {
+    fs.copyFileSync(SRC_STATUSLINE_PATH, STABLE_STATUSLINE);
+    fs.chmodSync(STABLE_STATUSLINE, 0o755);
+  } catch (err) {
+    console.log(`  ⚠️  Could not copy statusline.sh: ${err.message}`);
+    console.log('      The HUD may not work. Try reinstalling tokengolf.');
+  }
 
   const existing = settings.statusLine;
   const existingCmd = typeof existing === 'string' ? existing : (existing?.command ?? null);
@@ -252,7 +257,9 @@ export function installHooks() {
     ).version;
     fs.writeFileSync(path.join(TG_DIR, 'installed-version'), pkgVersion);
     console.log(`  ✓ installed-version → ${pkgVersion}`);
-  } catch {}
+  } catch (err) {
+    console.log(`  ⚠️  Could not stamp installed version: ${err.message}`);
+  }
 
   // Create default config if it doesn't exist
   const CONFIG_FILE = path.join(TG_DIR, 'config.json');
